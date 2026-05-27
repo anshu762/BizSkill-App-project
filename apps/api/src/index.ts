@@ -5,6 +5,9 @@ import helmet from "helmet";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
 import { authRouter } from "./routes/authRoutes";
 import { userRouter } from "./routes/userRoutes";
+import { profileRouter } from "./routes/profileRoutes";
+import { skillRouter } from "./routes/skillRoutes";
+import { uploadRouter } from "./routes/uploadRoutes";
 import { env } from "./utils/env";
 
 const app = express();
@@ -27,6 +30,9 @@ app.get("/api/health", (_req, res) => {
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
+app.use("/api/profile", profileRouter);
+app.use("/api/skills", skillRouter);
+app.use("/api/upload", uploadRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
