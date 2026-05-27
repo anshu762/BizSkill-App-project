@@ -1,0 +1,14 @@
+packages:
+  - apps/*
+  - packages/*
+
+nodeLinker: hoisted
+
+allowBuilds:
+  '@prisma/client': true
+  '@prisma/engines': true
+  prisma: true
+
+overrides:
+  expo-constants: ~18.0.13
+  expo-linking: ~8.0.12

@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SkillCategory {
+  GRAPHIC_DESIGN
+  SOCIAL_MEDIA
+  PHOTOGRAPHY
+  WEBSITE
+  MARKETING
+  BRANDING
+  FINANCE
+  PITCH_DECK
+  CONTENT
+  OTHER
+}
+
+enum BusinessStage {
+  IDEA
+  BUILDING
+  LAUNCHED
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  EXPERT
+}
+
+enum ExchangeStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+  COMPLETED
+  CANCELLED
+}
+
+model User {
+  id               String            @id @default(uuid()) @db.Uuid
+  name             String
+  email            String            @unique
+  passwordHash     String            @map("password_hash")
+  avatar           String?
+  bio              String?
+  age              Int?
+  location         String?
+  bizCoins         Int               @default(100) @map("biz_coins")
+  hasOnboarded     Boolean           @default(false) @map("has_onboarded")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  businessProfile  BusinessProfile?
+  skills           Skill[]
+  refreshTokens    RefreshToken[]
+  posts            Post[]
+  notifications    Notification[]
+  teamMemberships  TeamMember[]
+  ownedTeams       Team[]            @relation("TeamOwner")
+  requestsSent     ExchangeRequest[] @relation("RequestSender")
+  requestsReceived ExchangeRequest[] @relation("RequestRecipient")
+
+  @@map("users")
+}
+
+model BusinessProfile {
+  id              String         @id @default(uuid()) @db.Uuid
+  userId          String         @unique @map("user_id") @db.Uuid
+  businessName    String         @map("business_name")
+  industry        SkillCategory
+  description     String?
+  stage           BusinessStage
+  website         String?
+  instagramHandle String?        @map("instagram_handle")
+  user            User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("business_profiles")
+}
+
+model Skill {
+  id                String            @id @default(uuid()) @db.Uuid
+  userId            String            @map("user_id") @db.Uuid
+  title             String
+  category          SkillCategory
+  description       String?
+  level             SkillLevel
+  coinValue         Int               @map("coin_value")
+  isOffering        Boolean           @default(true) @map("is_offering")
+  isActive          Boolean           @default(true) @map("is_active")
+  user              User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offeredRequests   ExchangeRequest[] @relation("OfferedSkill")
+  requestedRequests ExchangeRequest[] @relation("RequestedSkill")
+
+  @@map("skills")
+}
+
+model ExchangeRequest {
+  id               String         @id @default(uuid()) @db.Uuid
+  fromUserId       String         @map("from_user_id") @db.Uuid
+  toUserId         String         @map("to_user_id") @db.Uuid
+  skillOfferedId   String         @map("skill_offered_id") @db.Uuid
+  skillRequestedId String         @map("skill_requested_id") @db.Uuid
+  message          String?
+  coinsOffered     Int            @map("coins_offered")
+  status           ExchangeStatus @default(PENDING)
+  createdAt        DateTime       @default(now()) @map("created_at")
+  updatedAt        DateTime       @updatedAt @map("updated_at")
+  fromUser         User           @relation("RequestSender", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser           User           @relation("RequestRecipient", fields: [toUserId], references: [id], onDelete: Cascade)
+  skillOffered     Skill          @relation("OfferedSkill", fields: [skillOfferedId], references: [id], onDelete: Cascade)
+  skillRequested   Skill          @relation("RequestedSkill", fields: [skillRequestedId], references: [id], onDelete: Cascade)
+
+  @@map("exchange_requests")
+}
+
+model Post {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  content   String
+  image     String?
+  likes     Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("posts")
+}
+
+model Team {
+  id          String       @id @default(uuid()) @db.Uuid
+  name        String
+  description String?
+  ownerId     String       @map("owner_id") @db.Uuid
+  createdAt   DateTime     @default(now()) @map("created_at")
+  updatedAt   DateTime     @updatedAt @map("updated_at")
+  owner       User         @relation("TeamOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  members     TeamMember[]
+
+  @@map("teams")
+}
+
+model TeamMember {
+  id     String @id @default(uuid()) @db.Uuid
+  teamId String @map("team_id") @db.Uuid
+  userId String @map("user_id") @db.Uuid
+  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@map("team_members")
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  type      String
+  title     String
+  message   String
+  read      Boolean  @default(false)
+  relatedId String?  @map("related_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("notifications")
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}

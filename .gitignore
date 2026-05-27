@@ -1,0 +1,21 @@
+node_modules/
+.pnpm-store/
+.expo/
+dist/
+coverage/
+*.log
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+
+# Prisma local artifacts
+*.db
+*.db-journal
+
+# Native and OS output
+.DS_Store
+android/
+ios/
+
