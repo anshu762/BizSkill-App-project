@@ -37,7 +37,7 @@ export default function ProfileScreen() {
   const updateMutation = useUpdateProfile();
   const [editOpen, setEditOpen] = useState(false);
 
-  const { control, handleSubmit, reset } = useForm<EditValues>({
+  const { control, handleSubmit } = useForm<EditValues>({
     resolver: zodResolver(editSchema),
     values: {
       name: profile?.name ?? "",
@@ -159,7 +159,25 @@ export default function ProfileScreen() {
           <Text className="mb-6 text-sm text-muted">No skills needed yet.</Text>
         )}
 
-        <AppButton label="Edit Profile" onPress={() => setEditOpen(true)} className="mb-6" />
+        <AppButton label="Edit Profile" onPress={() => setEditOpen(true)} className="mb-4" />
+
+        <TouchableOpacity onPress={() => router.push("/exchanges" as any)} className="mb-3 flex-row items-center rounded-3xl bg-white p-5">
+          <Ionicons name="swap-horizontal-outline" size={22} color="#5B4DFF" />
+          <View className="ml-4 flex-1">
+            <Text className="font-semibold text-ink">My Exchanges</Text>
+            <Text className="text-xs text-muted">View incoming, outgoing, and completed swaps</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#98A2B3" />
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => router.push("/wallet" as any)} className="mb-6 flex-row items-center rounded-3xl bg-white p-5">
+          <Ionicons name="wallet-outline" size={22} color="#F59E0B" />
+          <View className="ml-4 flex-1">
+            <Text className="font-semibold text-ink">Wallet</Text>
+            <Text className="text-xs text-muted">View balance and transaction history</Text>
+          </View>
+          <Ionicons name="chevron-forward" size={18} color="#98A2B3" />
+        </TouchableOpacity>
       </ScrollView>
 
       <Modal visible={editOpen} animationType="slide" presentationStyle="pageSheet">

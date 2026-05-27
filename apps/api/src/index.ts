@@ -8,6 +8,10 @@ import { userRouter } from "./routes/userRoutes";
 import { profileRouter } from "./routes/profileRoutes";
 import { skillRouter } from "./routes/skillRoutes";
 import { uploadRouter } from "./routes/uploadRoutes";
+import { marketplaceRouter } from "./routes/marketplaceRoutes";
+import { exchangeRouter } from "./routes/exchangeRoutes";
+import { walletRouter } from "./routes/walletRoutes";
+import { reviewRouter } from "./routes/reviewRoutes";
 import { env } from "./utils/env";
 
 const app = express();
@@ -33,6 +37,10 @@ app.use("/api/users", userRouter);
 app.use("/api/profile", profileRouter);
 app.use("/api/skills", skillRouter);
 app.use("/api/upload", uploadRouter);
+app.use("/api/marketplace", marketplaceRouter);
+app.use("/api/exchanges", exchangeRouter);
+app.use("/api/wallet", walletRouter);
+app.use("/api/reviews", reviewRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
