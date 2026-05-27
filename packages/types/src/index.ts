@@ -99,6 +99,29 @@ export interface ApiResponse<T> {
   data?: T;
 }
 
+export interface ProfileResponse extends User {
+  businessProfile?: BusinessProfile | null;
+  skills?: Skill[];
+  exchangeCount?: number;
+  avgRating?: number;
+  reviewCount?: number;
+  followerCount?: number;
+}
+
+export interface OnboardingInput {
+  bio?: string;
+  age?: number;
+  location?: string;
+  businessName: string;
+  industry: SkillCategory;
+  description: string;
+  stage: BusinessStage;
+  website?: string;
+  instagramHandle?: string;
+  offeredSkills: Omit<Skill, "id" | "userId" | "isOffering" | "isActive" | "user">[];
+  neededSkills: Omit<Skill, "id" | "userId" | "isOffering" | "isActive" | "user">[];
+}
+
 export interface PaginatedResponse<T> extends ApiResponse<T[]> {
   pagination: {
     page: number;
