@@ -1,8 +1,8 @@
 import type { ApiResponse, User } from "@bizskills/types";
 import axios from "axios";
-import * as SecureStore from "expo-secure-store";
 import { create } from "zustand";
 import { api } from "../lib/axios";
+import { storage } from "../lib/storage";
 
 const ACCESS_KEY = "access_token";
 const REFRESH_KEY = "refresh_token";
@@ -28,9 +28,9 @@ interface AuthState {
 
 const saveSession = async (session: Session) => {
   await Promise.all([
-    SecureStore.setItemAsync(ACCESS_KEY, session.accessToken),
-    SecureStore.setItemAsync(REFRESH_KEY, session.refreshToken),
-    SecureStore.setItemAsync(USER_KEY, JSON.stringify(session.user)),
+    storage.setItem(ACCESS_KEY, session.accessToken),
+    storage.setItem(REFRESH_KEY, session.refreshToken),
+    storage.setItem(USER_KEY, JSON.stringify(session.user)),
   ]);
 };
 
@@ -71,9 +71,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   clearSession: async () => {
     await Promise.all([
-      SecureStore.deleteItemAsync(ACCESS_KEY),
-      SecureStore.deleteItemAsync(REFRESH_KEY),
-      SecureStore.deleteItemAsync(USER_KEY),
+      storage.deleteItem(ACCESS_KEY),
+      storage.deleteItem(REFRESH_KEY),
+      storage.deleteItem(USER_KEY),
     ]);
     set({ user: null, accessToken: null, refreshToken: null });
   },
@@ -98,7 +98,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const accessToken = response.data.data?.accessToken;
     if (!accessToken) throw new Error("Missing access token");
 
-    await SecureStore.setItemAsync(ACCESS_KEY, accessToken);
+    await storage.setItem(ACCESS_KEY, accessToken);
     set({ accessToken });
     return accessToken;
   },
@@ -106,9 +106,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   hydrate: async () => {
     try {
       const [accessToken, refreshToken, rawUser] = await Promise.all([
-        SecureStore.getItemAsync(ACCESS_KEY),
-        SecureStore.getItemAsync(REFRESH_KEY),
-        SecureStore.getItemAsync(USER_KEY),
+        storage.getItem(ACCESS_KEY),
+        storage.getItem(REFRESH_KEY),
+        storage.getItem(USER_KEY),
       ]);
       set({
         accessToken,
@@ -121,7 +121,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   updateUser: async (user) => {
-    await SecureStore.setItemAsync(USER_KEY, JSON.stringify(user));
+    await storage.setItem(USER_KEY, JSON.stringify(user));
     set({ user });
   },
 }));
