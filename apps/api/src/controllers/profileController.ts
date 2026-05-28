@@ -18,7 +18,7 @@ const authenticatedUserId = (req: Request) => {
 const skillSchema = z.object({
   title: z.string().trim().min(1).max(100),
   category: z.nativeEnum(SkillCategory),
-  description: z.string().trim().min(1).max(500).optional(),
+  description: z.string().trim().max(500).optional().default(""),
   level: z.nativeEnum(SkillLevel),
   coinValue: z.number().int().min(0).max(9999),
 });
@@ -54,54 +54,51 @@ export const completeOnboarding = async (req: Request, res: Response) => {
   const input = onboardingSchema.parse(req.body);
   const userId = authenticatedUserId(req);
 
-  const result = await prisma.$transaction(async (tx) => {
-    const user = await tx.user.update({
-      where: { id: userId },
-      data: {
-        bio: input.bio,
-        age: input.age,
-        location: input.location,
-        hasOnboarded: true,
-        businessProfile: {
-          upsert: {
-            create: {
-              businessName: input.businessName, industry: input.industry,
-              description: input.description, stage: input.stage,
-              website: input.website || null, instagramHandle: input.instagramHandle || null,
-            },
-            update: {
-              businessName: input.businessName, industry: input.industry,
-              description: input.description, stage: input.stage,
-              website: input.website || null, instagramHandle: input.instagramHandle || null,
-            },
+  await prisma.user.update({
+    where: { id: userId },
+    data: {
+      bio: input.bio,
+      age: input.age,
+      location: input.location,
+      hasOnboarded: true,
+      businessProfile: {
+        upsert: {
+          create: {
+            businessName: input.businessName, industry: input.industry,
+            description: input.description, stage: input.stage,
+            website: input.website || null, instagramHandle: input.instagramHandle || null,
+          },
+          update: {
+            businessName: input.businessName, industry: input.industry,
+            description: input.description, stage: input.stage,
+            website: input.website || null, instagramHandle: input.instagramHandle || null,
           },
         },
       },
-      select: publicUserSelect,
+    },
+  });
+
+  if (input.offeredSkills.length > 0) {
+    await prisma.skill.createMany({
+      data: input.offeredSkills.map((s) => ({
+        userId, title: s.title, category: s.category,
+        description: s.description, level: s.level, coinValue: s.coinValue, isOffering: true,
+      })),
     });
+  }
 
-    if (input.offeredSkills.length > 0) {
-      await tx.skill.createMany({
-        data: input.offeredSkills.map((s) => ({
-          userId, title: s.title, category: s.category,
-          description: s.description, level: s.level, coinValue: s.coinValue, isOffering: true,
-        })),
-      });
-    }
-
-    if (input.neededSkills.length > 0) {
-      await tx.skill.createMany({
-        data: input.neededSkills.map((s) => ({
-          userId, title: s.title, category: s.category,
-          description: s.description, level: s.level, coinValue: s.coinValue, isOffering: false,
-        })),
-      });
-    }
-
-    return tx.user.findUniqueOrThrow({
-      where: { id: userId },
-      select: publicUserSelect,
+  if (input.neededSkills.length > 0) {
+    await prisma.skill.createMany({
+      data: input.neededSkills.map((s) => ({
+        userId, title: s.title, category: s.category,
+        description: s.description, level: s.level, coinValue: s.coinValue, isOffering: false,
+      })),
     });
+  }
+
+  const result = await prisma.user.findUniqueOrThrow({
+    where: { id: userId },
+    select: publicUserSelect,
   });
 
   res.json({ success: true, data: result });

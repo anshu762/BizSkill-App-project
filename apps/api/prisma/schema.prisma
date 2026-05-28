@@ -35,7 +35,7 @@ enum SkillLevel {
 enum ExchangeStatus {
   PENDING
   ACCEPTED
-  DECLINED
+  REJECTED
   COMPLETED
   CANCELLED
 }
@@ -62,8 +62,49 @@ model User {
   ownedTeams       Team[]            @relation("TeamOwner")
   requestsSent     ExchangeRequest[] @relation("RequestSender")
   requestsReceived ExchangeRequest[] @relation("RequestRecipient")
+  transactionsSent Transaction[]    @relation("TransactionSender")
+  transactionsRecv Transaction[]    @relation("TransactionReceiver")
+  reviewsGiven     Review[]         @relation("Reviewer")
+  reviewsReceived  Review[]         @relation("Reviewee")
 
   @@map("users")
+}
+
+model Transaction {
+  id               String          @id @default(uuid()) @db.Uuid
+  fromUserId       String          @map("from_user_id") @db.Uuid
+  toUserId         String          @map("to_user_id") @db.Uuid
+  amount           Int
+  type             TransactionType
+  description      String
+  relatedExchangeId String?        @map("related_exchange_id")
+  createdAt        DateTime        @default(now()) @map("created_at")
+  fromUser         User            @relation("TransactionSender", fields: [fromUserId], references: [id], onDelete: Cascade)
+  toUser           User            @relation("TransactionReceiver", fields: [toUserId], references: [id], onDelete: Cascade)
+
+  @@map("transactions")
+}
+
+enum TransactionType {
+  EXCHANGE_REWARD
+  COIN_DEDUCT
+  BONUS
+}
+
+model Review {
+  id         String   @id @default(uuid()) @db.Uuid
+  reviewerId String   @map("reviewer_id") @db.Uuid
+  revieweeId String   @map("reviewee_id") @db.Uuid
+  exchangeId String   @map("exchange_id") @db.Uuid
+  rating     Int
+  comment    String?
+  createdAt  DateTime @default(now()) @map("created_at")
+  reviewer   User     @relation("Reviewer", fields: [reviewerId], references: [id], onDelete: Cascade)
+  reviewee   User     @relation("Reviewee", fields: [revieweeId], references: [id], onDelete: Cascade)
+  exchange   ExchangeRequest @relation(fields: [exchangeId], references: [id])
+
+  @@unique([exchangeId, reviewerId])
+  @@map("reviews")
 }
 
 model BusinessProfile {
@@ -112,6 +153,7 @@ model ExchangeRequest {
   toUser           User           @relation("RequestRecipient", fields: [toUserId], references: [id], onDelete: Cascade)
   skillOffered     Skill          @relation("OfferedSkill", fields: [skillOfferedId], references: [id], onDelete: Cascade)
   skillRequested   Skill          @relation("RequestedSkill", fields: [skillRequestedId], references: [id], onDelete: Cascade)
+  reviews          Review[]
 
   @@map("exchange_requests")
 }

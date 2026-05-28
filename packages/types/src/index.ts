@@ -13,7 +13,7 @@ export enum SkillCategory {
 
 export type BusinessStage = "IDEA" | "BUILDING" | "LAUNCHED";
 export type SkillLevel = "BEGINNER" | "INTERMEDIATE" | "EXPERT";
-export type ExchangeStatus = "PENDING" | "ACCEPTED" | "DECLINED" | "COMPLETED" | "CANCELLED";
+export type ExchangeStatus = "PENDING" | "ACCEPTED" | "REJECTED" | "COMPLETED" | "CANCELLED";
 
 export interface User {
   id: string;
@@ -56,14 +56,50 @@ export interface Skill {
 
 export interface ExchangeRequest {
   id: string;
-  requesterId: string;
-  providerId: string;
-  skillId: string;
+  fromUserId: string;
+  toUserId: string;
+  skillOfferedId: string;
+  skillRequestedId: string;
   message?: string | null;
-  coinValue: number;
+  coinsOffered: number;
   status: ExchangeStatus;
   createdAt: string;
   updatedAt: string;
+  fromUser?: { id: string; name: string; avatar?: string | null; businessProfile?: BusinessProfile | null };
+  toUser?: { id: string; name: string; avatar?: string | null; businessProfile?: BusinessProfile | null };
+  skillOffered?: Skill;
+  skillRequested?: Skill;
+}
+
+export interface Transaction {
+  id: string;
+  fromUserId: string;
+  toUserId: string;
+  amount: number;
+  type: "EXCHANGE_REWARD" | "COIN_DEDUCT" | "BONUS";
+  description: string;
+  relatedExchangeId?: string | null;
+  createdAt: string;
+}
+
+export interface Review {
+  id: string;
+  reviewerId: string;
+  revieweeId: string;
+  exchangeId: string;
+  rating: number;
+  comment?: string | null;
+  createdAt: string;
+  reviewer?: { id: string; name: string; avatar?: string | null };
+}
+
+export interface WalletData {
+  balance: number;
+  transactions: Transaction[];
+}
+
+export interface MarketplaceItem extends Skill {
+  user?: User & { businessProfile?: BusinessProfile | null };
 }
 
 export interface Post {

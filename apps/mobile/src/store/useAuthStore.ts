@@ -1,5 +1,7 @@
 import type { ApiResponse, User } from "@bizskills/types";
 import axios from "axios";
+import Constants from "expo-constants";
+import { Platform } from "react-native";
 import { create } from "zustand";
 import { api } from "../lib/axios";
 import { storage } from "../lib/storage";
@@ -7,7 +9,18 @@ import { storage } from "../lib/storage";
 const ACCESS_KEY = "access_token";
 const REFRESH_KEY = "refresh_token";
 const USER_KEY = "user_data";
-const baseURL = process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+
+function getBaseUrl(): string {
+  if (Platform.OS === "web") return process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+  try {
+    const hostUri = (Constants.expoConfig as any)?.hostUri;
+    if (hostUri) return `http://${hostUri.split(":")[0]}:3000`;
+  } catch {}
+  if (Platform.OS === "android") return "http://10.0.2.2:3000";
+  return process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+}
+
+const baseURL = getBaseUrl();
 
 type Session = { accessToken: string; refreshToken: string; user: User };
 
