@@ -60,6 +60,17 @@ export const createExchange = async (req: Request, res: Response) => {
     include: exchangeInclude,
   });
 
+  const me = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      userId: input.toUserId,
+      type: "EXCHANGE_REQUEST",
+      message: `${me?.name ?? "Someone"} wants to exchange skills with you`,
+      link: `/exchanges`,
+      relatedId: exchange.id,
+    },
+  });
+
   res.status(201).json({ success: true, data: exchange });
 };
 
@@ -127,6 +138,17 @@ export const acceptExchange = async (req: Request, res: Response) => {
     include: exchangeInclude,
   });
 
+  const me = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      userId: exchange.fromUserId,
+      type: "EXCHANGE_UPDATE",
+      message: `${me?.name ?? "Someone"} accepted your exchange request`,
+      link: `/exchanges`,
+      relatedId: id,
+    },
+  });
+
   res.json({ success: true, data: updated });
 };
 
@@ -143,6 +165,17 @@ export const rejectExchange = async (req: Request, res: Response) => {
     where: { id },
     data: { status: "REJECTED" },
     include: exchangeInclude,
+  });
+
+  const me = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+  await prisma.notification.create({
+    data: {
+      userId: exchange.fromUserId,
+      type: "EXCHANGE_UPDATE",
+      message: `${me?.name ?? "Someone"} declined your exchange request`,
+      link: `/exchanges`,
+      relatedId: id,
+    },
   });
 
   res.json({ success: true, data: updated });
@@ -182,6 +215,18 @@ export const completeExchange = async (req: Request, res: Response) => {
     await tx.user.update({ where: { id: exchange.toUserId }, data: { bizCoins: { increment: bonusAmount } } });
 
     return updated;
+  });
+
+  const me = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+  const otherUserId = exchange.fromUserId === userId ? exchange.toUserId : exchange.fromUserId;
+  await prisma.notification.create({
+    data: {
+      userId: otherUserId,
+      type: "EXCHANGE_UPDATE",
+      message: `${me?.name ?? "Someone"} marked an exchange as complete`,
+      link: `/exchanges`,
+      relatedId: id,
+    },
   });
 
   res.json({ success: true, data: result });

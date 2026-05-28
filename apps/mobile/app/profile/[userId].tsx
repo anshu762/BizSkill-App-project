@@ -1,18 +1,23 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, Text, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { StageBadge } from "../../src/components/StageBadge";
 import { SkillChip } from "../../src/components/SkillChip";
 import { AppButton } from "../../src/components/AppButton";
-import { useProfile } from "../../src/lib/apiHooks";
+import { useProfile, useFollow, useFollowStats } from "../../src/lib/apiHooks";
+import { useAuthStore } from "../../src/store/useAuthStore";
 import type { SkillCategory, SkillLevel } from "@bizskills/types";
 
 export default function PublicProfileScreen() {
   const { userId } = useLocalSearchParams<{ userId: string }>();
   const router = useRouter();
+  const myId = useAuthStore((state) => state.user?.id);
   const { data: profile, isLoading } = useProfile(userId);
+  const { data: followStats } = useFollowStats(userId);
+  const followMutation = useFollow();
+  const isMe = myId === userId;
 
   if (isLoading) {
     return (
@@ -62,20 +67,31 @@ export default function PublicProfileScreen() {
               </View>
             )}
           </View>
+
+          {!isMe && (
+            <TouchableOpacity
+              onPress={() => followMutation.mutate({ targetUserId: userId!, action: followStats?.isFollowedByMe ? "unfollow" : "follow" })}
+              className={`mt-4 rounded-full px-8 py-3 ${followStats?.isFollowedByMe ? "border border-brand/20 bg-white" : "bg-brand"}`}
+            >
+              <Text className={`text-sm font-semibold ${followStats?.isFollowedByMe ? "text-brand" : "text-white"}`}>
+                {followStats?.isFollowedByMe ? "Following" : "Follow"}
+              </Text>
+            </TouchableOpacity>
+          )}
         </View>
 
         <View className="my-6 flex-row justify-between rounded-3xl bg-white p-5">
           <View className="items-center" style={{ width: "33%" }}>
+            <Text className="text-xl font-bold text-ink">{followStats?.followerCount ?? 0}</Text>
+            <Text className="mt-1 text-xs text-muted">Followers</Text>
+          </View>
+          <View className="items-center" style={{ width: "33%" }}>
+            <Text className="text-xl font-bold text-ink">{followStats?.followingCount ?? 0}</Text>
+            <Text className="mt-1 text-xs text-muted">Following</Text>
+          </View>
+          <View className="items-center" style={{ width: "33%" }}>
             <Text className="text-xl font-bold text-ink">{p.exchangeCount ?? 0}</Text>
             <Text className="mt-1 text-xs text-muted">Exchanges</Text>
-          </View>
-          <View className="items-center" style={{ width: "33%" }}>
-            <Text className="text-xl font-bold text-ink">{(p.avgRating ?? 0) > 0 ? `⭐ ${p.avgRating}` : "-"}</Text>
-            <Text className="mt-1 text-xs text-muted">Rating</Text>
-          </View>
-          <View className="items-center" style={{ width: "33%" }}>
-            <Text className="text-xl font-bold text-ink">{p.followerCount ?? 0}</Text>
-            <Text className="mt-1 text-xs text-muted">Followers</Text>
           </View>
         </View>
 
@@ -98,9 +114,11 @@ export default function PublicProfileScreen() {
         )}
       </ScrollView>
 
-      <View className="absolute bottom-0 left-0 right-0 bg-white px-6 py-4" style={{ borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
-        <AppButton label={`Request Exchange with ${p.name.split(" ")[0]}`} onPress={() => router.push({ pathname: "/exchange/[id]", params: { id: userId } })} />
-      </View>
+      {!isMe && (
+        <View className="absolute bottom-0 left-0 right-0 bg-white px-6 py-4" style={{ borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
+          <AppButton label={`Request Exchange with ${p.name.split(" ")[0]}`} onPress={() => router.push(`/profile/${userId}` as any)} />
+        </View>
+      )}
     </SafeAreaView>
   );
 }

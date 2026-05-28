@@ -12,6 +12,10 @@ import { marketplaceRouter } from "./routes/marketplaceRoutes";
 import { exchangeRouter } from "./routes/exchangeRoutes";
 import { walletRouter } from "./routes/walletRoutes";
 import { reviewRouter } from "./routes/reviewRoutes";
+import { postRouter } from "./routes/postRoutes";
+import { commentRouter } from "./routes/commentRoutes";
+import { followRouter } from "./routes/followRoutes";
+import { notificationRouter } from "./routes/notificationRoutes";
 import { env } from "./utils/env";
 
 const app = express();
@@ -41,6 +45,10 @@ app.use("/api/marketplace", marketplaceRouter);
 app.use("/api/exchanges", exchangeRouter);
 app.use("/api/wallet", walletRouter);
 app.use("/api/reviews", reviewRouter);
+app.use("/api/posts", postRouter);
+app.use("/api/comments", commentRouter);
+app.use("/api/follow", followRouter);
+app.use("/api/notifications", notificationRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

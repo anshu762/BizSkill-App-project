@@ -123,10 +123,44 @@ export interface Team {
 export interface Notification {
   id: string;
   userId: string;
-  title: string;
+  type: string;
   message: string;
-  read: boolean;
+  link?: string | null;
+  isRead: boolean;
+  relatedId?: string | null;
   createdAt: string;
+}
+
+export interface FeedPost {
+  id: string;
+  userId: string;
+  content: string;
+  type: "UPDATE" | "LAUNCH" | "MILESTONE" | "COLLAB_REQUEST" | "PRODUCT_DROP";
+  image?: string | null;
+  imageUrl?: string | null;
+  likes: number;
+  likeCount: number;
+  commentCount: number;
+  isLikedByMe: boolean;
+  isOwnPost: boolean;
+  createdAt: string;
+  updatedAt: string;
+  user: { id: string; name: string; avatar?: string | null; businessProfile?: BusinessProfile | null };
+}
+
+export interface PostComment {
+  id: string;
+  postId: string;
+  authorId: string;
+  content: string;
+  createdAt: string;
+  author: { id: string; name: string; avatar?: string | null };
+}
+
+export interface FollowStats {
+  followerCount: number;
+  followingCount: number;
+  isFollowedByMe: boolean;
 }
 
 export interface ApiResponse<T> {
