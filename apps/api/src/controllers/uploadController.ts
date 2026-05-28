@@ -42,3 +42,19 @@ export const uploadAvatar = async (req: Request, res: Response) => {
 
   res.json({ success: true, data: { url: result.secure_url } });
 };
+
+export const uploadPost = multer({ storage, fileFilter, limits: { fileSize: 10 * 1024 * 1024 } }).single("image");
+
+export const uploadPostImage = async (req: Request, res: Response) => {
+  if (!req.file) throw new AppError(400, "No file uploaded");
+
+  const b64 = Buffer.from(req.file.buffer).toString("base64");
+  const dataUri = `data:${req.file.mimetype};base64,${b64}`;
+
+  const result = await cloudinary.uploader.upload(dataUri, {
+    folder: "bizskills/posts",
+    transformation: { width: 1200, quality: "auto" },
+  });
+
+  res.json({ success: true, data: { url: result.secure_url } });
+};

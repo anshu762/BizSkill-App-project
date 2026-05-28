@@ -57,6 +57,8 @@ model User {
   skills           Skill[]
   refreshTokens    RefreshToken[]
   posts            Post[]
+  postLikes        PostLike[]
+  comments         PostComment[]
   notifications    Notification[]
   teamMemberships  TeamMember[]
   ownedTeams       Team[]            @relation("TeamOwner")
@@ -66,8 +68,22 @@ model User {
   transactionsRecv Transaction[]    @relation("TransactionReceiver")
   reviewsGiven     Review[]         @relation("Reviewer")
   reviewsReceived  Review[]         @relation("Reviewee")
+  followers        Follow[]         @relation("FollowedUser")
+  following        Follow[]         @relation("FollowerUser")
 
   @@map("users")
+}
+
+model Follow {
+  id          String   @id @default(uuid()) @db.Uuid
+  followerId  String   @map("follower_id") @db.Uuid
+  followingId String   @map("following_id") @db.Uuid
+  createdAt   DateTime @default(now()) @map("created_at")
+  follower    User     @relation("FollowerUser", fields: [followerId], references: [id], onDelete: Cascade)
+  following   User     @relation("FollowedUser", fields: [followingId], references: [id], onDelete: Cascade)
+
+  @@unique([followerId, followingId])
+  @@map("follows")
 }
 
 model Transaction {
@@ -159,16 +175,44 @@ model ExchangeRequest {
 }
 
 model Post {
-  id        String   @id @default(uuid()) @db.Uuid
-  userId    String   @map("user_id") @db.Uuid
+  id        String        @id @default(uuid()) @db.Uuid
+  userId    String        @map("user_id") @db.Uuid
   content   String
+  type      String        @default("UPDATE")
   image     String?
-  likes     Int      @default(0)
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  imageUrl  String?       @map("image_url")
+  likes     Int           @default(0)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  postLikes PostLike[]
+  comments  PostComment[]
 
   @@map("posts")
+}
+
+model PostLike {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([postId, userId])
+  @@map("post_likes")
+}
+
+model PostComment {
+  id        String   @id @default(uuid()) @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  authorId  String   @map("author_id") @db.Uuid
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@map("post_comments")
 }
 
 model Team {
@@ -199,9 +243,9 @@ model Notification {
   id        String   @id @default(uuid()) @db.Uuid
   userId    String   @map("user_id") @db.Uuid
   type      String
-  title     String
   message   String
-  read      Boolean  @default(false)
+  link      String?
+  isRead    Boolean  @default(false) @map("is_read")
   relatedId String?  @map("related_id")
   createdAt DateTime @default(now()) @map("created_at")
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
