@@ -13,14 +13,9 @@ const teamInclude = {
   owner: { select: { id: true, name: true, avatar: true } },
   members: { include: { user: { select: { id: true, name: true, avatar: true } } }, orderBy: { joinedAt: "asc" as const } },
   roles: {
+    where: { isOpen: true },
+    include: { _count: { select: { applications: true } } },
     orderBy: { createdAt: "asc" as const },
-    include: {
-      _count: { select: { applications: true } },
-      applications: {
-        include: { applicant: { select: { id: true, name: true, avatar: true, businessProfile: true } } },
-        orderBy: { createdAt: "desc" as const },
-      },
-    },
   },
   _count: { select: { members: true, roles: true } },
 } satisfies Prisma.TeamInclude;
@@ -204,7 +199,7 @@ export const applyToRole = async (req: Request, res: Response) => {
       userId: role.team.ownerId,
       type: "TEAM_APPLICATION",
       message: `${me?.name ?? "Someone"} applied for "${role.title}" in ${role.team.name}`,
-      link: `/teams/${role.teamId}`,
+      link: `/team/${role.teamId}`,
       relatedId: application.id,
     },
   });
@@ -257,7 +252,7 @@ export const acceptApplication = async (req: Request, res: Response) => {
         userId: application.applicantId,
         type: "APPLICATION_UPDATE",
         message: `Your application for "${application.teamRole.title}" in ${application.teamRole.team.name} was accepted!`,
-        link: `/teams/${application.teamRole.teamId}`,
+        link: `/team/${application.teamRole.teamId}`,
         relatedId: appId,
       },
     }),
@@ -285,7 +280,7 @@ export const rejectApplication = async (req: Request, res: Response) => {
         userId: application.applicantId,
         type: "APPLICATION_UPDATE",
         message: `Your application for "${application.teamRole.title}" in ${application.teamRole.team.name} was not accepted`,
-        link: `/teams/${application.teamRole.teamId}`,
+        link: `/team/${application.teamRole.teamId}`,
         relatedId: appId,
       },
     }),
