@@ -76,7 +76,7 @@ export default function MarketplaceScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
       <View className="px-6">
         <PageHeader eyebrow="Marketplace" title="Find skills" />
         <View className="mb-4 flex-row items-center">
