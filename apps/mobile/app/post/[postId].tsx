@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, FlatList, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Platform, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
@@ -41,6 +41,7 @@ export default function PostScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
       <View className="px-6 pt-4 pb-2">
         <TouchableOpacity onPress={() => router.back()} className="mb-4 h-12 w-12 items-center justify-center rounded-2xl bg-white">
           <Ionicons name="arrow-back" size={21} color="#101828" />
@@ -72,7 +73,7 @@ export default function PostScreen() {
         <TextInput
           placeholder="Write a comment..."
           placeholderTextColor="#98A2B3"
-          className="ml-3 flex-1 text-base text-ink"
+          className="ml-3 flex-1 text-base text-ink bg-white"
           value={newComment}
           onChangeText={setNewComment}
         />
@@ -80,6 +81,7 @@ export default function PostScreen() {
           <Ionicons name="send" size={22} color={newComment.trim() ? "#5B4DFF" : "#D0D5DD"} />
         </TouchableOpacity>
       </View>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }

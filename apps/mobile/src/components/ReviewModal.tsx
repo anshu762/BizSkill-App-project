@@ -73,7 +73,7 @@ export function ReviewModal({ visible, onClose, exchangeId }: ReviewModalProps) 
           <Text className="mb-6 text-right text-xs text-muted">{comment.length}/200</Text>
 
           <AppButton
-            label="Submit Review ⭐"
+            label="Submit Review"
             onPress={handleSubmit}
             disabled={rating === 0}
             loading={createReview.isPending}
