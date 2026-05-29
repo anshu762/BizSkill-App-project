@@ -92,6 +92,7 @@ model User {
   sentMessages     Message[]        @relation("MessageSender")
   receivedMessages Message[]        @relation("MessageReceiver")
   teamApplications TeamApplication[]
+  pushToken        String?           @map("push_token")
 
   @@map("users")
 }

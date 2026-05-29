@@ -458,6 +458,20 @@ export function useMarkMessagesRead() {
   });
 }
 
+export function useProfileCompletion() {
+  const { data: profile } = useProfile();
+  if (!profile) return 0;
+  let pct = 0;
+  if (profile.avatar) pct += 20;
+  if (profile.bio) pct += 20;
+  const offered = profile.skills?.filter((s) => s.isOffering).length ?? 0;
+  if (offered >= 1) pct += 20;
+  const needed = profile.skills?.filter((s) => !s.isOffering).length ?? 0;
+  if (needed >= 1) pct += 20;
+  if (profile.businessProfile) pct += 20;
+  return pct;
+}
+
 export function useUnreadMessageCount() {
   return useQuery({
     queryKey: ["unreadMessageCount"],

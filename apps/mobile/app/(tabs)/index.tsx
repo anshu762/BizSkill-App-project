@@ -1,21 +1,88 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { PostCard } from "../../src/components/PostCard";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { CreatePostModal } from "../../src/components/CreatePostModal";
-import { useFeed, useUnreadCount } from "../../src/lib/apiHooks";
+import { ErrorBoundary } from "../../src/components/ErrorBoundary";
+import { PostCardSkeleton } from "../../src/components/Skeletons";
+import { useFeed, useProfileCompletion, useUnreadCount } from "../../src/lib/apiHooks";
+import { api } from "../../src/lib/axios";
+import { storage } from "../../src/lib/storage";
 import { useAuthStore } from "../../src/store/useAuthStore";
 
 const filters = [
   { key: "all", label: "All" },
   { key: "following", label: "Following" },
-  { key: "launches", label: "🚀 Launches" },
-  { key: "milestones", label: "🏆 Milestones" },
-  { key: "collab", label: "🤝 Collabs" },
+  { key: "launches", label: "Launches" },
+  { key: "milestones", label: "Milestones" },
+  { key: "collab", label: "Collabs" },
 ];
+
+function DashboardCard() {
+  const router = useRouter();
+  const user = useAuthStore((s) => s.user);
+  const [visible, setVisible] = useState(false);
+  const completion = useProfileCompletion();
+
+  const { data: wallet } = useQuery({ queryKey: ["wallet"], queryFn: async () => { const r = await api.get("/wallet"); return r.data.data; } });
+  const { data: exchanges } = useQuery({ queryKey: ["exchanges"], queryFn: async () => { const r = await api.get("/exchanges?status=PENDING"); return r.data; } });
+  const { data: messages } = useQuery({ queryKey: ["conversations"], queryFn: async () => { const r = await api.get("/messages/conversations"); const c = r.data.data; return c?.reduce((s: number, x: any) => s + (x.unreadCount ?? 0), 0) ?? 0; } });
+
+  useEffect(() => {
+    storage.getItem("dashboard_last_seen").then((d) => {
+      if (d !== new Date().toDateString()) setVisible(true);
+    });
+  }, []);
+
+  const dismiss = () => {
+    setVisible(false);
+    storage.setItem("dashboard_last_seen", new Date().toDateString());
+  };
+
+  if (!visible) return null;
+
+  const pendingExchanges = exchanges?.pagination?.total ?? 0;
+  const unreadMessages = messages ?? 0;
+
+  return (
+    <View className="mb-5 rounded-3xl bg-ink p-5">
+      <View className="flex-row items-center justify-between">
+        <Text className="text-sm font-semibold text-white">Your BizSkills Today</Text>
+        <TouchableOpacity onPress={dismiss}>
+          <Ionicons name="close" size={18} color="#9CA3AF" />
+        </TouchableOpacity>
+      </View>
+      <View className="mt-4 flex-row justify-between">
+        <StatItem icon="wallet-outline" value={wallet?.balance ?? user?.bizCoins ?? 0} label="Coins" />
+        <StatItem icon="swap-horizontal-outline" value={pendingExchanges} label="Pending" />
+        <StatItem icon="chatbubble-ellipses-outline" value={unreadMessages} label="Messages" />
+      </View>
+      <View className="mt-4">
+        <View className="flex-row items-center justify-between">
+          <Text className="text-xs text-indigo-200">Profile completion</Text>
+          <Text className="text-xs font-semibold text-white">{completion}%</Text>
+        </View>
+        <View className="mt-1.5 h-2 overflow-hidden rounded-full bg-indigo-900/50">
+          <View className="h-full rounded-full bg-brand" style={{ width: `${completion}%` }} />
+        </View>
+      </View>
+    </View>
+  );
+}
+
+function StatItem({ icon, value, label }: { icon: string; value: number; label: string }) {
+  return (
+    <View className="items-center">
+      <Ionicons name={icon as any} size={18} color="#A5B4FC" />
+      <Text className="mt-1 text-lg font-bold text-white">{value}</Text>
+      <Text className="text-xs text-indigo-200">{label}</Text>
+    </View>
+  );
+}
 
 export default function FeedScreen() {
   const router = useRouter();
@@ -28,71 +95,87 @@ export default function FeedScreen() {
   const allPosts = data?.pages.flatMap((p) => p.data) ?? [];
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
-      <View className="px-6">
-        <View className="mt-4 mb-5 flex-row items-center justify-between">
-          <Text className="text-2xl font-bold text-ink">BizSkills</Text>
-          <TouchableOpacity onPress={() => router.push("/notifications" as any)} className="relative">
-            <Ionicons name="notifications-outline" size={24} color="#101828" />
-            {(unreadCount ?? 0) > 0 && (
-              <View className="absolute -right-1.5 -top-1.5 h-5 w-5 items-center justify-center rounded-full bg-red-500">
-                <Text className="text-[10px] font-bold text-white">{unreadCount! > 9 ? "9+" : unreadCount}</Text>
-              </View>
-            )}
+    <ErrorBoundary>
+      <SafeAreaView className="flex-1 bg-surface">
+        <View className="px-6">
+          <View className="mt-4 mb-5 flex-row items-center justify-between">
+            <Text className="text-2xl font-bold text-ink">BizSkills</Text>
+            <TouchableOpacity onPress={() => router.push("/notifications" as any)} className="relative">
+              <Ionicons name="notifications-outline" size={24} color="#101828" />
+              {(unreadCount ?? 0) > 0 && (
+                <View className="absolute -right-1.5 -top-1.5 h-5 w-5 items-center justify-center rounded-full bg-red-500">
+                  <Text className="text-[10px] font-bold text-white">{unreadCount! > 9 ? "9+" : unreadCount}</Text>
+                </View>
+              )}
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            onPress={() => setCreateOpen(true)}
+            className="mb-4 flex-row items-center rounded-3xl bg-white p-4"
+          >
+            <AvatarWithFallback uri={user?.avatar} name={user?.name ?? "B"} size={40} />
+            <Text className="ml-3 text-sm text-muted">What's happening with your business?</Text>
           </TouchableOpacity>
+
+          <FlatList
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            data={filters}
+            keyExtractor={(f) => f.key}
+            className="mb-4"
+            renderItem={({ item }) => (
+              <TouchableOpacity
+                onPress={() => setFilter(item.key)}
+                className={`mr-2 rounded-full px-5 py-3 ${filter === item.key ? "bg-brand" : "bg-white"}`}
+              >
+                <Text className={`text-sm font-medium ${filter === item.key ? "text-white" : "text-muted"}`}>{item.label}</Text>
+              </TouchableOpacity>
+            )}
+          />
         </View>
 
-        <TouchableOpacity
-          onPress={() => setCreateOpen(true)}
-          className="mb-4 flex-row items-center rounded-3xl bg-white p-4"
-        >
-          <AvatarWithFallback uri={user?.avatar} name={user?.name ?? "B"} size={40} />
-          <Text className="ml-3 text-sm text-muted">What's happening with your business?</Text>
-        </TouchableOpacity>
-
         <FlatList
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          data={filters}
-          keyExtractor={(f) => f.key}
-          className="mb-4"
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => setFilter(item.key)}
-              className={`mr-2 rounded-full px-5 py-3 ${filter === item.key ? "bg-brand" : "bg-white"}`}
-            >
-              <Text className={`text-sm font-medium ${filter === item.key ? "text-white" : "text-muted"}`}>{item.label}</Text>
-            </TouchableOpacity>
-          )}
+          data={isLoading ? Array(3).fill(null) : allPosts}
+          keyExtractor={(item, i) => item?.id ?? String(i)}
+          contentContainerClassName="px-6 pb-8"
+          onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
+          onEndReachedThreshold={0.5}
+          ListHeaderComponent={<DashboardCard />}
+          ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}
+          ListEmptyComponent={
+            isLoading ? (
+              <>
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+                <PostCardSkeleton />
+              </>
+            ) : (
+              <View className="mt-10 items-center">
+                <Text className="mb-2 text-lg font-semibold text-ink">No posts yet</Text>
+                <Text className="mb-4 text-sm text-muted">Be the first to share!</Text>
+                <TouchableOpacity
+                  onPress={() => setCreateOpen(true)}
+                  className="rounded-full bg-brand px-8 py-3"
+                >
+                  <Text className="font-semibold text-white">Create Post</Text>
+                </TouchableOpacity>
+              </View>
+            )
+          }
+          renderItem={({ item }) =>
+            isLoading ? <PostCardSkeleton /> : (
+              <PostCard
+                post={item}
+                onCommentPress={(postId) => router.push(`/post/${postId}` as any)}
+                onUserPress={(userId) => router.push(`/profile/${userId}` as any)}
+              />
+            )
+          }
         />
-      </View>
 
-      <FlatList
-        data={allPosts}
-        keyExtractor={(item) => item.id}
-        contentContainerClassName="px-6 pb-8"
-        onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
-        onEndReachedThreshold={0.5}
-        ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}
-        ListEmptyComponent={
-          isLoading ? (
-            <ActivityIndicator className="mt-10" color="#5B4DFF" size="large" />
-          ) : (
-            <View className="mt-10 items-center">
-              <Text className="text-sm text-muted">No posts yet. Be the first to post!</Text>
-            </View>
-          )
-        }
-        renderItem={({ item }) => (
-          <PostCard
-            post={item}
-            onCommentPress={(postId) => router.push(`/post/${postId}` as any)}
-            onUserPress={(userId) => router.push(`/profile/${userId}` as any)}
-          />
-        )}
-      />
-
-      <CreatePostModal visible={createOpen} onClose={() => setCreateOpen(false)} />
-    </SafeAreaView>
+        <CreatePostModal visible={createOpen} onClose={() => setCreateOpen(false)} />
+      </SafeAreaView>
+    </ErrorBoundary>
   );
 }

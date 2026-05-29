@@ -5,7 +5,13 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "scheme": "bizskills",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#5B4DFF"
+    },
     "plugins": [
       "expo-router",
       "expo-secure-store",
@@ -14,18 +20,29 @@
         {
           "photosPermission": "BizSkills uses your photos to add your profile and portfolio images."
         }
-      ]
+      ],
     ],
     "experiments": {
       "typedRoutes": true
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.bizskills.mobile"
+      "bundleIdentifier": "com.bizskills.mobile",
+      "infoPlist": {
+        "NSPhotoLibraryUsageDescription": "BizSkills uses your photos to add your profile and portfolio images."
+      }
     },
     "android": {
-      "package": "com.bizskills.mobile"
+      "package": "com.bizskills.mobile",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#5B4DFF"
+      }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "bizskills-app"
+      }
     }
   }
 }
-
