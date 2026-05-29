@@ -116,7 +116,12 @@ export default function PublicProfileScreen() {
 
       {!isMe && (
         <View className="absolute bottom-0 left-0 right-0 bg-white px-6 py-4" style={{ borderTopLeftRadius: 24, borderTopRightRadius: 24 }}>
-          <AppButton label={`Request Exchange with ${p.name.split(" ")[0]}`} onPress={() => router.push(`/profile/${userId}` as any)} />
+          <View className="flex-row">
+            <AppButton label={`Request Exchange`} className="flex-1 mr-2" onPress={() => router.push(`/profile/${userId}` as any)} />
+            <TouchableOpacity onPress={() => router.push(`/messages/${userId}` as any)} className="h-[52px] w-[52px] items-center justify-center rounded-2xl bg-brand">
+              <Ionicons name="chatbubble-ellipses" size={22} color="white" />
+            </TouchableOpacity>
+          </View>
         </View>
       )}
     </SafeAreaView>

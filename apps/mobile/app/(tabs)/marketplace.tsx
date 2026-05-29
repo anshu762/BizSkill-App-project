@@ -8,7 +8,7 @@ import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { BizCoinBadge } from "../../src/components/BizCoinBadge";
 import { ExchangeModal } from "../../src/components/ExchangeModal";
 import { PageHeader } from "../../src/components/PageHeader";
-import { useMarketplace } from "../../src/lib/apiHooks";
+import { useDiscover, useMarketplace } from "../../src/lib/apiHooks";
 import type { SkillCategory, SkillLevel } from "@bizskills/types";
 
 const categories = [
@@ -54,8 +54,10 @@ export default function MarketplaceScreen() {
   }, [debouncedSearch, category, level, sort, minCoins, maxCoins]);
 
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useMarketplace(filters);
+  const { data: discoverData } = useDiscover({ minScore: "1", limit: "5" });
 
   const allSkills = useMemo(() => data?.pages.flatMap((p) => p.data ?? []) ?? [], [data]);
+  const discoverUsers = useMemo(() => discoverData?.pages?.flatMap((p: any) => p.data ?? []) ?? [], [discoverData]);
 
   let debounceTimer: ReturnType<typeof setTimeout>;
   const handleSearch = useCallback((text: string) => {
@@ -95,6 +97,33 @@ export default function MarketplaceScreen() {
         <FlatList
           data={allSkills}
           keyExtractor={(item) => item.id}
+          ListHeaderComponent={discoverUsers.length > 0 ? () => (
+            <View className="mb-6">
+              <Text className="mb-3 text-lg font-bold text-ink">People who match your skills</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {discoverUsers.map((user: any) => (
+                  <TouchableOpacity
+                    key={user.id}
+                    onPress={() => router.push(`/profile/${user.id}`)}
+                    className="mr-3 items-center rounded-3xl bg-white p-4"
+                    style={{ width: 140 }}
+                  >
+                    <View className="relative">
+                      <AvatarWithFallback uri={user.avatar} name={user.name?.[0] ?? "?"} size={52} />
+                      <View className="absolute -top-1 -right-1 rounded-full bg-green-500 px-1.5 py-0.5">
+                        <Text className="text-xs font-bold text-white">{user.matchScore}</Text>
+                      </View>
+                    </View>
+                    <Text numberOfLines={1} className="mt-2 text-sm font-semibold text-ink">{user.name}</Text>
+                    <Text numberOfLines={1} className="text-xs text-muted">{user.businessProfile?.businessName ?? "Founder"}</Text>
+                    <View className="mt-2 rounded-full bg-green-50 px-3 py-0.5">
+                      <Text className="text-xs font-medium text-green-700">{user.matchScore * 10}% match</Text>
+                    </View>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+          ) : undefined}
           onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
           onEndReachedThreshold={0.5}
           ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}

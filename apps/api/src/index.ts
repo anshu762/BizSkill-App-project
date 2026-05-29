@@ -16,6 +16,9 @@ import { postRouter } from "./routes/postRoutes";
 import { commentRouter } from "./routes/commentRoutes";
 import { followRouter } from "./routes/followRoutes";
 import { notificationRouter } from "./routes/notificationRoutes";
+import { teamRouter } from "./routes/teamRoutes";
+import { discoverRouter } from "./routes/discoverRoutes";
+import { messageRouter } from "./routes/messageRoutes";
 import { env } from "./utils/env";
 
 const app = express();
@@ -49,6 +52,9 @@ app.use("/api/posts", postRouter);
 app.use("/api/comments", commentRouter);
 app.use("/api/follow", followRouter);
 app.use("/api/notifications", notificationRouter);
+app.use("/api/teams", teamRouter);
+app.use("/api/discover", discoverRouter);
+app.use("/api/messages", messageRouter);
 
 app.use(notFoundHandler);
 app.use(errorHandler);

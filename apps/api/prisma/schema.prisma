@@ -40,6 +40,25 @@ enum ExchangeStatus {
   CANCELLED
 }
 
+enum TeamCategory {
+  SCHOOL_STARTUP
+  COMPETITION
+  BUSINESS_FAIR
+  PERSONAL_PROJECT
+}
+
+enum TeamStage {
+  FORMING
+  ACTIVE
+  COMPLETED
+}
+
+enum ApplicationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
 model User {
   id               String            @id @default(uuid()) @db.Uuid
   name             String
@@ -70,6 +89,9 @@ model User {
   reviewsReceived  Review[]         @relation("Reviewee")
   followers        Follow[]         @relation("FollowedUser")
   following        Follow[]         @relation("FollowerUser")
+  sentMessages     Message[]        @relation("MessageSender")
+  receivedMessages Message[]        @relation("MessageReceiver")
+  teamApplications TeamApplication[]
 
   @@map("users")
 }
@@ -216,27 +238,73 @@ model PostComment {
 }
 
 model Team {
-  id          String       @id @default(uuid()) @db.Uuid
+  id          String          @id @default(uuid()) @db.Uuid
   name        String
   description String?
-  ownerId     String       @map("owner_id") @db.Uuid
-  createdAt   DateTime     @default(now()) @map("created_at")
-  updatedAt   DateTime     @updatedAt @map("updated_at")
-  owner       User         @relation("TeamOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  ownerId     String          @map("owner_id") @db.Uuid
+  category    TeamCategory    @default(PERSONAL_PROJECT)
+  stage       TeamStage       @default(FORMING)
+  isPublic    Boolean         @default(true) @map("is_public")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+  owner       User            @relation("TeamOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   members     TeamMember[]
+  roles       TeamRole[]
 
   @@map("teams")
 }
 
 model TeamMember {
-  id     String @id @default(uuid()) @db.Uuid
-  teamId String @map("team_id") @db.Uuid
-  userId String @map("user_id") @db.Uuid
-  team   Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id        String     @id @default(uuid()) @db.Uuid
+  teamId    String     @map("team_id") @db.Uuid
+  userId    String     @map("user_id") @db.Uuid
+  role      String     @default("MEMBER")
+  joinedAt  DateTime   @default(now()) @map("joined_at")
+  team      Team       @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([teamId, userId])
   @@map("team_members")
+}
+
+model TeamRole {
+  id            String            @id @default(uuid()) @db.Uuid
+  teamId        String            @map("team_id") @db.Uuid
+  title         String
+  description   String?
+  skillsNeeded  String[]          @map("skills_needed")
+  isOpen        Boolean           @default(true) @map("is_open")
+  createdAt     DateTime          @default(now()) @map("created_at")
+  team          Team              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  applications  TeamApplication[]
+
+  @@map("team_roles")
+}
+
+model TeamApplication {
+  id           String            @id @default(uuid()) @db.Uuid
+  teamRoleId   String            @map("team_role_id") @db.Uuid
+  applicantId  String            @map("applicant_id") @db.Uuid
+  message      String?
+  status       ApplicationStatus @default(PENDING)
+  createdAt    DateTime          @default(now()) @map("created_at")
+  teamRole     TeamRole          @relation(fields: [teamRoleId], references: [id], onDelete: Cascade)
+  applicant    User              @relation(fields: [applicantId], references: [id], onDelete: Cascade)
+
+  @@map("team_applications")
+}
+
+model Message {
+  id         String   @id @default(uuid()) @db.Uuid
+  senderId   String   @map("sender_id") @db.Uuid
+  receiverId String   @map("receiver_id") @db.Uuid
+  content    String
+  isRead     Boolean  @default(false) @map("is_read")
+  createdAt  DateTime @default(now()) @map("created_at")
+  sender     User     @relation("MessageSender", fields: [senderId], references: [id], onDelete: Cascade)
+  receiver   User     @relation("MessageReceiver", fields: [receiverId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
 }
 
 model Notification {
