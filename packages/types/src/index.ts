@@ -114,11 +114,77 @@ export interface Post {
 export interface Team {
   id: string;
   name: string;
-  description: string;
-  avatar?: string | null;
-  memberIds: string[];
+  description: string | null;
+  ownerId: string;
+  category: TeamCategory;
+  stage: TeamStage;
+  isPublic: boolean;
+  createdAt: string;
+  updatedAt: string;
+  owner?: { id: string; name: string; avatar?: string | null };
+  members?: TeamMember[];
+  roles?: TeamRole[];
+  _count?: { members: number; roles: number };
+  openRolesCount?: number;
+}
+
+export interface TeamMember {
+  id: string;
+  teamId: string;
+  userId: string;
+  role: "OWNER" | "MEMBER";
+  joinedAt: string;
+  user?: { id: string; name: string; avatar?: string | null };
+}
+
+export interface TeamRole {
+  id: string;
+  teamId: string;
+  title: string;
+  description: string | null;
+  skillsNeeded: string[];
+  isOpen: boolean;
+  createdAt: string;
+  applications?: TeamApplication[];
+  _count?: { applications: number };
+}
+
+export interface TeamApplication {
+  id: string;
+  teamRoleId: string;
+  applicantId: string;
+  message: string | null;
+  status: ApplicationStatus;
+  createdAt: string;
+  applicant?: { id: string; name: string; avatar?: string | null; businessProfile?: BusinessProfile | null };
+  teamRole?: TeamRole;
+}
+
+export interface Message {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  content: string;
+  isRead: boolean;
   createdAt: string;
 }
+
+export interface Conversation {
+  user: { id: string; name: string; avatar?: string | null; businessProfile?: BusinessProfile | null };
+  lastMessage: Message;
+  unreadCount: number;
+}
+
+export interface DiscoverUser extends User {
+  businessProfile: BusinessProfile;
+  offeredSkills: Skill[];
+  neededSkills: Skill[];
+  matchScore: number;
+}
+
+export type TeamCategory = "SCHOOL_STARTUP" | "COMPETITION" | "BUSINESS_FAIR" | "PERSONAL_PROJECT";
+export type TeamStage = "FORMING" | "ACTIVE" | "COMPLETED";
+export type ApplicationStatus = "PENDING" | "ACCEPTED" | "REJECTED";
 
 export interface Notification {
   id: string;

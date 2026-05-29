@@ -280,3 +280,192 @@ export function useMarkAllRead() {
     },
   });
 }
+
+// ── Teams ──
+
+export function useTeams(filters: Record<string, any>) {
+  return useInfiniteQuery({
+    queryKey: ["teams", filters],
+    queryFn: async ({ pageParam = 1 }) => {
+      const params = new URLSearchParams({ page: String(pageParam), limit: "15", ...filters });
+      const res = await api.get<any>(`/teams?${params}`);
+      return res.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (!lastPage.pagination) return undefined;
+      const { page, totalPages } = lastPage.pagination;
+      return page < totalPages ? page + 1 : undefined;
+    },
+    initialPageParam: 1,
+  });
+}
+
+export function useTeamDetail(teamId?: string) {
+  return useQuery({
+    queryKey: ["team", teamId],
+    queryFn: async () => {
+      const res = await api.get<any>(`/teams/${teamId}`);
+      return res.data.data!;
+    },
+    enabled: !!teamId,
+  });
+}
+
+export function useMyTeams() {
+  return useQuery({
+    queryKey: ["myTeams"],
+    queryFn: async () => {
+      const res = await api.get<any>("/teams/my");
+      return res.data.data!;
+    },
+  });
+}
+
+export function useCreateTeam() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (data: { name: string; description?: string; category?: string }) => {
+      const res = await api.post<any>("/teams", data);
+      return res.data.data!;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["teams"] });
+      queryClient.invalidateQueries({ queryKey: ["myTeams"] });
+    },
+  });
+}
+
+export function useAddRole() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ teamId, ...data }: { teamId: string; title: string; description?: string; skillsNeeded?: string[] }) => {
+      const res = await api.post<any>(`/teams/${teamId}/roles`, data);
+      return res.data.data!;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["team"] }),
+  });
+}
+
+export function useApplyToRole() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ roleId, message }: { roleId: string; message?: string }) => {
+      const res = await api.post<any>(`/teams/roles/${roleId}/apply`, { message });
+      return res.data.data!;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["team"] });
+      queryClient.invalidateQueries({ queryKey: ["myTeams"] });
+    },
+  });
+}
+
+export function useAcceptApplication() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (appId: string) => {
+      const res = await api.put<any>(`/teams/applications/${appId}/accept`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["team"] });
+      queryClient.invalidateQueries({ queryKey: ["myTeams"] });
+    },
+  });
+}
+
+export function useRejectApplication() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (appId: string) => {
+      const res = await api.put<any>(`/teams/applications/${appId}/reject`);
+      return res.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["team"] });
+      queryClient.invalidateQueries({ queryKey: ["myTeams"] });
+    },
+  });
+}
+
+// ── Discover ──
+
+export function useDiscover(filters: Record<string, any>) {
+  return useInfiniteQuery({
+    queryKey: ["discover", filters],
+    queryFn: async ({ pageParam = 1 }) => {
+      const params = new URLSearchParams({ page: String(pageParam), limit: "10", ...filters });
+      const res = await api.get<any>(`/discover?${params}`);
+      return res.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (!lastPage.pagination) return undefined;
+      const { page, totalPages } = lastPage.pagination;
+      return page < totalPages ? page + 1 : undefined;
+    },
+    initialPageParam: 1,
+  });
+}
+
+// ── Messages ──
+
+export function useConversations() {
+  return useQuery({
+    queryKey: ["conversations"],
+    queryFn: async () => {
+      const res = await api.get<any>("/messages/conversations");
+      return res.data.data!;
+    },
+  });
+}
+
+export function useMessages(userId?: string) {
+  return useQuery({
+    queryKey: ["messages", userId],
+    queryFn: async () => {
+      const res = await api.get<any>(`/messages/${userId}`);
+      return res.data.data!;
+    },
+    enabled: !!userId,
+    refetchInterval: 10000,
+  });
+}
+
+export function useSendMessage() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ userId, content }: { userId: string; content: string }) => {
+      const res = await api.post<any>(`/messages/${userId}`, { content });
+      return res.data.data!;
+    },
+    onSuccess: (_, vars) => {
+      queryClient.invalidateQueries({ queryKey: ["messages", vars.userId] });
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+    },
+  });
+}
+
+export function useMarkMessagesRead() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (userId: string) => {
+      await api.put(`/messages/${userId}/read`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["conversations"] });
+      queryClient.invalidateQueries({ queryKey: ["messages"] });
+    },
+  });
+}
+
+export function useUnreadMessageCount() {
+  return useQuery({
+    queryKey: ["unreadMessageCount"],
+    queryFn: async () => {
+      const res = await api.get<any>("/messages/conversations");
+      const conversations = res.data.data ?? [];
+      return conversations.reduce((sum: number, c: any) => sum + (c.unreadCount ?? 0), 0);
+    },
+    refetchInterval: 30000,
+  });
+}
