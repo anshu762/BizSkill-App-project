@@ -1,7 +1,7 @@
 import type { ApiResponse, SkillCategory as SkillCategoryEnum, SkillLevel } from "@bizskills/types";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ScrollView, Text, TextInput, TouchableOpacity, View, Animated } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
@@ -27,9 +27,9 @@ const categories = [
 ] as const;
 
 const stages = [
-  { value: "IDEA" as const, label: "Idea", emoji: "💡" },
-  { value: "BUILDING" as const, label: "Building", emoji: "🔨" },
-  { value: "LAUNCHED" as const, label: "Launched", emoji: "🚀" },
+  { value: "IDEA" as const, label: "Idea" },
+  { value: "BUILDING" as const, label: "Building" },
+  { value: "LAUNCHED" as const, label: "Launched" },
 ];
 
 const levels = [
@@ -279,8 +279,7 @@ export default function OnboardingScreen() {
             <View className="mb-4 flex-row">
               {stages.map((s) => (
                 <TouchableOpacity key={s.value} onPress={() => setValue("stage", s.value)} className={`mr-2 flex-1 items-center rounded-2xl py-4 ${watch("stage") === s.value ? "bg-brand" : "bg-white"}`}>
-                  <Text className="text-lg">{s.emoji}</Text>
-                  <Text className={`mt-1 text-xs font-semibold ${watch("stage") === s.value ? "text-white" : "text-muted"}`}>{s.label}</Text>
+                  <Text className={`text-sm font-semibold ${watch("stage") === s.value ? "text-white" : "text-ink"}`}>{s.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -380,7 +379,7 @@ export default function OnboardingScreen() {
             </View>
             <View className="mt-3 flex-row">
               <AppButton label="Back" variant="outline" onPress={() => setStep(3)} className="mr-2 flex-1" />
-              <AppButton label="Looks good! Launch Profile 🚀" loading={submitting} onPress={handleSubmit(submit)} className="flex-1" />
+              <AppButton label="Looks good! Launch Profile" loading={submitting} onPress={handleSubmit(submit)} className="flex-1" />
             </View>
           </>
         );
@@ -389,25 +388,26 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
-        {renderStepIndicator()}
-        {renderStep()}
-      </ScrollView>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+          {renderStepIndicator()}
+          {renderStep()}
+        </ScrollView>
+      </KeyboardAvoidingView>
     </SafeAreaView>
   );
 }
 
 function StageBadgePreview({ stage }: { stage: string }) {
-  const config: Record<string, { label: string; emoji: string; bg: string; text: string }> = {
-    IDEA: { label: "Idea", emoji: "💡", bg: "bg-gray-100", text: "text-gray-700" },
-    BUILDING: { label: "Building", emoji: "🔨", bg: "bg-blue-50", text: "text-blue-700" },
-    LAUNCHED: { label: "Launched", emoji: "🚀", bg: "bg-green-50", text: "text-green-700" },
+  const config: Record<string, { label: string; bg: string; text: string }> = {
+    IDEA: { label: "Idea", bg: "bg-gray-100", text: "text-gray-700" },
+    BUILDING: { label: "Building", bg: "bg-blue-50", text: "text-blue-700" },
+    LAUNCHED: { label: "Launched", bg: "bg-green-50", text: "text-green-700" },
   };
   const c = config[stage] ?? config.IDEA;
   return (
-    <View className={`flex-row items-center rounded-full ${c.bg} px-3 py-1.5`}>
-      <Text className="text-sm">{c.emoji}</Text>
-      <Text className={`ml-1 text-xs font-semibold ${c.text}`}>{c.label}</Text>
+    <View className={`rounded-full ${c.bg} px-3 py-1.5`}>
+      <Text className={`text-xs font-semibold ${c.text}`}>{c.label}</Text>
     </View>
   );
 }

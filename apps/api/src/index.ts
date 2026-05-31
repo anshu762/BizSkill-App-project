@@ -1,8 +1,11 @@
+import compression from "compression";
 import cors from "cors";
 import express from "express";
 import rateLimit from "express-rate-limit";
 import helmet from "helmet";
+import morgan from "morgan";
 import { errorHandler, notFoundHandler } from "./middleware/errorHandler";
+import { prisma } from "./lib/prisma";
 import { authRouter } from "./routes/authRoutes";
 import { userRouter } from "./routes/userRoutes";
 import { profileRouter } from "./routes/profileRoutes";
@@ -24,21 +27,33 @@ import { env } from "./utils/env";
 const app = express();
 
 app.use(helmet());
+app.use(compression());
 app.use(cors({ origin: "*" }));
-app.use(express.json());
-app.use(
-  rateLimit({
-    windowMs: 15 * 60 * 1000,
-    limit: 100,
-    standardHeaders: "draft-7",
-    legacyHeaders: false,
-  }),
-);
+app.use(express.json({ limit: "10mb" }));
 
-app.get("/api/health", (_req, res) => {
-  res.json({ status: "ok", timestamp: new Date().toISOString() });
+if (env.NODE_ENV !== "production") {
+  app.use(morgan("dev"));
+} else {
+  app.use(morgan("combined", { skip: () => true }));
+}
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 100,
+  standardHeaders: "draft-7",
+  legacyHeaders: false,
 });
 
+app.get("/api/health", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    res.json({ status: "ok", db: "connected", timestamp: new Date().toISOString() });
+  } catch {
+    res.status(503).json({ status: "error", db: "disconnected", timestamp: new Date().toISOString() });
+  }
+});
+
+app.use("/api", limiter);
 app.use("/api/auth", authRouter);
 app.use("/api/users", userRouter);
 app.use("/api/profile", profileRouter);
@@ -63,3 +78,4 @@ app.listen(env.PORT, () => {
   console.log(`BizSkills API listening on port ${env.PORT}`);
 });
 
+export default app;

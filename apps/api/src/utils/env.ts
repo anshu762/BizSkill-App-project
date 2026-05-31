@@ -13,6 +13,7 @@ const envSchema = z.object({
   CLOUDINARY_CLOUD_NAME: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
+  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
 });
 
 export const env = envSchema.parse(process.env);

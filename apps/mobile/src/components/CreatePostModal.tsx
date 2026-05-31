@@ -8,11 +8,11 @@ import { useCreatePost } from "../lib/apiHooks";
 import { AppButton } from "./AppButton";
 
 const postTypes = [
-  { value: "UPDATE", label: "Update", emoji: "📝" },
-  { value: "LAUNCH", label: "Launch", emoji: "🚀" },
-  { value: "MILESTONE", label: "Milestone", emoji: "🏆" },
-  { value: "PRODUCT_DROP", label: "Product", emoji: "🔥" },
-  { value: "COLLAB_REQUEST", label: "Collab", emoji: "🤝" },
+  { value: "UPDATE", label: "Update" },
+  { value: "LAUNCH", label: "Launch" },
+  { value: "MILESTONE", label: "Milestone" },
+  { value: "PRODUCT_DROP", label: "Product Drop" },
+  { value: "COLLAB_REQUEST", label: "Collab" },
 ];
 
 interface CreatePostModalProps {
@@ -89,7 +89,7 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5">
             {postTypes.map((t) => (
               <TouchableOpacity key={t.value} onPress={() => setType(t.value)} className={`mr-2 rounded-full px-5 py-3 ${type === t.value ? "bg-brand" : "bg-white"}`}>
-                <Text className={`text-sm font-medium ${type === t.value ? "text-white" : "text-muted"}`}>{t.emoji} {t.label}</Text>
+                <Text className={`text-sm font-medium ${type === t.value ? "text-white" : "text-muted"}`}>{t.label}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>

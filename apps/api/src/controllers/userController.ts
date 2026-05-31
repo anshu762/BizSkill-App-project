@@ -82,3 +82,11 @@ export const completeOnboarding = async (req: Request, res: Response) => {
   res.json({ success: true, data: user });
 };
 
+export const updatePushToken = async (req: Request, res: Response) => {
+  const userId = authenticatedUserId(req);
+  const { pushToken } = z.object({ pushToken: z.string().min(1) }).parse(req.body);
+
+  await prisma.user.update({ where: { id: userId }, data: { pushToken } });
+  res.json({ success: true, message: "Push token updated" });
+};
+

@@ -7,10 +7,10 @@ import type { FeedPost } from "@bizskills/types";
 
 const typeConfig: Record<string, { label: string; color: string; bg: string }> = {
   UPDATE: { label: "Update", color: "#5B4DFF", bg: "bg-indigo-50" },
-  LAUNCH: { label: "Launch 🚀", color: "#059669", bg: "bg-green-50" },
-  MILESTONE: { label: "Milestone 🏆", color: "#D97706", bg: "bg-amber-50" },
-  COLLAB_REQUEST: { label: "Looking to Collab 🤝", color: "#DC2626", bg: "bg-red-50" },
-  PRODUCT_DROP: { label: "Product Drop 🔥", color: "#7C3AED", bg: "bg-purple-50" },
+  LAUNCH: { label: "Launch", color: "#059669", bg: "bg-green-50" },
+  MILESTONE: { label: "Milestone", color: "#D97706", bg: "bg-amber-50" },
+  COLLAB_REQUEST: { label: "Looking to Collab", color: "#DC2626", bg: "bg-red-50" },
+  PRODUCT_DROP: { label: "Product Drop", color: "#7C3AED", bg: "bg-purple-50" },
 };
 
 function timeAgo(dateStr: string): string {
@@ -94,7 +94,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete }: PostCa
       {post.type === "COLLAB_REQUEST" && (
         <View className="px-5 pb-4">
           <TouchableOpacity className="h-11 items-center justify-center rounded-2xl bg-brand/10">
-            <Text className="text-sm font-semibold text-brand">Request Collab 🤝</Text>
+            <Text className="text-sm font-semibold text-brand">Request Collab</Text>
           </TouchableOpacity>
         </View>
       )}

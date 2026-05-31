@@ -196,6 +196,32 @@ export function useToggleLike() {
       const res = await api.post<ApiResponse<{ liked: boolean }>>(`/posts/${postId}/like`);
       return res.data.data?.liked ?? false;
     },
+    onMutate: async (postId) => {
+      await queryClient.cancelQueries({ queryKey: ["feed"] });
+      const prev = queryClient.getQueriesData({ queryKey: ["feed"] });
+      queryClient.setQueriesData({ queryKey: ["feed"] }, (old: any) => {
+        if (!old?.pages) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            data: page.data.map((post: FeedPost) =>
+              post.id === postId
+                ? { ...post, isLikedByMe: !post.isLikedByMe, likeCount: post.likeCount + (post.isLikedByMe ? -1 : 1) }
+                : post
+            ),
+          })),
+        };
+      });
+      return { prev };
+    },
+    onError: (_err, _postId, context) => {
+      if (context?.prev) {
+        for (const [key, data] of context.prev) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+    },
     onSettled: () => queryClient.invalidateQueries({ queryKey: ["feed"] }),
   });
 }
@@ -218,7 +244,33 @@ export function useAddComment() {
       const res = await api.post<ApiResponse<PostComment>>(`/posts/${postId}/comments`, { content });
       return res.data.data!;
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["comments"] }),
+    onMutate: async ({ postId }) => {
+      await queryClient.cancelQueries({ queryKey: ["feed"] });
+      const prevFeed = queryClient.getQueriesData({ queryKey: ["feed"] });
+      queryClient.setQueriesData({ queryKey: ["feed"] }, (old: any) => {
+        if (!old?.pages) return old;
+        return {
+          ...old,
+          pages: old.pages.map((page: any) => ({
+            ...page,
+            data: page.data.map((post: FeedPost) =>
+              post.id === postId
+                ? { ...post, commentCount: post.commentCount + 1 }
+                : post
+            ),
+          })),
+        };
+      });
+      return { prevFeed };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.prevFeed) {
+        for (const [key, data] of context.prevFeed) {
+          queryClient.setQueryData(key, data);
+        }
+      }
+    },
+    onSettled: () => queryClient.invalidateQueries({ queryKey: ["comments"] }),
   });
 }
 
@@ -456,6 +508,20 @@ export function useMarkMessagesRead() {
       queryClient.invalidateQueries({ queryKey: ["messages"] });
     },
   });
+}
+
+export function useProfileCompletion() {
+  const { data: profile } = useProfile();
+  if (!profile) return 0;
+  let pct = 0;
+  if (profile.avatar) pct += 20;
+  if (profile.bio) pct += 20;
+  const offered = profile.skills?.filter((s) => s.isOffering).length ?? 0;
+  if (offered >= 1) pct += 20;
+  const needed = profile.skills?.filter((s) => !s.isOffering).length ?? 0;
+  if (needed >= 1) pct += 20;
+  if (profile.businessProfile) pct += 20;
+  return pct;
 }
 
 export function useUnreadMessageCount() {

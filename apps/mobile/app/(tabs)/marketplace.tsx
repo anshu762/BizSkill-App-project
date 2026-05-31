@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
 import { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/AppButton";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
@@ -76,7 +76,8 @@ export default function MarketplaceScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
-      <View className="flex-1 px-6">
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
+      <View className="px-6">
         <PageHeader eyebrow="Marketplace" title="Find skills" />
         <View className="mb-4 flex-row items-center">
           <View className="flex-1 h-14 flex-row items-center rounded-2xl bg-white px-4">
@@ -84,7 +85,7 @@ export default function MarketplaceScreen() {
             <TextInput
               placeholder="Search skills or people"
               placeholderTextColor="#98A2B3"
-              className="ml-3 flex-1 text-base text-ink"
+              className="ml-3 flex-1 text-base text-ink bg-white"
               value={search}
               onChangeText={handleSearch}
             />
@@ -93,69 +94,70 @@ export default function MarketplaceScreen() {
             <Ionicons name="options-outline" size={22} color="#5B4DFF" />
           </TouchableOpacity>
         </View>
-
-        <FlatList
-          data={allSkills}
-          keyExtractor={(item) => item.id}
-          ListHeaderComponent={discoverUsers.length > 0 ? () => (
-            <View className="mb-6">
-              <Text className="mb-3 text-lg font-bold text-ink">People who match your skills</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
-                {discoverUsers.map((user: any) => (
-                  <TouchableOpacity
-                    key={user.id}
-                    onPress={() => router.push(`/profile/${user.id}`)}
-                    className="mr-3 items-center rounded-3xl bg-white p-4"
-                    style={{ width: 140 }}
-                  >
-                    <View className="relative">
-                      <AvatarWithFallback uri={user.avatar} name={user.name?.[0] ?? "?"} size={52} />
-                      <View className="absolute -top-1 -right-1 rounded-full bg-green-500 px-1.5 py-0.5">
-                        <Text className="text-xs font-bold text-white">{user.matchScore}</Text>
-                      </View>
-                    </View>
-                    <Text numberOfLines={1} className="mt-2 text-sm font-semibold text-ink">{user.name}</Text>
-                    <Text numberOfLines={1} className="text-xs text-muted">{user.businessProfile?.businessName ?? "Founder"}</Text>
-                    <View className="mt-2 rounded-full bg-green-50 px-3 py-0.5">
-                      <Text className="text-xs font-medium text-green-700">{user.matchScore * 10}% match</Text>
-                    </View>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
-            </View>
-          ) : undefined}
-          onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
-          onEndReachedThreshold={0.5}
-          ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}
-          renderItem={({ item }) => (
-            <View className="mb-4 rounded-3xl bg-white p-5">
-              <TouchableOpacity onPress={() => router.push(`/profile/${item.userId}`)} className="flex-row items-center">
-                <AvatarWithFallback uri={item.user?.avatar} name={item.user?.name ?? "?"} size={40} />
-                <View className="ml-3 flex-1">
-                  <Text className="font-semibold text-ink">{item.user?.name}</Text>
-                  <Text className="text-xs text-muted">{item.user?.businessProfile?.businessName ?? "Founder"}</Text>
-                </View>
-                <BizCoinBadge amount={item.coinValue} />
-              </TouchableOpacity>
-              <View className="mt-3 flex-row items-center">
-                <View className="rounded-full bg-indigo-50 px-3 py-1">
-                  <Text className="text-xs font-medium text-brand">{item.category}</Text>
-                </View>
-                <View className="ml-2 rounded-full bg-gray-100 px-3 py-1">
-                  <Text className="text-xs font-medium capitalize text-gray-600">{item.level.toLowerCase()}</Text>
-                </View>
-              </View>
-              <Text className="mt-3 text-lg font-semibold text-ink">{item.title}</Text>
-              <AppButton
-                label="Request"
-                onPress={() => setExchangeTarget({ userId: item.userId, skillId: item.id })}
-                className="mt-3"
-              />
-            </View>
-          )}
-          contentContainerClassName="pb-4"
-        />
       </View>
+
+      <FlatList
+        data={allSkills}
+        keyExtractor={(item) => item.id}
+        contentContainerClassName="px-6 pb-4"
+        ListHeaderComponent={discoverUsers.length > 0 ? () => (
+          <View className="mb-6">
+            <Text className="mb-3 text-lg font-bold text-ink">People who match your skills</Text>
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+              {discoverUsers.map((user: any) => (
+                <TouchableOpacity
+                  key={user.id}
+                  onPress={() => router.push(`/profile/${user.id}`)}
+                  className="mr-3 items-center rounded-3xl bg-white p-4"
+                  style={{ width: 140 }}
+                >
+                  <View className="relative">
+                    <AvatarWithFallback uri={user.avatar} name={user.name?.[0] ?? "?"} size={52} />
+                    <View className="absolute -top-1 -right-1 rounded-full bg-green-500 px-1.5 py-0.5">
+                      <Text className="text-xs font-bold text-white">{user.matchScore}</Text>
+                    </View>
+                  </View>
+                  <Text numberOfLines={1} className="mt-2 text-sm font-semibold text-ink">{user.name}</Text>
+                  <Text numberOfLines={1} className="text-xs text-muted">{user.businessProfile?.businessName ?? "Founder"}</Text>
+                  <View className="mt-2 rounded-full bg-green-50 px-3 py-0.5">
+                    <Text className="text-xs font-medium text-green-700">{user.matchScore * 10}% match</Text>
+                  </View>
+                </TouchableOpacity>
+              ))}
+            </ScrollView>
+          </View>
+        ) : undefined}
+        onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
+        onEndReachedThreshold={0.5}
+        ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}
+        renderItem={({ item }) => (
+          <View className="mb-4 rounded-3xl bg-white p-5">
+            <TouchableOpacity onPress={() => router.push(`/profile/${item.userId}`)} className="flex-row items-center">
+              <AvatarWithFallback uri={item.user?.avatar} name={item.user?.name ?? "?"} size={40} />
+              <View className="ml-3 flex-1">
+                <Text className="font-semibold text-ink">{item.user?.name}</Text>
+                <Text className="text-xs text-muted">{item.user?.businessProfile?.businessName ?? "Founder"}</Text>
+              </View>
+              <BizCoinBadge amount={item.coinValue} />
+            </TouchableOpacity>
+            <View className="mt-3 flex-row items-center">
+              <View className="rounded-full bg-indigo-50 px-3 py-1">
+                <Text className="text-xs font-medium text-brand">{item.category}</Text>
+              </View>
+              <View className="ml-2 rounded-full bg-gray-100 px-3 py-1">
+                <Text className="text-xs font-medium capitalize text-gray-600">{item.level.toLowerCase()}</Text>
+              </View>
+            </View>
+            <Text className="mt-3 text-lg font-semibold text-ink">{item.title}</Text>
+            <AppButton
+              label="Request"
+              onPress={() => setExchangeTarget({ userId: item.userId, skillId: item.id })}
+              className="mt-3"
+            />
+          </View>
+        )}
+      />
+      </KeyboardAvoidingView>
 
       <Modal visible={filterOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setFilterOpen(false)}>
         <SafeAreaView className="flex-1 bg-surface">
