@@ -44,6 +44,24 @@ const limiter = rateLimit({
   legacyHeaders: false,
 });
 
+app.get("/", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Welcome to BizSkills API! 🚀",
+    status: "Running smoothly",
+    healthCheck: "/api/health"
+  });
+});
+
+app.get("/api", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "BizSkills API Endpoint",
+    version: "v1",
+    docs: "Endpoints are available under /api/*"
+  });
+});
+
 app.get("/api/health", async (_req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
