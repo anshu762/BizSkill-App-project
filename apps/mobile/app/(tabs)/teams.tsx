@@ -77,12 +77,25 @@ export default function TeamsScreen() {
     setCreateDesc("");
   };
 
+  const tabIcons: Record<string, string> = {
+    discover: "compass-outline",
+    my: "people-outline",
+    applications: "documents-outline",
+  };
+
   const TabButton = ({ label, value }: { label: string; value: typeof tab }) => (
     <TouchableOpacity
       onPress={() => setTab(value)}
-      className={`rounded-full px-5 py-2.5 ${tab === value ? "bg-brand" : "bg-white"}`}
+      className={`mr-3 last:mr-0 flex-1 flex-row items-center justify-center rounded-2xl py-3 ${
+        tab === value ? "bg-brand" : "bg-white border border-slate-200"
+      }`}
     >
-      <Text className={`text-sm font-semibold ${tab === value ? "text-white" : "text-muted"}`}>{label}</Text>
+      <Ionicons
+        name={tabIcons[value] as any}
+        size={16}
+        color={tab === value ? "#FFFFFF" : "#667085"}
+      />
+      <Text className={`ml-1.5 text-sm font-semibold ${tab === value ? "text-white" : "text-muted"}`}>{label}</Text>
     </TouchableOpacity>
   );
 
@@ -146,7 +159,7 @@ export default function TeamsScreen() {
     <SafeAreaView className="flex-1 bg-surface">
       <View className="flex-1 px-6">
         <PageHeader eyebrow="Collaborate" title="Teams" />
-        <View className="mb-4 flex-row">
+        <View className="mb-5 flex-row">
           <TabButton label="Discover" value="discover" />
           <TabButton label="My Teams" value="my" />
           <TabButton label="Applications" value="applications" />
@@ -159,25 +172,43 @@ export default function TeamsScreen() {
               <TextInput
                 placeholder="Search teams..."
                 placeholderTextColor="#98A2B3"
-                className="ml-3 flex-1 text-base text-ink"
+                className="ml-3 flex-1 text-base text-ink bg-white"
                 value={search}
                 onChangeText={handleSearch}
               />
             </View>
-            <ScrollView horizontal className="mb-4" showsHorizontalScrollIndicator={false}>
-              {categories.map((c) => (
-                <TouchableOpacity key={c.value} onPress={() => setCategory(c.value)} className={`mr-2 rounded-full px-4 py-2 ${category === c.value ? "bg-brand" : "bg-white"}`}>
-                  <Text className={`text-sm font-medium ${category === c.value ? "text-white" : "text-muted"}`}>{c.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-            <ScrollView horizontal className="mb-4" showsHorizontalScrollIndicator={false}>
-              {stages.map((s) => (
-                <TouchableOpacity key={s.value} onPress={() => setStage(s.value)} className={`mr-2 rounded-full px-4 py-2 ${stage === s.value ? "bg-brand" : "bg-white"}`}>
-                  <Text className={`text-sm font-medium ${stage === s.value ? "text-white" : "text-muted"}`}>{s.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
+            <View className="mb-1">
+              <Text className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted">Category</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {categories.map((c) => (
+                  <TouchableOpacity key={c.value} onPress={() => setCategory(c.value)} className={`mr-2 rounded-xl border px-4 py-2.5 ${
+                    category === c.value
+                      ? "border-brand bg-brand"
+                      : "border-slate-200 bg-white"
+                  }`}>
+                    <Text className={`text-sm font-medium ${
+                      category === c.value ? "text-white" : "text-muted"
+                    }`}>{c.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
+            <View className="mb-4 mt-4">
+              <Text className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted">Status</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {stages.map((s) => (
+                  <TouchableOpacity key={s.value} onPress={() => setStage(s.value)} className={`mr-2 rounded-lg border px-4 py-2.5 ${
+                    stage === s.value
+                      ? "border-brand bg-brand"
+                      : "border-slate-200 bg-white"
+                  }`}>
+                    <Text className={`text-sm font-semibold ${
+                      stage === s.value ? "text-white" : "text-muted"
+                    }`}>{s.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
+            </View>
             <FlatList
               data={allTeams}
               keyExtractor={(item: any) => item.id}
@@ -189,7 +220,7 @@ export default function TeamsScreen() {
             />
             <TouchableOpacity
               onPress={() => setCreateOpen(true)}
-              className="absolute bottom-6 right-0 h-14 w-14 items-center justify-center rounded-full bg-brand shadow-lg"
+              className="absolute bottom-6 right-0 h-14 w-14 items-center justify-center rounded-full bg-brand"
             >
               <Ionicons name="add" size={28} color="white" />
             </TouchableOpacity>

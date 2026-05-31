@@ -14,6 +14,14 @@ import { api } from "../../src/lib/axios";
 import { storage } from "../../src/lib/storage";
 import { useAuthStore } from "../../src/store/useAuthStore";
 
+const filterIcons: Record<string, string> = {
+  all: "apps-outline",
+  following: "people-outline",
+  launches: "rocket-outline",
+  milestones: "trophy-outline",
+  collab: "hand-left-outline",
+};
+
 const filters = [
   { key: "all", label: "All" },
   { key: "following", label: "Following" },
@@ -127,9 +135,20 @@ export default function FeedScreen() {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => setFilter(item.key)}
-                className={`mr-2 rounded-full px-5 py-3 ${filter === item.key ? "bg-brand" : "bg-white"}`}
+                className={`mr-2 flex-row items-center rounded-xl border px-4 py-2.5 ${
+                  filter === item.key
+                    ? "border-brand bg-brand"
+                    : "border-slate-200 bg-white"
+                }`}
               >
-                <Text className={`text-sm font-medium ${filter === item.key ? "text-white" : "text-muted"}`}>{item.label}</Text>
+                <Ionicons
+                  name={filterIcons[item.key] as any}
+                  size={14}
+                  color={filter === item.key ? "#FFFFFF" : "#667085"}
+                />
+                <Text className={`ml-1.5 text-sm font-medium ${
+                  filter === item.key ? "text-white" : "text-muted"
+                }`}>{item.label}</Text>
               </TouchableOpacity>
             )}
           />

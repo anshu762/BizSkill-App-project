@@ -87,7 +87,7 @@ export default function PostScreen() {
 
         <View
           className="flex-row items-center border-t border-slate-200 bg-white px-4 py-3"
-          style={{ paddingBottom: keyboardHeight > 0 ? keyboardHeight - insets.bottom : undefined }}
+          style={{ paddingBottom: keyboardHeight > 0 ? keyboardHeight - insets.bottom + 12 : undefined }}
         >
           <AvatarWithFallback uri={user?.avatar} name={user?.name ?? "B"} size={32} />
           <TextInput
