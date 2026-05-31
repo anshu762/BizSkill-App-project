@@ -38,11 +38,6 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#5B4DFF"
       }
-    },
-    "extra": {
-      "eas": {
-        "projectId": "bizskills-app"
-      }
     }
   }
 }
