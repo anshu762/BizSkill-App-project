@@ -22,7 +22,7 @@ importers:
   apps/mobile:
     dependencies:
       '@bizskills/types':
-        specifier: file:../../packages/types
+        specifier: workspace:*
         version: link:../../packages/types
       '@expo/metro-runtime':
         specifier: ~6.1.2
