@@ -20,7 +20,7 @@
         {
           "photosPermission": "BizSkills uses your photos to add your profile and portfolio images."
         }
-      ],
+      ]
     ],
     "experiments": {
       "typedRoutes": true
@@ -37,6 +37,15 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#5B4DFF"
+      },
+      "permissions": [
+        "android.permission.RECORD_AUDIO"
+      ]
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "b55e1708-3917-4410-ae62-635c07cb82c8"
       }
     }
   }
