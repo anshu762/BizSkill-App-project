@@ -1,7 +1,6 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
-import { useAuthStore } from "../store/useAuthStore";
 
 function getBaseUrl(): string {
   if (Platform.OS === "web") return process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
@@ -23,8 +22,13 @@ const baseURL = getBaseUrl();
 
 export const api = axios.create({ baseURL: `${baseURL}/api`, timeout: 10_000 });
 
+function getAuthStore() {
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
+  return require("../store/useAuthStore").useAuthStore;
+}
+
 api.interceptors.request.use((config) => {
-  const accessToken = useAuthStore.getState().accessToken;
+  const accessToken = getAuthStore().getState().accessToken;
   if (accessToken) config.headers.Authorization = `Bearer ${accessToken}`;
   return config;
 });
@@ -42,11 +46,11 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && original && !original._retry && !isAuthAction) {
       original._retry = true;
       try {
-        const accessToken = await useAuthStore.getState().refreshAccessToken();
+        const accessToken = await getAuthStore().getState().refreshAccessToken();
         original.headers.Authorization = `Bearer ${accessToken}`;
         return api(original);
       } catch {
-        await useAuthStore.getState().clearSession();
+        await getAuthStore().getState().clearSession();
       }
     }
 
