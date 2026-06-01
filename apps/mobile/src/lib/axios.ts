@@ -21,7 +21,7 @@ function getBaseUrl(): string {
 
 const baseURL = getBaseUrl();
 
-export const api = axios.create({ baseURL: `${baseURL}/api` });
+export const api = axios.create({ baseURL: `${baseURL}/api`, timeout: 10_000 });
 
 api.interceptors.request.use((config) => {
   const accessToken = useAuthStore.getState().accessToken;
