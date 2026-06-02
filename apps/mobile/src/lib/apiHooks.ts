@@ -265,9 +265,13 @@ export function useAddComment() {
       const res = await api.post<ApiResponse<PostComment>>(`/posts/${postId}/comments`, { content });
       return res.data.data!;
     },
-    onMutate: async ({ postId }) => {
+    onMutate: async ({ postId, content }) => {
       await queryClient.cancelQueries({ queryKey: ["feed"] });
+      await queryClient.cancelQueries({ queryKey: ["comments", postId] });
+
       const prevFeed = queryClient.getQueriesData({ queryKey: ["feed"] });
+      const prevComments = queryClient.getQueryData<PaginatedResponse<PostComment>>(["comments", postId]);
+
       queryClient.setQueriesData({ queryKey: ["feed"] }, (old: any) => {
         if (!old?.pages) return old;
         return {
@@ -282,7 +286,29 @@ export function useAddComment() {
           })),
         };
       });
-      return { prevFeed };
+
+      const currentUser = useAuthStore.getState().user;
+      const optimisticComment: PostComment = {
+        id: `temp-${Date.now()}`,
+        postId,
+        content,
+        createdAt: new Date().toISOString(),
+        authorId: currentUser?.id ?? "temp-user",
+        author: {
+          id: currentUser?.id ?? "temp-user",
+          name: currentUser?.name ?? "Me",
+          avatar: currentUser?.avatar ?? null,
+        },
+      };
+
+      if (prevComments) {
+        queryClient.setQueryData<PaginatedResponse<PostComment>>(["comments", postId], {
+          ...prevComments,
+          data: [...prevComments.data, optimisticComment],
+        });
+      }
+
+      return { prevFeed, prevComments, postId };
     },
     onError: (_err, _vars, context) => {
       if (context?.prevFeed) {
@@ -290,8 +316,14 @@ export function useAddComment() {
           queryClient.setQueryData(key, data);
         }
       }
+      if (context?.prevComments && context?.postId) {
+        queryClient.setQueryData(["comments", context.postId], context.prevComments);
+      }
     },
-    onSettled: () => queryClient.invalidateQueries({ queryKey: ["comments"] }),
+    onSettled: (_, __, { postId }) => {
+      queryClient.invalidateQueries({ queryKey: ["comments", postId] });
+      queryClient.invalidateQueries({ queryKey: ["feed"] });
+    },
   });
 }
 
