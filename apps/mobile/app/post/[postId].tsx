@@ -6,7 +6,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import Toast from "react-native-toast-message";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { PostCard } from "../../src/components/PostCard";
-import { useComments, useAddComment, useFeed } from "../../src/lib/apiHooks";
+import { useComments, useAddComment, useFeed, useDeletePost, useUpdatePost } from "../../src/lib/apiHooks";
 import { readApiError } from "../../src/lib/axios";
 import { useAuthStore } from "../../src/store/useAuthStore";
 
@@ -21,6 +21,8 @@ export default function PostScreen() {
   const post = feedData?.pages.flatMap((p) => p.data).find((p) => p.id === postId);
   const { data: commentsData, isLoading } = useComments(postId!);
   const addComment = useAddComment();
+  const deletePost = useDeletePost();
+  const updatePost = useUpdatePost();
   const comments = commentsData?.data ?? [];
 
   useEffect(() => {
@@ -68,7 +70,14 @@ export default function PostScreen() {
           keyExtractor={(item) => item.id}
           className="flex-1"
           contentContainerClassName="px-6 pb-4"
-          ListHeaderComponent={post ? <PostCard post={post} /> : null}
+          ListHeaderComponent={post ? <PostCard 
+            post={post} 
+            onDelete={(id) => {
+              deletePost.mutate(id);
+              router.back();
+            }}
+            onEdit={(id, content) => updatePost.mutateAsync({ postId: id, content })}
+          /> : null}
           ListEmptyComponent={<Text className="mt-6 text-center text-sm text-muted">No comments yet.</Text>}
           keyboardShouldPersistTaps="handled"
           renderItem={({ item }) => (

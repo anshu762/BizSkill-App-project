@@ -1,13 +1,38 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link, useLocalSearchParams, useRouter } from "expo-router";
-import { ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { AppButton } from "../../src/components/AppButton";
+import { useExchange } from "../../src/lib/apiHooks";
+import { useAuthStore } from "../../src/store/useAuthStore";
 
 export default function ExchangeDetailScreen() {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id: string }>();
-  const title = id === "pitch-deck" ? "Pitch Deck Polish" : "Brand Identity Sprint";
+  const myId = useAuthStore((state) => state.user?.id);
+  const { data: exchange, isLoading } = useExchange(id);
+
+  if (isLoading) {
+    return (
+      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
+        <ActivityIndicator color="#5B4DFF" size="large" />
+      </SafeAreaView>
+    );
+  }
+
+  if (!exchange) {
+    return (
+      <SafeAreaView className="flex-1 bg-surface">
+        <View className="flex-1 items-center justify-center px-6">
+          <Text className="text-lg text-muted">Exchange not found</Text>
+          <AppButton label="Go back" variant="outline" onPress={() => router.back()} className="mt-4" />
+        </View>
+      </SafeAreaView>
+    );
+  }
+
+  const otherUser = exchange.fromUserId === myId ? exchange.toUser : exchange.fromUser;
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
@@ -17,34 +42,41 @@ export default function ExchangeDetailScreen() {
         </TouchableOpacity>
         <View className="mt-8 rounded-[30px] bg-white p-6">
           <View className="flex-row justify-between">
-            <Text className="rounded-full bg-indigo-50 px-3 py-2 text-xs font-semibold text-brand">DESIGN</Text>
-            <Text className="text-lg font-bold text-brand">45 BC</Text>
+            <Text className="rounded-full bg-indigo-50 px-3 py-2 text-xs font-semibold text-brand">{exchange.skillRequested?.category ?? "SKILL"}</Text>
+            <Text className="text-lg font-bold text-brand">{exchange.coinsOffered} BC</Text>
           </View>
-          <Text className="mt-7 text-3xl font-bold tracking-tight text-ink">{title}</Text>
+          <Text className="mt-7 text-3xl font-bold tracking-tight text-ink">{exchange.skillRequested?.title ?? "Skill Exchange"}</Text>
           <Text className="mt-4 text-sm leading-6 text-muted">
-            Get a refined visual direction, logo explorations and a concise brand guide for your next launch.
+            {exchange.skillRequested?.description ?? "Skill exchange request"}
           </Text>
-          <Link href={{ pathname: "/profile/[userId]", params: { userId: "rhea" } }} asChild>
-            <TouchableOpacity className="mt-7 flex-row items-center rounded-2xl bg-surface p-4">
-              <View className="h-12 w-12 items-center justify-center rounded-full bg-brand">
-                <Text className="text-lg font-bold text-white">R</Text>
-              </View>
-              <View className="ml-3 flex-1">
-                <Text className="font-semibold text-ink">Rhea Malik</Text>
-                <Text className="mt-1 text-xs text-muted">Graphic designer - 4.9 rating</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={18} color="#98A2B3" />
-            </TouchableOpacity>
-          </Link>
-        </View>
-        <Text className="mb-3 mt-8 text-lg font-bold text-ink">Deliverables</Text>
-        {["Discovery conversation", "Two visual directions", "Final brand starter kit"].map((line) => (
-          <View key={line} className="mb-2 flex-row items-center rounded-2xl bg-white p-4">
-            <Ionicons name="checkmark-circle" size={20} color="#11B9AD" />
-            <Text className="ml-3 text-sm font-medium text-ink">{line}</Text>
+          <View className="mt-7 flex-row items-center rounded-2xl bg-surface p-4">
+            <AvatarWithFallback uri={otherUser?.avatar} name={otherUser?.name ?? "?"} size={48} />
+            <View className="ml-3 flex-1">
+              <Text className="font-semibold text-ink">{otherUser?.name ?? "User"}</Text>
+              <Text className="mt-1 text-xs text-muted">Status: {exchange.status}</Text>
+            </View>
           </View>
-        ))}
-        <AppButton label="Request Exchange - 45 BC" className="mt-8" />
+        </View>
+        <View className="mt-8 rounded-3xl bg-white p-5">
+          <Text className="mb-3 text-lg font-bold text-ink">Exchange Details</Text>
+          <View className="flex-row justify-between rounded-2xl bg-surface p-3">
+            <View className="flex-1 items-center">
+              <Text className="text-xs text-muted">You offer</Text>
+              <Text className="mt-1 text-sm font-semibold text-ink">{exchange.skillOffered?.title ?? "Skill"}</Text>
+            </View>
+            <Ionicons name="swap-horizontal" size={20} color="#5B4DFF" style={{ marginTop: 12 }} />
+            <View className="flex-1 items-center">
+              <Text className="text-xs text-muted">You get</Text>
+              <Text className="mt-1 text-sm font-semibold text-ink">{exchange.skillRequested?.title ?? "Skill"}</Text>
+            </View>
+          </View>
+          {exchange.message && (
+            <View className="mt-4">
+              <Text className="text-sm font-semibold text-ink">Message</Text>
+              <Text className="mt-1 text-sm text-muted">{exchange.message}</Text>
+            </View>
+          )}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

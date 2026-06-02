@@ -1,12 +1,13 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/AppButton";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { PageHeader } from "../../src/components/PageHeader";
 import { useCreateTeam, useMyTeams, useTeams } from "../../src/lib/apiHooks";
+import { TeamCardSkeleton } from "../../src/components/Skeletons";
 
 const categories = [
   { value: "ALL", label: "All" },
@@ -62,11 +63,11 @@ export default function TeamsScreen() {
 
   const allTeams = useMemo(() => data?.pages.flatMap((p: any) => p.data ?? []) ?? [], [data]);
 
-  let debounceTimer: ReturnType<typeof setTimeout>;
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleSearch = useCallback((text: string) => {
     setSearch(text);
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => setDebouncedSearch(text), 400);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedSearch(text), 400);
   }, []);
 
   const handleCreate = async () => {
@@ -147,14 +148,6 @@ export default function TeamsScreen() {
     </TouchableOpacity>
   );
 
-  if (isLoading || myLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
-        <ActivityIndicator color="#5B4DFF" size="large" />
-      </SafeAreaView>
-    );
-  }
-
   return (
     <SafeAreaView className="flex-1 bg-surface">
       <View className="flex-1 px-6">
@@ -209,6 +202,13 @@ export default function TeamsScreen() {
                 ))}
               </ScrollView>
             </View>
+            {isLoading ? (
+              <View className="pb-20">
+                <TeamCardSkeleton />
+                <TeamCardSkeleton />
+                <TeamCardSkeleton />
+              </View>
+            ) : (
             <FlatList
               data={allTeams}
               keyExtractor={(item: any) => item.id}
@@ -218,6 +218,7 @@ export default function TeamsScreen() {
               ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}
               contentContainerClassName="pb-20"
             />
+            )}
             <TouchableOpacity
               onPress={() => setCreateOpen(true)}
               className="absolute bottom-6 right-0 h-14 w-14 items-center justify-center rounded-full bg-brand"
@@ -281,8 +282,12 @@ export default function TeamsScreen() {
             )}
 
             {(!myTeamsData?.owned?.length && !myTeamsData?.member?.length) && (
-              <View className="mt-10 items-center">
-                <Text className="text-muted">You haven't joined any teams yet</Text>
+              <View className="mt-16 items-center px-4">
+                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
+                  <Ionicons name="people-outline" size={36} color="#5B4DFF" />
+                </View>
+                <Text className="mt-5 text-xl font-bold text-ink">No teams yet</Text>
+                <Text className="mt-2 text-center text-sm leading-5 text-muted">Start or join a team to collaborate with other founders on projects, competitions, and business ideas.</Text>
               </View>
             )}
 
@@ -305,8 +310,12 @@ export default function TeamsScreen() {
                 </View>
               ))
             ) : (
-              <View className="mt-10 items-center">
-                <Text className="text-muted">No applications yet</Text>
+              <View className="mt-16 items-center px-4">
+                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
+                  <Ionicons name="documents-outline" size={36} color="#5B4DFF" />
+                </View>
+                <Text className="mt-5 text-xl font-bold text-ink">No applications yet</Text>
+                <Text className="mt-2 text-center text-sm leading-5 text-muted">Apply to open team roles to see your applications here.</Text>
               </View>
             )}
           </ScrollView>

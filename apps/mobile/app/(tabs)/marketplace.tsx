@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link, useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
+import { useRouter } from "expo-router";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { ActivityIndicator, FlatList, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/AppButton";
@@ -9,7 +9,6 @@ import { BizCoinBadge } from "../../src/components/BizCoinBadge";
 import { ExchangeModal } from "../../src/components/ExchangeModal";
 import { PageHeader } from "../../src/components/PageHeader";
 import { useDiscover, useMarketplace } from "../../src/lib/apiHooks";
-import type { SkillCategory, SkillLevel } from "@bizskills/types";
 
 const categories = [
   { value: "", label: "All" },
@@ -59,20 +58,12 @@ export default function MarketplaceScreen() {
   const allSkills = useMemo(() => data?.pages.flatMap((p) => p.data ?? []) ?? [], [data]);
   const discoverUsers = useMemo(() => discoverData?.pages?.flatMap((p: any) => p.data ?? []) ?? [], [discoverData]);
 
-  let debounceTimer: ReturnType<typeof setTimeout>;
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleSearch = useCallback((text: string) => {
     setSearch(text);
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => setDebouncedSearch(text), 400);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedSearch(text), 400);
   }, []);
-
-  if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
-        <ActivityIndicator color="#5B4DFF" size="large" />
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
@@ -96,6 +87,24 @@ export default function MarketplaceScreen() {
         </View>
       </View>
 
+      {isLoading ? (
+        <View className="px-6">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <View key={i} className="mb-4 rounded-3xl bg-white p-5">
+              <View className="flex-row items-center">
+                <View className="h-10 w-10 rounded-full bg-gray-200" />
+                <View className="ml-3 flex-1">
+                  <View className="mb-2 h-4 w-32 rounded bg-gray-200" />
+                  <View className="h-3 w-20 rounded bg-gray-200" />
+                </View>
+              </View>
+              <View className="mt-3 h-6 w-24 rounded-full bg-gray-200" />
+              <View className="mt-3 mb-3 h-5 w-48 rounded bg-gray-200" />
+              <View className="h-14 w-full rounded-2xl bg-gray-200" />
+            </View>
+          ))}
+        </View>
+      ) : (
       <FlatList
         data={allSkills}
         keyExtractor={(item) => item.id}
@@ -157,6 +166,7 @@ export default function MarketplaceScreen() {
           </View>
         )}
       />
+      )}
       </KeyboardAvoidingView>
 
       <Modal visible={filterOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setFilterOpen(false)}>

@@ -15,14 +15,6 @@ export default function WalletScreen() {
   const user = useAuthStore((state) => state.user);
   const { data: wallet, isLoading } = useWallet();
 
-  if (isLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
-        <ActivityIndicator color="#5B4DFF" size="large" />
-      </SafeAreaView>
-    );
-  }
-
   const transactions = wallet?.transactions ?? [];
 
   return (
@@ -44,15 +36,33 @@ export default function WalletScreen() {
           </View>
         </View>
 
+        {isLoading ? (
+          <View className="px-6">
+            <View className="mb-4 h-6 w-44 rounded bg-gray-200" />
+            {Array.from({ length: 4 }).map((_, i) => (
+              <View key={i} className="mb-3 flex-row items-center rounded-3xl bg-white p-4">
+                <View className="h-10 w-10 rounded-full bg-gray-200" />
+                <View className="ml-4 flex-1">
+                  <View className="mb-2 h-4 w-3/4 rounded bg-gray-200" />
+                  <View className="h-3 w-1/4 rounded bg-gray-200" />
+                </View>
+                <View className="h-5 w-16 rounded bg-gray-200" />
+              </View>
+            ))}
+          </View>
+        ) : (
         <FlatList
           data={transactions}
           keyExtractor={(item) => item.id}
           contentContainerClassName="px-6 pb-8"
           ListHeaderComponent={<Text className="mb-4 text-lg font-bold text-ink">Transaction History</Text>}
           ListEmptyComponent={
-            <View className="mt-8 items-center">
-              <Ionicons name="wallet-outline" size={48} color="#98A2B3" />
-              <Text className="mt-4 text-sm text-muted">No transactions yet. Complete an exchange to earn!</Text>
+            <View className="mt-16 items-center px-4">
+              <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-amber-50">
+                <Ionicons name="wallet-outline" size={36} color="#F59E0B" />
+              </View>
+              <Text className="mt-5 text-xl font-bold text-ink">No transactions yet</Text>
+              <Text className="mt-2 text-center text-sm leading-5 text-muted">Complete an exchange to earn BizCoins. Each completed swap gives both parties +10 BC.</Text>
             </View>
           }
           renderItem={({ item }) => {
@@ -74,6 +84,7 @@ export default function WalletScreen() {
             );
           }}
         />
+        )}
       </SafeAreaView>
     </ErrorBoundary>
   );

@@ -9,7 +9,7 @@ import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { CreatePostModal } from "../../src/components/CreatePostModal";
 import { ErrorBoundary } from "../../src/components/ErrorBoundary";
 import { PostCardSkeleton } from "../../src/components/Skeletons";
-import { useFeed, useProfileCompletion, useUnreadCount, useUpdatePost } from "../../src/lib/apiHooks";
+import { useFeed, useProfileCompletion, useUnreadCount, useUpdatePost, useDeletePost } from "../../src/lib/apiHooks";
 import { api } from "../../src/lib/axios";
 import { storage } from "../../src/lib/storage";
 import { useAuthStore } from "../../src/store/useAuthStore";
@@ -100,6 +100,7 @@ export default function FeedScreen() {
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useFeed(filter);
   const { data: unreadCount } = useUnreadCount();
   const updatePost = useUpdatePost();
+  const deletePost = useDeletePost();
 
   const allPosts = data?.pages.flatMap((p) => p.data) ?? [];
 
@@ -192,6 +193,7 @@ export default function FeedScreen() {
                 post={item}
                 onCommentPress={(postId) => router.push(`/post/${postId}` as any)}
                 onUserPress={(userId) => router.push(`/profile/${userId}` as any)}
+                onDelete={(postId) => deletePost.mutate(postId)}
                 onEdit={(postId, content) => updatePost.mutateAsync({ postId, content })}
               />
             )

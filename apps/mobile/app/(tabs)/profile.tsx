@@ -8,7 +8,6 @@ import Toast from "react-native-toast-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
-import { BizCoinBadge } from "../../src/components/BizCoinBadge";
 import { StageBadge } from "../../src/components/StageBadge";
 import { SkillChip } from "../../src/components/SkillChip";
 import { AppButton } from "../../src/components/AppButton";

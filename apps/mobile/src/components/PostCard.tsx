@@ -1,11 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Alert, Image, Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Modal, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { AvatarWithFallback } from "./AvatarWithFallback";
 import { AppButton } from "./AppButton";
-import { useToggleLike, useDeletePost } from "../lib/apiHooks";
+import { useToggleLike } from "../lib/apiHooks";
 import { readApiError } from "../lib/axios";
 import type { FeedPost } from "@bizskills/types";
 
@@ -39,10 +39,10 @@ interface PostCardProps {
 
 export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }: PostCardProps) {
   const toggleLike = useToggleLike();
-  const deletePost = useDeletePost();
   const [expanded, setExpanded] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [editModal, setEditModal] = useState(false);
+  const [deleteModal, setDeleteModal] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
   const config = typeConfig[post.type] ?? typeConfig.UPDATE;
 
@@ -59,15 +59,13 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
     }
   };
 
-  const handleDelete = () => {
-    Alert.alert("Delete Post", "Are you sure you want to delete this post?", [
-      { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: () => {
-        onDelete?.(post.id);
-        deletePost.mutate(post.id);
-        Toast.show({ type: "success", text1: "Post deleted" });
-      }},
-    ]);
+  const promptDelete = () => {
+    setDeleteModal(true);
+  };
+
+  const confirmDelete = () => {
+    setDeleteModal(false);
+    onDelete?.(post.id);
   };
 
   return (
@@ -127,7 +125,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
             <Ionicons name="pencil-outline" size={18} color="#5B4DFF" />
             <Text className="mt-0.5 text-xs font-medium text-brand">Edit</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => { setShowMenu(false); handleDelete(); }} className="flex-1 items-center py-3">
+          <TouchableOpacity onPress={() => { setShowMenu(false); promptDelete(); }} className="flex-1 items-center py-3">
             <Ionicons name="trash-outline" size={18} color="#EF4444" />
             <Text className="mt-0.5 text-xs font-medium text-red-500">Delete</Text>
           </TouchableOpacity>
@@ -137,6 +135,26 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
           </TouchableOpacity>
         </View>
       )}
+
+      <Modal visible={deleteModal} transparent animationType="fade" onRequestClose={() => setDeleteModal(false)}>
+        <View className="flex-1 items-center justify-center bg-black/50 px-6">
+          <View className="w-full rounded-3xl bg-white p-6">
+            <View className="mb-4 h-12 w-12 items-center justify-center rounded-full bg-red-50">
+              <Ionicons name="trash-outline" size={24} color="#EF4444" />
+            </View>
+            <Text className="mb-2 text-xl font-bold text-ink">Delete Post?</Text>
+            <Text className="mb-6 text-sm leading-5 text-muted">Are you sure you want to delete this post? This action cannot be undone.</Text>
+            <View className="flex-row items-center">
+              <TouchableOpacity onPress={() => setDeleteModal(false)} className="mr-3 flex-1 items-center justify-center rounded-full bg-slate-100 py-3.5">
+                <Text className="font-semibold text-ink">Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={confirmDelete} className="flex-1 items-center justify-center rounded-full bg-red-500 py-3.5">
+                <Text className="font-semibold text-white">Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Modal visible={editModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditModal(false)}>
         <SafeAreaView className="flex-1 bg-surface">

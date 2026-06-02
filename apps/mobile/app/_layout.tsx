@@ -3,8 +3,8 @@ import "../global.css";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { StatusBar } from "expo-status-bar";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { Animated, View, StyleSheet } from "react-native";
+import { useCallback, useEffect, useState } from "react";
+import { Text, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import * as SplashScreen from "expo-splash-screen";
@@ -20,7 +20,6 @@ export default function RootLayout() {
   const accessToken = useAuthStore((state) => state.accessToken);
   const isHydrated = useAuthStore((state) => state.isHydrated);
   const hydrate = useAuthStore((state) => state.hydrate);
-  const splashOpacity = useRef(new Animated.Value(1));
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
@@ -28,19 +27,14 @@ export default function RootLayout() {
   }, [hydrate]);
 
   const hideSplash = useCallback(async () => {
-    Animated.timing(splashOpacity.current, {
-      toValue: 0,
-      duration: 400,
-      useNativeDriver: true,
-    }).start(async () => {
-      setIsReady(true);
-      await SplashScreen.hideAsync();
-    });
+    setIsReady(true);
+    await SplashScreen.hideAsync();
   }, []);
 
   useEffect(() => {
     if (isHydrated) {
-      setTimeout(() => hideSplash(), 800);
+      const timer = setTimeout(() => hideSplash(), 1000);
+      return () => clearTimeout(timer);
     }
   }, [isHydrated, hideSplash]);
 
@@ -59,13 +53,13 @@ export default function RootLayout() {
 
   if (!isReady) {
     return (
-      <Animated.View style={[styles.splash, { opacity: splashOpacity.current }]}>
-        <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-brand">
-          <Animated.Text className="text-4xl font-bold text-white">B</Animated.Text>
+      <View className="flex-1 items-center justify-center bg-brand">
+        <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-white/20">
+          <Text className="text-4xl font-bold text-white">B</Text>
         </View>
-        <Animated.Text className="mt-4 text-2xl font-bold text-white">BizSkills</Animated.Text>
-        <Animated.Text className="mt-2 text-sm text-indigo-200">Trade skills. Build businesses.</Animated.Text>
-      </Animated.View>
+        <Text className="mt-4 text-2xl font-bold text-white">BizSkills</Text>
+        <Text className="mt-2 text-sm text-indigo-200">Trade skills. Build businesses.</Text>
+      </View>
     );
   }
 
@@ -79,12 +73,3 @@ export default function RootLayout() {
     </SafeAreaProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  splash: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#5B4DFF",
-  },
-});

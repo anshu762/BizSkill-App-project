@@ -112,6 +112,42 @@ export const getPost = async (req: Request, res: Response) => {
   });
 };
 
+const updatePostSchema = z.object({
+  content: z.string().trim().min(1).max(500),
+});
+
+export const updatePost = async (req: Request, res: Response) => {
+  const userId = authenticatedUserId(req);
+  const { postId } = req.params;
+  const { content } = updatePostSchema.parse(req.body);
+
+  const post = await prisma.post.findUnique({ where: { id: postId } });
+  if (!post) throw new AppError(404, "Post not found");
+  if (post.userId !== userId) throw new AppError(403, "Not your post");
+
+  const updated = await prisma.post.update({
+    where: { id: postId },
+    data: { content },
+    include: {
+      ...postInclude,
+      postLikes: { where: { userId }, take: 1 },
+    },
+  });
+
+  res.json({
+    success: true,
+    data: {
+      ...updated,
+      likeCount: updated._count.postLikes,
+      commentCount: updated._count.comments,
+      isLikedByMe: updated.postLikes.length > 0,
+      isOwnPost: updated.userId === userId,
+      _count: undefined,
+      postLikes: undefined,
+    },
+  });
+};
+
 export const deletePost = async (req: Request, res: Response) => {
   const userId = authenticatedUserId(req);
   const { postId } = req.params;
