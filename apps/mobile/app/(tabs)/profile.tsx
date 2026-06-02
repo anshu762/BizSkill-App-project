@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useCallback } from "react";
-import { Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import { Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "expo-router";
@@ -251,89 +251,93 @@ export default function ProfileScreen() {
       </ScrollView>
 
       <Modal visible={editOpen} animationType="slide" presentationStyle="pageSheet">
-        <SafeAreaView className="flex-1 bg-surface">
-          <ScrollView contentContainerClassName="px-6 pb-8">
-            <View className="mt-4 mb-6 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-ink">Edit Profile</Text>
-              <TouchableOpacity onPress={() => setEditOpen(false)}>
-                <Ionicons name="close" size={24} color="#101828" />
-              </TouchableOpacity>
-            </View>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+          <SafeAreaView className="flex-1 bg-surface">
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+              <View className="mt-4 mb-6 flex-row items-center justify-between">
+                <Text className="text-xl font-bold text-ink">Edit Profile</Text>
+                <TouchableOpacity onPress={() => setEditOpen(false)}>
+                  <Ionicons name="close" size={24} color="#101828" />
+                </TouchableOpacity>
+              </View>
 
-            <Text className="mb-1 text-sm font-bold text-ink">Personal</Text>
-            <Controller control={control} name="name" render={({ field, fieldState }) => (
-              <FormField label="Name" placeholder="Your name" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
-            )} />
-            <Controller control={control} name="bio" render={({ field, fieldState }) => (
-              <FormField label="Bio" placeholder="Tell your story" multiline className="h-24 pt-4" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
-            )} />
-            <Controller control={control} name="location" render={({ field, fieldState }) => (
-              <FormField label="Location" placeholder="City, Country" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
-            )} />
+              <Text className="mb-1 text-sm font-bold text-ink">Personal</Text>
+              <Controller control={control} name="name" render={({ field, fieldState }) => (
+                <FormField label="Name" placeholder="Your name" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
+              )} />
+              <Controller control={control} name="bio" render={({ field, fieldState }) => (
+                <FormField label="Bio" placeholder="Tell your story" multiline className="h-24 pt-4" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
+              )} />
+              <Controller control={control} name="location" render={({ field, fieldState }) => (
+                <FormField label="Location" placeholder="City, Country" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
+              )} />
 
-            <Text className="mb-1 mt-4 text-sm font-bold text-ink">Business</Text>
-            <Controller control={control} name="businessName" render={({ field, fieldState }) => (
-              <FormField label="Business name" placeholder="Your venture" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
-            )} />
-            <Controller control={control} name="description" render={({ field, fieldState }) => (
-              <FormField label="Description" placeholder="What you do" multiline className="h-24 pt-4" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
-            )} />
+              <Text className="mb-1 mt-4 text-sm font-bold text-ink">Business</Text>
+              <Controller control={control} name="businessName" render={({ field, fieldState }) => (
+                <FormField label="Business name" placeholder="Your venture" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
+              )} />
+              <Controller control={control} name="description" render={({ field, fieldState }) => (
+                <FormField label="Description" placeholder="What you do" multiline className="h-24 pt-4" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
+              )} />
 
-            <AppButton label="Save" loading={updateMutation.isPending} onPress={handleSubmit(onSubmit)} className="mt-6" />
-          </ScrollView>
-        </SafeAreaView>
+              <AppButton label="Save" loading={updateMutation.isPending} onPress={handleSubmit(onSubmit)} className="mt-6" />
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
 
       <Modal visible={!!editSkill} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditSkill(null)}>
-        <SafeAreaView className="flex-1 bg-surface">
-          <ScrollView contentContainerClassName="px-6 pb-8">
-            <View className="mt-4 mb-6 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-ink">Edit Skill</Text>
-              <TouchableOpacity onPress={() => setEditSkill(null)}>
-                <Ionicons name="close" size={24} color="#101828" />
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+          <SafeAreaView className="flex-1 bg-surface">
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+              <View className="mt-4 mb-6 flex-row items-center justify-between">
+                <Text className="text-xl font-bold text-ink">Edit Skill</Text>
+                <TouchableOpacity onPress={() => setEditSkill(null)}>
+                  <Ionicons name="close" size={24} color="#101828" />
+                </TouchableOpacity>
+              </View>
+              <Text className="mb-2 text-sm font-medium text-ink">Title</Text>
+              <TextInput
+                placeholder="e.g. Logo Design"
+                placeholderTextColor="#98A2B3"
+                className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
+                value={editSkillTitle}
+                onChangeText={setEditSkillTitle}
+              />
+              <Text className="mb-2 text-sm font-medium text-ink">Category</Text>
+              <View className="mb-4 flex-row flex-wrap">
+                {categories.map((c) => (
+                  <TouchableOpacity key={c.value} onPress={() => setEditSkillCategory(c.value)} className={`mb-2 mr-2 rounded-full px-4 py-2 border ${editSkillCategory === c.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
+                    <Text className={`text-xs font-medium ${editSkillCategory === c.value ? "text-white" : "text-ink"}`}>{c.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text className="mb-2 text-sm font-medium text-ink">Level</Text>
+              <View className="mb-4 flex-row">
+                {levels.map((l) => (
+                  <TouchableOpacity key={l.value} onPress={() => setEditSkillLevel(l.value)} className={`mr-2 rounded-full px-5 py-2 border ${editSkillLevel === l.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
+                    <Text className={`text-xs font-medium ${editSkillLevel === l.value ? "text-white" : "text-ink"}`}>{l.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <Text className="mb-1 text-sm font-medium text-ink">BizCoin Value: {Math.round(editSkillCoins / 10) * 10} BC</Text>
+              <View className="mb-4 flex-row flex-wrap">
+                {[10, 20, 30, 50, 100, 150, 200].map((v) => (
+                  <TouchableOpacity key={v} onPress={() => setEditSkillCoins(v)} className={`mb-2 mr-2 rounded px-3 py-1.5 border ${Math.round(editSkillCoins / 10) * 10 === v ? "bg-brand/10 border-brand" : "bg-white border-slate-200"}`}>
+                    <Text className={`text-xs font-medium ${Math.round(editSkillCoins / 10) * 10 === v ? "text-brand" : "text-muted"}`}>{v} BC</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <View className="flex-row">
+                <AppButton label="Cancel" variant="outline" onPress={() => setEditSkill(null)} className="mr-2 flex-1" />
+                <AppButton label="Save" onPress={handleSaveSkill} loading={updateSkillMutation.isPending} className="flex-1" />
+              </View>
+              <TouchableOpacity onPress={() => handleDeleteSkill(editSkill?.id, editSkill?.title)} className="mt-6 items-center">
+                <Text className="text-sm font-medium text-red-500">Delete Skill</Text>
               </TouchableOpacity>
-            </View>
-            <Text className="mb-2 text-sm font-medium text-ink">Title</Text>
-            <TextInput
-              placeholder="e.g. Logo Design"
-              placeholderTextColor="#98A2B3"
-              className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
-              value={editSkillTitle}
-              onChangeText={setEditSkillTitle}
-            />
-            <Text className="mb-2 text-sm font-medium text-ink">Category</Text>
-            <View className="mb-4 flex-row flex-wrap">
-              {categories.map((c) => (
-                <TouchableOpacity key={c.value} onPress={() => setEditSkillCategory(c.value)} className={`mb-2 mr-2 rounded-full px-4 py-2 border ${editSkillCategory === c.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
-                  <Text className={`text-xs font-medium ${editSkillCategory === c.value ? "text-white" : "text-ink"}`}>{c.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <Text className="mb-2 text-sm font-medium text-ink">Level</Text>
-            <View className="mb-4 flex-row">
-              {levels.map((l) => (
-                <TouchableOpacity key={l.value} onPress={() => setEditSkillLevel(l.value)} className={`mr-2 rounded-full px-5 py-2 border ${editSkillLevel === l.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
-                  <Text className={`text-xs font-medium ${editSkillLevel === l.value ? "text-white" : "text-ink"}`}>{l.label}</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <Text className="mb-1 text-sm font-medium text-ink">BizCoin Value: {Math.round(editSkillCoins / 10) * 10} BC</Text>
-            <View className="mb-4 flex-row flex-wrap">
-              {[10, 20, 30, 50, 100, 150, 200].map((v) => (
-                <TouchableOpacity key={v} onPress={() => setEditSkillCoins(v)} className={`mb-2 mr-2 rounded px-3 py-1.5 border ${Math.round(editSkillCoins / 10) * 10 === v ? "bg-brand/10 border-brand" : "bg-white border-slate-200"}`}>
-                  <Text className={`text-xs font-medium ${Math.round(editSkillCoins / 10) * 10 === v ? "text-brand" : "text-muted"}`}>{v} BC</Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-            <View className="flex-row">
-              <AppButton label="Cancel" variant="outline" onPress={() => setEditSkill(null)} className="mr-2 flex-1" />
-              <AppButton label="Save" onPress={handleSaveSkill} loading={updateSkillMutation.isPending} className="flex-1" />
-            </View>
-            <TouchableOpacity onPress={() => handleDeleteSkill(editSkill?.id, editSkill?.title)} className="mt-6 items-center">
-              <Text className="text-sm font-medium text-red-500">Delete Skill</Text>
-            </TouchableOpacity>
-          </ScrollView>
-        </SafeAreaView>
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

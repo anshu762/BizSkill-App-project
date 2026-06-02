@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/AppButton";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
@@ -323,42 +323,44 @@ export default function TeamsScreen() {
       </View>
 
       <Modal visible={createOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setCreateOpen(false)}>
-        <SafeAreaView className="flex-1 bg-surface">
-          <ScrollView contentContainerClassName="px-6 pb-8">
-            <View className="mt-4 mb-6 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-ink">Create Team</Text>
-              <TouchableOpacity onPress={() => setCreateOpen(false)}>
-                <Ionicons name="close" size={24} color="#101828" />
-              </TouchableOpacity>
-            </View>
-            <Text className="mb-2 text-sm font-semibold text-ink">Team Name</Text>
-            <TextInput
-              placeholder="e.g. Launch Lab"
-              placeholderTextColor="#98A2B3"
-              className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
-              value={createName}
-              onChangeText={setCreateName}
-            />
-            <Text className="mb-2 text-sm font-semibold text-ink">Description (optional)</Text>
-            <TextInput
-              placeholder="What's your team about?"
-              placeholderTextColor="#98A2B3"
-              multiline
-              className="mb-4 min-h-[100px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-ink"
-              value={createDesc}
-              onChangeText={setCreateDesc}
-            />
-            <Text className="mb-3 text-sm font-semibold text-ink">Category</Text>
-            <View className="mb-6 flex-row flex-wrap">
-              {categories.filter((c) => c.value !== "ALL").map((c) => (
-                <TouchableOpacity key={c.value} onPress={() => setCreateCat(c.value)} className={`mb-2 mr-2 rounded-full px-5 py-3 ${createCat === c.value ? "bg-brand" : "bg-white"}`}>
-                  <Text className={`text-sm font-medium ${createCat === c.value ? "text-white" : "text-muted"}`}>{c.label}</Text>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+          <SafeAreaView className="flex-1 bg-surface">
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+              <View className="mt-4 mb-6 flex-row items-center justify-between">
+                <Text className="text-xl font-bold text-ink">Create Team</Text>
+                <TouchableOpacity onPress={() => setCreateOpen(false)}>
+                  <Ionicons name="close" size={24} color="#101828" />
                 </TouchableOpacity>
-              ))}
-            </View>
-            <AppButton label="Create Team" onPress={handleCreate} loading={createTeam.isPending} />
-          </ScrollView>
-        </SafeAreaView>
+              </View>
+              <Text className="mb-2 text-sm font-semibold text-ink">Team Name</Text>
+              <TextInput
+                placeholder="e.g. Launch Lab"
+                placeholderTextColor="#98A2B3"
+                className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
+                value={createName}
+                onChangeText={setCreateName}
+              />
+              <Text className="mb-2 text-sm font-semibold text-ink">Description (optional)</Text>
+              <TextInput
+                placeholder="What's your team about?"
+                placeholderTextColor="#98A2B3"
+                multiline
+                className="mb-4 min-h-[100px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-ink"
+                value={createDesc}
+                onChangeText={setCreateDesc}
+              />
+              <Text className="mb-3 text-sm font-semibold text-ink">Category</Text>
+              <View className="mb-6 flex-row flex-wrap">
+                {categories.filter((c) => c.value !== "ALL").map((c) => (
+                  <TouchableOpacity key={c.value} onPress={() => setCreateCat(c.value)} className={`mb-2 mr-2 rounded-full px-5 py-3 ${createCat === c.value ? "bg-brand" : "bg-white"}`}>
+                    <Text className={`text-sm font-medium ${createCat === c.value ? "text-white" : "text-muted"}`}>{c.label}</Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+              <AppButton label="Create Team" onPress={handleCreate} loading={createTeam.isPending} />
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

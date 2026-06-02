@@ -39,8 +39,8 @@ export default function MessageThreadScreen() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
+      <SafeAreaView className="flex-1 bg-surface">
         <View className="flex-row items-center px-4 py-3">
           <TouchableOpacity onPress={() => router.back()} className="mr-3 h-10 w-10 items-center justify-center rounded-full bg-white">
             <Ionicons name="arrow-back" size={20} color="#101828" />
@@ -53,6 +53,7 @@ export default function MessageThreadScreen() {
           ref={flatListRef}
           data={messages ?? []}
           keyExtractor={(item: any) => item.id}
+          keyboardShouldPersistTaps="handled"
           contentContainerClassName="px-4 pb-4"
           onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: true })}
           renderItem={({ item: msg }: any) => {
@@ -95,7 +96,7 @@ export default function MessageThreadScreen() {
             <Ionicons name="send" size={20} color="white" />
           </TouchableOpacity>
         </View>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }

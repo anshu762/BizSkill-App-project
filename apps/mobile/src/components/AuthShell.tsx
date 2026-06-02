@@ -9,11 +9,8 @@ interface AuthShellProps extends PropsWithChildren {
 
 export function AuthShell({ title, subtitle, children }: AuthShellProps) {
   return (
-    <SafeAreaView className="flex-1 bg-surface">
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-        className="flex-1"
-      >
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
+      <SafeAreaView className="flex-1 bg-surface">
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="flex-grow px-6 pb-8">
           <View className="mt-8 flex-row items-center">
             <View className="h-11 w-11 items-center justify-center rounded-2xl bg-brand">
@@ -27,8 +24,8 @@ export function AuthShell({ title, subtitle, children }: AuthShellProps) {
           </View>
           <View className="mt-9">{children}</View>
         </ScrollView>
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+      </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 }
 

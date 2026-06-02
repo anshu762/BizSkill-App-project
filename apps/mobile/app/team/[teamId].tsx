@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/AppButton";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
@@ -206,69 +206,73 @@ export default function TeamDetailScreen() {
         )}
       </ScrollView>
 
-      {/* Apply Modal */}
+// Apply Modal
       <Modal visible={!!applyRoleId} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setApplyRoleId(null)}>
-        <SafeAreaView className="flex-1 bg-surface">
-          <View className="flex-1 px-6">
-            <View className="mt-4 mb-6 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-ink">Apply for Role</Text>
-              <TouchableOpacity onPress={() => setApplyRoleId(null)}>
-                <Ionicons name="close" size={24} color="#101828" />
-              </TouchableOpacity>
-            </View>
-            <Text className="mb-3 text-sm font-semibold text-ink">Why do you want to join? (optional)</Text>
-            <TextInput
-              placeholder="Share your motivation, skills, or experience..."
-              placeholderTextColor="#98A2B3"
-              multiline
-              className="mb-6 min-h-[140px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-ink"
-              value={applyMessage}
-              onChangeText={setApplyMessage}
-              maxLength={500}
-            />
-            <AppButton label="Submit Application" onPress={handleApply} loading={applyMutation.isPending} />
-          </View>
-        </SafeAreaView>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+          <SafeAreaView className="flex-1 bg-surface">
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+              <View className="mt-4 mb-6 flex-row items-center justify-between">
+                <Text className="text-xl font-bold text-ink">Apply for Role</Text>
+                <TouchableOpacity onPress={() => setApplyRoleId(null)}>
+                  <Ionicons name="close" size={24} color="#101828" />
+                </TouchableOpacity>
+              </View>
+              <Text className="mb-3 text-sm font-semibold text-ink">Why do you want to join? (optional)</Text>
+              <TextInput
+                placeholder="Share your motivation, skills, or experience..."
+                placeholderTextColor="#98A2B3"
+                multiline
+                className="mb-6 min-h-[140px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-ink"
+                value={applyMessage}
+                onChangeText={setApplyMessage}
+                maxLength={500}
+              />
+              <AppButton label="Submit Application" onPress={handleApply} loading={applyMutation.isPending} />
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
 
       {/* Add Role Modal */}
       <Modal visible={addRoleOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setAddRoleOpen(false)}>
-        <SafeAreaView className="flex-1 bg-surface">
-          <ScrollView contentContainerClassName="px-6 pb-8">
-            <View className="mt-4 mb-6 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-ink">Add Role</Text>
-              <TouchableOpacity onPress={() => setAddRoleOpen(false)}>
-                <Ionicons name="close" size={24} color="#101828" />
-              </TouchableOpacity>
-            </View>
-            <Text className="mb-2 text-sm font-semibold text-ink">Role Title *</Text>
-            <TextInput
-              placeholder="e.g. Growth Marketer"
-              placeholderTextColor="#98A2B3"
-              className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
-              value={roleTitle}
-              onChangeText={setRoleTitle}
-            />
-            <Text className="mb-2 text-sm font-semibold text-ink">Description (optional)</Text>
-            <TextInput
-              placeholder="What will this role do?"
-              placeholderTextColor="#98A2B3"
-              multiline
-              className="mb-4 min-h-[100px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-ink"
-              value={roleDesc}
-              onChangeText={setRoleDesc}
-            />
-            <Text className="mb-2 text-sm font-semibold text-ink">Skills Needed (comma separated)</Text>
-            <TextInput
-              placeholder="Marketing, SEO, Content"
-              placeholderTextColor="#98A2B3"
-              className="mb-6 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
-              value={roleSkills}
-              onChangeText={setRoleSkills}
-            />
-            <AppButton label="Add Role" onPress={handleAddRole} loading={addRoleMutation.isPending} />
-          </ScrollView>
-        </SafeAreaView>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+          <SafeAreaView className="flex-1 bg-surface">
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+              <View className="mt-4 mb-6 flex-row items-center justify-between">
+                <Text className="text-xl font-bold text-ink">Add Role</Text>
+                <TouchableOpacity onPress={() => setAddRoleOpen(false)}>
+                  <Ionicons name="close" size={24} color="#101828" />
+                </TouchableOpacity>
+              </View>
+              <Text className="mb-2 text-sm font-semibold text-ink">Role Title *</Text>
+              <TextInput
+                placeholder="e.g. Growth Marketer"
+                placeholderTextColor="#98A2B3"
+                className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
+                value={roleTitle}
+                onChangeText={setRoleTitle}
+              />
+              <Text className="mb-2 text-sm font-semibold text-ink">Description (optional)</Text>
+              <TextInput
+                placeholder="What will this role do?"
+                placeholderTextColor="#98A2B3"
+                multiline
+                className="mb-4 min-h-[100px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-ink"
+                value={roleDesc}
+                onChangeText={setRoleDesc}
+              />
+              <Text className="mb-2 text-sm font-semibold text-ink">Skills Needed (comma separated)</Text>
+              <TextInput
+                placeholder="Marketing, SEO, Content"
+                placeholderTextColor="#98A2B3"
+                className="mb-6 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
+                value={roleSkills}
+                onChangeText={setRoleSkills}
+              />
+              <AppButton label="Add Role" onPress={handleAddRole} loading={addRoleMutation.isPending} />
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

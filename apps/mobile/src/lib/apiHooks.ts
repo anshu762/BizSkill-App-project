@@ -304,7 +304,7 @@ export function useAddComment() {
       if (prevComments) {
         queryClient.setQueryData<PaginatedResponse<PostComment>>(["comments", postId], {
           ...prevComments,
-          data: [...prevComments.data, optimisticComment],
+          data: [...(prevComments.data ?? []), optimisticComment],
         });
       }
 
