@@ -1,8 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { Image, Text, TouchableOpacity, View } from "react-native";
+import { Alert, Image, Modal, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Toast from "react-native-toast-message";
 import { AvatarWithFallback } from "./AvatarWithFallback";
-import { useToggleLike } from "../lib/apiHooks";
+import { AppButton } from "./AppButton";
+import { useToggleLike, useDeletePost } from "../lib/apiHooks";
+import { readApiError } from "../lib/axios";
 import type { FeedPost } from "@bizskills/types";
 
 const typeConfig: Record<string, { label: string; color: string; bg: string }> = {
@@ -30,15 +34,41 @@ interface PostCardProps {
   onCommentPress?: (postId: string) => void;
   onUserPress?: (userId: string) => void;
   onDelete?: (postId: string) => void;
+  onEdit?: (postId: string, content: string) => void;
 }
 
-export function PostCard({ post, onCommentPress, onUserPress, onDelete }: PostCardProps) {
+export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }: PostCardProps) {
   const toggleLike = useToggleLike();
+  const deletePost = useDeletePost();
   const [expanded, setExpanded] = useState(false);
-  const config = typeConfig[post.type] ?? typeConfig.UPDATE;
   const [showMenu, setShowMenu] = useState(false);
+  const [editModal, setEditModal] = useState(false);
+  const [editContent, setEditContent] = useState(post.content);
+  const config = typeConfig[post.type] ?? typeConfig.UPDATE;
 
   const handleLike = () => toggleLike.mutate(post.id);
+
+  const handleEdit = async () => {
+    if (!editContent.trim()) return;
+    try {
+      await onEdit?.(post.id, editContent.trim());
+      setEditModal(false);
+      Toast.show({ type: "success", text1: "Post updated" });
+    } catch (error) {
+      Toast.show({ type: "error", text1: "Failed to update", text2: readApiError(error) });
+    }
+  };
+
+  const handleDelete = () => {
+    Alert.alert("Delete Post", "Are you sure you want to delete this post?", [
+      { text: "Cancel", style: "cancel" },
+      { text: "Delete", style: "destructive", onPress: () => {
+        onDelete?.(post.id);
+        deletePost.mutate(post.id);
+        Toast.show({ type: "success", text1: "Post deleted" });
+      }},
+    ]);
+  };
 
   return (
     <View className="mb-4 rounded-3xl bg-white overflow-hidden">
@@ -85,11 +115,52 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete }: PostCa
           </TouchableOpacity>
         </View>
         {post.isOwnPost && (
-          <TouchableOpacity onPress={() => onDelete?.(post.id)}>
+          <TouchableOpacity onPress={() => setShowMenu(!showMenu)} className="p-1">
             <Ionicons name="ellipsis-horizontal" size={18} color="#98A2B3" />
           </TouchableOpacity>
         )}
       </View>
+
+      {showMenu && post.isOwnPost && (
+        <View className="flex-row border-t border-slate-100 bg-surface">
+          <TouchableOpacity onPress={() => { setShowMenu(false); setEditModal(true); setEditContent(post.content); }} className="flex-1 items-center py-3">
+            <Ionicons name="pencil-outline" size={18} color="#5B4DFF" />
+            <Text className="mt-0.5 text-xs font-medium text-brand">Edit</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => { setShowMenu(false); handleDelete(); }} className="flex-1 items-center py-3">
+            <Ionicons name="trash-outline" size={18} color="#EF4444" />
+            <Text className="mt-0.5 text-xs font-medium text-red-500">Delete</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setShowMenu(false)} className="flex-1 items-center py-3">
+            <Ionicons name="close-outline" size={18} color="#667085" />
+            <Text className="mt-0.5 text-xs font-medium text-muted">Cancel</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      <Modal visible={editModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditModal(false)}>
+        <SafeAreaView className="flex-1 bg-surface">
+          <View className="flex-1 px-6">
+            <View className="mt-4 mb-6 flex-row items-center justify-between">
+              <Text className="text-xl font-bold text-ink">Edit Post</Text>
+              <TouchableOpacity onPress={() => setEditModal(false)}>
+                <Ionicons name="close" size={24} color="#101828" />
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              multiline
+              placeholder="What's happening with your business?"
+              placeholderTextColor="#98A2B3"
+              maxLength={500}
+              className="mb-2 h-40 rounded-3xl border border-slate-200 bg-white px-5 pt-5 text-base leading-6 text-ink"
+              value={editContent}
+              onChangeText={setEditContent}
+            />
+            <Text className="mb-5 text-right text-xs text-muted">{editContent.length}/500</Text>
+            <AppButton label="Save Changes" onPress={handleEdit} disabled={!editContent.trim()} />
+          </View>
+        </SafeAreaView>
+      </Modal>
 
       {post.type === "COLLAB_REQUEST" && (
         <View className="px-5 pb-4">

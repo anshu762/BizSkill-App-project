@@ -190,16 +190,16 @@ export default function OnboardingScreen() {
         <Text className="mb-2 text-sm font-medium text-ink">Category</Text>
         <View className="mb-4 flex-row flex-wrap">
           {categories.map((c) => (
-            <TouchableOpacity key={c.value} onPress={() => setSkillForm((p) => ({ ...p, category: c.value }))} className={`mb-2 mr-2 rounded-full px-4 py-2 ${skillForm.category === c.value ? "bg-brand" : "bg-surface"}`}>
-              <Text className={`text-xs font-medium ${skillForm.category === c.value ? "text-white" : "text-muted"}`}>{c.label}</Text>
+            <TouchableOpacity key={c.value} onPress={() => setSkillForm((p) => ({ ...p, category: c.value }))} className={`mb-2 mr-2 rounded-full px-4 py-2 border ${skillForm.category === c.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
+              <Text className={`text-xs font-medium ${skillForm.category === c.value ? "text-white" : "text-ink"}`}>{c.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
         <Text className="mb-2 text-sm font-medium text-ink">Level</Text>
         <View className="mb-4 flex-row">
           {levels.map((l) => (
-            <TouchableOpacity key={l.value} onPress={() => setSkillForm((p) => ({ ...p, level: l.value }))} className={`mr-2 rounded-full px-5 py-2 ${skillForm.level === l.value ? "bg-brand" : "bg-surface"}`}>
-              <Text className={`text-xs font-medium ${skillForm.level === l.value ? "text-white" : "text-muted"}`}>{l.label}</Text>
+            <TouchableOpacity key={l.value} onPress={() => setSkillForm((p) => ({ ...p, level: l.value }))} className={`mr-2 rounded-full px-5 py-2 border ${skillForm.level === l.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
+              <Text className={`text-xs font-medium ${skillForm.level === l.value ? "text-white" : "text-ink"}`}>{l.label}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -269,8 +269,8 @@ export default function OnboardingScreen() {
             <Text className="mb-2 text-sm font-medium text-ink">Industry</Text>
             <View className="mb-4 flex-row flex-wrap">
               {categories.map((c) => (
-                <TouchableOpacity key={c.value} onPress={() => setValue("industry", c.value)} className={`mb-2 mr-2 rounded-full px-4 py-3 ${watch("industry") === c.value ? "bg-brand" : "bg-white"}`}>
-                  <Text className={`text-sm font-medium ${watch("industry") === c.value ? "text-white" : "text-muted"}`}>{c.label}</Text>
+                <TouchableOpacity key={c.value} onPress={() => setValue("industry", c.value)} className={`mb-2 mr-2 rounded-full px-4 py-3 border ${watch("industry") === c.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
+                  <Text className={`text-sm font-semibold ${watch("industry") === c.value ? "text-white" : "text-ink"}`}>{c.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -278,8 +278,8 @@ export default function OnboardingScreen() {
             <Text className="mb-2 text-sm font-medium text-ink">Stage</Text>
             <View className="mb-4 flex-row">
               {stages.map((s) => (
-                <TouchableOpacity key={s.value} onPress={() => setValue("stage", s.value)} className={`mr-2 flex-1 items-center rounded-2xl py-4 ${watch("stage") === s.value ? "bg-brand" : "bg-white"}`}>
-                  <Text className={`text-sm font-semibold ${watch("stage") === s.value ? "text-white" : "text-ink"}`}>{s.label}</Text>
+                <TouchableOpacity key={s.value} onPress={() => setValue("stage", s.value)} className={`mr-2 flex-1 items-center rounded-2xl py-4 border ${watch("stage") === s.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
+                  <Text className={`text-sm font-bold ${watch("stage") === s.value ? "text-white" : "text-ink"}`}>{s.label}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -377,9 +377,9 @@ export default function OnboardingScreen() {
                 </>
               )}
             </View>
-            <View className="mt-3 flex-row">
-              <AppButton label="Back" variant="outline" onPress={() => setStep(3)} className="mr-2 flex-1" />
-              <AppButton label="Looks good! Launch Profile" loading={submitting} onPress={handleSubmit(submit)} className="flex-1" />
+            <View className="mt-6 flex-row">
+              <AppButton label="Back" variant="outline" onPress={() => setStep(3)} disabled={submitting} className="mr-2 flex-1" />
+              <AppButton label="Looks Good" loading={submitting} disabled={submitting} onPress={handleSubmit(submit)} className="flex-1" />
             </View>
           </>
         );

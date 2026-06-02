@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -9,7 +9,7 @@ import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { CreatePostModal } from "../../src/components/CreatePostModal";
 import { ErrorBoundary } from "../../src/components/ErrorBoundary";
 import { PostCardSkeleton } from "../../src/components/Skeletons";
-import { useFeed, useProfileCompletion, useUnreadCount } from "../../src/lib/apiHooks";
+import { useFeed, useProfileCompletion, useUnreadCount, useUpdatePost } from "../../src/lib/apiHooks";
 import { api } from "../../src/lib/axios";
 import { storage } from "../../src/lib/storage";
 import { useAuthStore } from "../../src/store/useAuthStore";
@@ -99,6 +99,7 @@ export default function FeedScreen() {
   const [createOpen, setCreateOpen] = useState(false);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useFeed(filter);
   const { data: unreadCount } = useUnreadCount();
+  const updatePost = useUpdatePost();
 
   const allPosts = data?.pages.flatMap((p) => p.data) ?? [];
 
@@ -170,14 +171,17 @@ export default function FeedScreen() {
                 <PostCardSkeleton />
               </>
             ) : (
-              <View className="mt-10 items-center">
-                <Text className="mb-2 text-lg font-semibold text-ink">No posts yet</Text>
-                <Text className="mb-4 text-sm text-muted">Be the first to share!</Text>
+              <View className="mt-16 items-center px-4">
+                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
+                  <Ionicons name="newspaper-outline" size={36} color="#5B4DFF" />
+                </View>
+                <Text className="mt-5 text-xl font-bold text-ink">No posts yet</Text>
+                <Text className="mt-2 text-center text-sm leading-5 text-muted">The feed is empty. Share your first update, milestone, or launch with the community!</Text>
                 <TouchableOpacity
                   onPress={() => setCreateOpen(true)}
-                  className="rounded-full bg-brand px-8 py-3"
+                  className="mt-6 rounded-full bg-brand px-8 py-3.5"
                 >
-                  <Text className="font-semibold text-white">Create Post</Text>
+                  <Text className="font-semibold text-white">Create Your First Post</Text>
                 </TouchableOpacity>
               </View>
             )
@@ -188,6 +192,7 @@ export default function FeedScreen() {
                 post={item}
                 onCommentPress={(postId) => router.push(`/post/${postId}` as any)}
                 onUserPress={(userId) => router.push(`/profile/${userId}` as any)}
+                onEdit={(postId, content) => updatePost.mutateAsync({ postId, content })}
               />
             )
           }

@@ -189,6 +189,27 @@ export function useCreatePost() {
   });
 }
 
+export function useDeletePost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async (postId: string) => {
+      await api.delete(`/posts/${postId}`);
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["feed"] }),
+  });
+}
+
+export function useUpdatePost() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: async ({ postId, ...data }: { postId: string; content: string }) => {
+      const res = await api.put<ApiResponse<FeedPost>>(`/posts/${postId}`, data);
+      return res.data.data!;
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["feed"] }),
+  });
+}
+
 export function useToggleLike() {
   const queryClient = useQueryClient();
   return useMutation({

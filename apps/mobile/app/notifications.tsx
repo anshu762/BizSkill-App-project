@@ -55,7 +55,15 @@ export default function NotificationsScreen() {
           data={notifications}
           keyExtractor={(item: any) => item.id}
           contentContainerClassName="px-6 pb-8"
-          ListEmptyComponent={<Text className="mt-10 text-center text-sm text-muted">No notifications yet</Text>}
+          ListEmptyComponent={
+            <View className="mt-24 items-center px-4">
+              <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
+                <Ionicons name="notifications-outline" size={36} color="#5B4DFF" />
+              </View>
+              <Text className="mt-5 text-xl font-bold text-ink">All clear</Text>
+              <Text className="mt-2 text-center text-sm leading-5 text-muted">No notifications yet. Likes, comments, exchange requests, and team invites will show up here.</Text>
+            </View>
+          }
           renderItem={({ item }: { item: any }) => {
             const config = iconMap[item.type] ?? { icon: "ellipse", color: "#98A2B3" };
             return (

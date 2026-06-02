@@ -100,11 +100,13 @@ export default function ExchangesScreen() {
           keyExtractor={(item) => item.id}
           contentContainerClassName="px-6 pb-8"
           ListEmptyComponent={
-            <View className="mt-16 items-center">
-              <Ionicons name="swap-horizontal-outline" size={48} color="#98A2B3" />
-              <Text className="mt-4 text-lg font-semibold text-ink">No exchanges yet</Text>
-              <Text className="mt-1 text-sm text-muted">Browse the marketplace!</Text>
-              <AppButton label="Browse Marketplace" onPress={() => router.push("/(tabs)/marketplace" as any)} className="mt-5" />
+            <View className="mt-20 items-center px-4">
+              <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
+                <Ionicons name="swap-horizontal-outline" size={36} color="#5B4DFF" />
+              </View>
+              <Text className="mt-5 text-xl font-bold text-ink">No exchanges yet</Text>
+              <Text className="mt-2 text-center text-sm leading-5 text-muted">Discover skills in the marketplace and send your first exchange request to get started.</Text>
+              <AppButton label="Browse Marketplace" onPress={() => router.push("/(tabs)/marketplace" as any)} className="mt-6" />
             </View>
           }
           renderItem={({ item }) => {

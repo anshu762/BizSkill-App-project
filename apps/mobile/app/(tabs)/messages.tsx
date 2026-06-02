@@ -68,10 +68,12 @@ export default function MessagesScreen() {
               contentContainerClassName="pb-8"
             />
           ) : (
-            <View className="mt-20 items-center">
-              <Ionicons name="chatbubble-ellipses-outline" size={48} color="#98A2B3" />
-              <Text className="mt-4 text-lg font-semibold text-ink">No conversations yet</Text>
-              <Text className="mt-1 text-sm text-muted">Message a fellow entrepreneur!</Text>
+            <View className="mt-24 items-center px-4">
+              <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
+                <Ionicons name="chatbubble-ellipses-outline" size={36} color="#5B4DFF" />
+              </View>
+              <Text className="mt-5 text-xl font-bold text-ink">No conversations yet</Text>
+              <Text className="mt-2 text-center text-sm leading-5 text-muted">When you connect with other founders, your messages will appear here.</Text>
             </View>
           )}
         </View>
