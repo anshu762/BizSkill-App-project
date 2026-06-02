@@ -161,7 +161,11 @@ export default function TeamDetailScreen() {
                     </View>
                   )}
                   {!isMember && !isOwner && (
-                    <AppButton label="Apply" onPress={() => setApplyRoleId(role.id)} className="mt-3" />
+                    role.applications && role.applications.length > 0 ? (
+                      <AppButton label="Applied (Pending)" disabled variant="outline" className="mt-3" />
+                    ) : (
+                      <AppButton label="Apply" onPress={() => setApplyRoleId(role.id)} className="mt-3" />
+                    )
                   )}
                   {isOwner && (
                     <CloseRoleButton roleId={role.id} />
