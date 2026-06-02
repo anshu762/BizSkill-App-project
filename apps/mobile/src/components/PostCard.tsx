@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { useState } from "react";
-import { Alert, Image, Modal, Text, TextInput, TouchableOpacity, View, Platform } from "react-native";
+import { useState, useEffect, useRef } from "react";
+import { Alert, Image, Modal, Text, TextInput, TouchableOpacity, View, Platform, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { AvatarWithFallback } from "./AvatarWithFallback";
@@ -46,7 +46,31 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
   const [editContent, setEditContent] = useState(post.content);
   const config = typeConfig[post.type] ?? typeConfig.UPDATE;
 
-  const handleLike = () => toggleLike.mutate(post.id);
+  const [localLiked, setLocalLiked] = useState(post.isLikedByMe);
+  const [localLikeCount, setLocalLikeCount] = useState(post.likeCount);
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+
+  useEffect(() => {
+    setLocalLiked(post.isLikedByMe);
+    setLocalLikeCount(post.likeCount);
+  }, [post.isLikedByMe, post.likeCount]);
+
+  const handleLike = () => {
+    const nextLiked = !localLiked;
+    setLocalLiked(nextLiked);
+    setLocalLikeCount((prev) => prev + (nextLiked ? 1 : -1));
+
+    // Spring animation for heart click
+    scaleAnim.setValue(0.7);
+    Animated.spring(scaleAnim, {
+      toValue: 1.0,
+      friction: 3,
+      tension: 40,
+      useNativeDriver: true,
+    }).start();
+
+    toggleLike.mutate(post.id);
+  };
 
   const handleEdit = async () => {
     if (!editContent.trim()) return;
@@ -101,8 +125,10 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
       <View className="flex-row items-center justify-between border-t border-slate-100 px-5 py-3">
         <View className="flex-row items-center">
           <TouchableOpacity onPress={handleLike} className="flex-row items-center mr-6">
-            <Ionicons name={post.isLikedByMe ? "heart" : "heart-outline"} size={20} color={post.isLikedByMe ? "#EF4444" : "#98A2B3"} />
-            <Text className={`ml-1.5 text-sm font-medium ${post.isLikedByMe ? "text-red-500" : "text-muted"}`}>{post.likeCount}</Text>
+            <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+              <Ionicons name={localLiked ? "heart" : "heart-outline"} size={20} color={localLiked ? "#EF4444" : "#98A2B3"} />
+            </Animated.View>
+            <Text className={`ml-1.5 text-sm font-medium ${localLiked ? "text-red-500" : "text-muted"}`}>{localLikeCount}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => onCommentPress?.(post.id)} className="flex-row items-center mr-6">
             <Ionicons name="chatbubble-outline" size={19} color="#98A2B3" />

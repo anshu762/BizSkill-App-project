@@ -305,7 +305,26 @@ export function useFollow() {
         await api.delete(`/follow/${targetUserId}`);
       }
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["followStats"] }),
+    onMutate: async ({ targetUserId, action }) => {
+      await queryClient.cancelQueries({ queryKey: ["followStats", targetUserId] });
+      const previousStats = queryClient.getQueryData<FollowStats>(["followStats", targetUserId]);
+      if (previousStats) {
+        queryClient.setQueryData<FollowStats>(["followStats", targetUserId], {
+          ...previousStats,
+          isFollowedByMe: action === "follow",
+          followerCount: previousStats.followerCount + (action === "follow" ? 1 : -1),
+        });
+      }
+      return { previousStats };
+    },
+    onError: (err, { targetUserId }, context) => {
+      if (context?.previousStats) {
+        queryClient.setQueryData(["followStats", targetUserId], context.previousStats);
+      }
+    },
+    onSettled: (_, __, { targetUserId }) => {
+      queryClient.invalidateQueries({ queryKey: ["followStats", targetUserId] });
+    },
   });
 }
 

@@ -7,7 +7,7 @@ import { StageBadge } from "../../src/components/StageBadge";
 import { SkillChip } from "../../src/components/SkillChip";
 import { AppButton } from "../../src/components/AppButton";
 import { useProfile, useFollow, useFollowStats, useCreateExchange } from "../../src/lib/apiHooks";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import type { SkillCategory, SkillLevel } from "@bizskills/types";
@@ -27,6 +27,27 @@ export default function PublicProfileScreen() {
   const [selectedOfferedSkillId, setSelectedOfferedSkillId] = useState<string>("");
   const [selectedRequestedSkillId, setSelectedRequestedSkillId] = useState<string>("");
   const [exchangeMessage, setExchangeMessage] = useState("");
+
+  const [localFollowed, setLocalFollowed] = useState(followStats?.isFollowedByMe);
+  const [localFollowerCount, setLocalFollowerCount] = useState(followStats?.followerCount ?? 0);
+
+  useEffect(() => {
+    if (followStats) {
+      setLocalFollowed(followStats.isFollowedByMe);
+      setLocalFollowerCount(followStats.followerCount);
+    }
+  }, [followStats?.isFollowedByMe, followStats?.followerCount]);
+
+  const handleFollowToggle = () => {
+    const nextFollowed = !localFollowed;
+    setLocalFollowed(nextFollowed);
+    setLocalFollowerCount((prev) => prev + (nextFollowed ? 1 : -1));
+
+    followMutation.mutate({
+      targetUserId: userId!,
+      action: nextFollowed ? "follow" : "unfollow",
+    });
+  };
 
   const handleCreateExchange = async () => {
     if (!selectedOfferedSkillId || !selectedRequestedSkillId || createExchange.isPending) return;
@@ -105,11 +126,11 @@ export default function PublicProfileScreen() {
 
           {!isMe && (
             <TouchableOpacity
-              onPress={() => followMutation.mutate({ targetUserId: userId!, action: followStats?.isFollowedByMe ? "unfollow" : "follow" })}
-              className={`mt-4 rounded-full px-8 py-3 ${followStats?.isFollowedByMe ? "border border-brand/20 bg-white" : "bg-brand"}`}
+              onPress={handleFollowToggle}
+              className={`mt-4 rounded-full px-8 py-3 ${localFollowed ? "border border-brand/20 bg-white" : "bg-brand"}`}
             >
-              <Text className={`text-sm font-semibold ${followStats?.isFollowedByMe ? "text-brand" : "text-white"}`}>
-                {followStats?.isFollowedByMe ? "Following" : "Follow"}
+              <Text className={`text-sm font-semibold ${localFollowed ? "text-brand" : "text-white"}`}>
+                {localFollowed ? "Following" : "Follow"}
               </Text>
             </TouchableOpacity>
           )}
@@ -117,7 +138,7 @@ export default function PublicProfileScreen() {
 
         <View className="my-6 flex-row justify-between rounded-3xl bg-white p-5">
           <View className="items-center" style={{ width: "33%" }}>
-            <Text className="text-xl font-bold text-ink">{followStats?.followerCount ?? 0}</Text>
+            <Text className="text-xl font-bold text-ink">{localFollowerCount}</Text>
             <Text className="mt-1 text-xs text-muted">Followers</Text>
           </View>
           <View className="items-center" style={{ width: "33%" }}>
