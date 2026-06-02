@@ -110,6 +110,7 @@ export default function OnboardingScreen() {
   };
 
   const submit = async (values: Values) => {
+    if (submitting) return;
     setSubmitting(true);
     try {
       const response = await api.post<ApiResponse<{ id: string; hasOnboarded: boolean }>>("/profile/onboarding", {
@@ -388,7 +389,7 @@ export default function OnboardingScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} className="flex-1">
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} className="flex-1">
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
           {renderStepIndicator()}
           {renderStep()}

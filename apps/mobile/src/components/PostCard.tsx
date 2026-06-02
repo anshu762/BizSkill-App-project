@@ -182,7 +182,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
 
       {post.type === "COLLAB_REQUEST" && (
         <View className="px-5 pb-4">
-          <TouchableOpacity className="h-11 items-center justify-center rounded-2xl bg-brand/10">
+          <TouchableOpacity onPress={() => onUserPress?.(post.userId)} className="h-11 items-center justify-center rounded-2xl bg-brand/10">
             <Text className="text-sm font-semibold text-brand">Request Collab</Text>
           </TouchableOpacity>
         </View>

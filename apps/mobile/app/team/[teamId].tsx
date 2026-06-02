@@ -60,7 +60,7 @@ export default function TeamDetailScreen() {
   const isMember = team.members?.some((m: any) => m.userId === myId);
 
   const handleApply = async () => {
-    if (!applyRoleId) return;
+    if (!applyRoleId || applyMutation.isPending) return;
     try {
       await applyMutation.mutateAsync({ roleId: applyRoleId, message: applyMessage });
       Alert.alert("Applied!", "Your application has been submitted.");
@@ -72,7 +72,10 @@ export default function TeamDetailScreen() {
   };
 
   const handleAddRole = async () => {
-    if (!roleTitle.trim()) { Alert.alert("Error", "Role title is required"); return; }
+    if (!roleTitle.trim() || addRoleMutation.isPending) { 
+      if (!roleTitle.trim()) Alert.alert("Error", "Role title is required"); 
+      return; 
+    }
     try {
       await addRoleMutation.mutateAsync({
         teamId: teamId!,
