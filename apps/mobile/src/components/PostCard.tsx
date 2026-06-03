@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState, useEffect, useRef } from "react";
-import { Alert, Image, Modal, Text, TextInput, TouchableOpacity, View, Platform, Animated } from "react-native";
+import { Alert, Image, Modal, Text, TextInput, TouchableOpacity, View, Platform, Animated, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { AvatarWithFallback } from "./AvatarWithFallback";
@@ -184,25 +184,27 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
 
       <Modal visible={editModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditModal(false)}>
         <SafeAreaView className="flex-1 bg-surface">
-          <View className="flex-1 px-6">
-            <View className="mt-4 mb-6 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-ink">Edit Post</Text>
-              <TouchableOpacity onPress={() => setEditModal(false)}>
-                <Ionicons name="close" size={24} color="#101828" />
-              </TouchableOpacity>
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <View className="flex-1 px-6">
+              <View className="mt-4 mb-6 flex-row items-center justify-between">
+                <Text className="text-xl font-bold text-ink">Edit Post</Text>
+                <TouchableOpacity onPress={() => setEditModal(false)}>
+                  <Ionicons name="close" size={24} color="#101828" />
+                </TouchableOpacity>
+              </View>
+              <TextInput
+                multiline
+                placeholder="What's happening with your business?"
+                placeholderTextColor="#98A2B3"
+                maxLength={500}
+                className="mb-2 h-40 rounded-3xl border border-slate-200 bg-white px-5 pt-5 text-base leading-6 text-ink"
+                value={editContent}
+                onChangeText={setEditContent}
+              />
+              <Text className="mb-5 text-right text-xs text-muted">{editContent.length}/500</Text>
+              <AppButton label="Save Changes" onPress={handleEdit} disabled={!editContent.trim()} />
             </View>
-            <TextInput
-              multiline
-              placeholder="What's happening with your business?"
-              placeholderTextColor="#98A2B3"
-              maxLength={500}
-              className="mb-2 h-40 rounded-3xl border border-slate-200 bg-white px-5 pt-5 text-base leading-6 text-ink"
-              value={editContent}
-              onChangeText={setEditContent}
-            />
-            <Text className="mb-5 text-right text-xs text-muted">{editContent.length}/500</Text>
-            <AppButton label="Save Changes" onPress={handleEdit} disabled={!editContent.trim()} />
-          </View>
+          </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
 
