@@ -9,7 +9,7 @@ import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { CreatePostModal } from "../../src/components/CreatePostModal";
 import { ErrorBoundary } from "../../src/components/ErrorBoundary";
 import { PostCardSkeleton } from "../../src/components/Skeletons";
-import { useFeed, useProfileCompletion, useUnreadCount, useUpdatePost, useDeletePost } from "../../src/lib/apiHooks";
+import { useFeed, useProfileCompletion, useUnreadCount, useUpdatePost, useDeletePost, useUnreadMessageCount } from "../../src/lib/apiHooks";
 import { api } from "../../src/lib/axios";
 import { storage } from "../../src/lib/storage";
 import { useAuthStore } from "../../src/store/useAuthStore";
@@ -38,7 +38,7 @@ function DashboardCard() {
 
   const { data: wallet } = useQuery({ queryKey: ["wallet"], queryFn: async () => { const r = await api.get("/wallet"); return r.data.data; } });
   const { data: exchanges } = useQuery({ queryKey: ["exchanges"], queryFn: async () => { const r = await api.get("/exchanges?status=PENDING"); return r.data; } });
-  const { data: messages } = useQuery({ queryKey: ["conversations"], queryFn: async () => { const r = await api.get("/messages/conversations"); const c = r.data.data; return c?.reduce((s: number, x: any) => s + (x.unreadCount ?? 0), 0) ?? 0; } });
+  const { data: messages } = useUnreadMessageCount();
 
   useEffect(() => {
     storage.getItem("dashboard_last_seen").then((d) => {
