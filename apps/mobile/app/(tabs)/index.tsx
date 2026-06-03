@@ -137,20 +137,25 @@ export default function FeedScreen() {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => setFilter(item.key)}
+                activeOpacity={0.88}
                 className={`mr-2 flex-row items-center rounded-xl border px-4 py-2.5 ${
                   filter === item.key
                     ? "border-brand bg-brand"
                     : "border-slate-200 bg-white"
                 }`}
+                style={filter === item.key ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
               >
                 <Ionicons
                   name={filterIcons[item.key] as any}
                   size={14}
                   color={filter === item.key ? "#FFFFFF" : "#667085"}
                 />
-                <Text className={`ml-1.5 text-sm font-medium ${
-                  filter === item.key ? "text-white" : "text-muted"
-                }`}>{item.label}</Text>
+                <Text
+                  className={`ml-1.5 text-sm font-medium ${
+                    filter === item.key ? "text-white" : "text-muted"
+                  }`}
+                  style={filter === item.key ? { color: "#FFFFFF" } : undefined}
+                >{item.label}</Text>
               </TouchableOpacity>
             )}
           />

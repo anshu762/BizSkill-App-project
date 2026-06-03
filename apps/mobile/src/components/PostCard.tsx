@@ -48,12 +48,14 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
 
   const [localLiked, setLocalLiked] = useState(post.isLikedByMe);
   const [localLikeCount, setLocalLikeCount] = useState(post.likeCount);
+  const [localCommentCount, setLocalCommentCount] = useState(post.commentCount);
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
     setLocalLiked(post.isLikedByMe);
     setLocalLikeCount(post.likeCount);
-  }, [post.isLikedByMe, post.likeCount]);
+    setLocalCommentCount(post.commentCount);
+  }, [post.isLikedByMe, post.likeCount, post.commentCount]);
 
   const handleLike = () => {
     const nextLiked = !localLiked;
@@ -130,9 +132,9 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
             </Animated.View>
             <Text className={`ml-1.5 text-sm font-medium ${localLiked ? "text-red-500" : "text-muted"}`}>{localLikeCount}</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => onCommentPress?.(post.id)} className="flex-row items-center mr-6">
+          <TouchableOpacity onPress={() => { setLocalCommentCount((c) => c + 1); onCommentPress?.(post.id); }} className="flex-row items-center mr-6">
             <Ionicons name="chatbubble-outline" size={19} color="#98A2B3" />
-            <Text className="ml-1.5 text-sm text-muted">{post.commentCount}</Text>
+            <Text className="ml-1.5 text-sm text-muted">{localCommentCount}</Text>
           </TouchableOpacity>
           <TouchableOpacity className="flex-row items-center">
             <Ionicons name="share-outline" size={19} color="#98A2B3" />

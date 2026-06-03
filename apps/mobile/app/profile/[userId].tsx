@@ -127,9 +127,14 @@ export default function PublicProfileScreen() {
           {!isMe && (
             <TouchableOpacity
               onPress={handleFollowToggle}
+              activeOpacity={0.88}
               className={`mt-4 rounded-full px-8 py-3 ${localFollowed ? "border border-brand/20 bg-white" : "bg-brand"}`}
+              style={localFollowed ? undefined : { backgroundColor: "#5B4DFF" }}
             >
-              <Text className={`text-sm font-semibold ${localFollowed ? "text-brand" : "text-white"}`}>
+              <Text
+                className={`text-sm font-semibold ${localFollowed ? "text-brand" : "text-white"}`}
+                style={localFollowed ? { color: "#5B4DFF" } : { color: "#FFFFFF" }}
+              >
                 {localFollowed ? "Following" : "Follow"}
               </Text>
             </TouchableOpacity>
@@ -206,12 +211,17 @@ export default function PublicProfileScreen() {
                   <Text className="mb-2 text-sm font-semibold text-ink">Choose a skill you will offer *</Text>
                   <View className="mb-5 flex-row flex-wrap">
                     {myOfferedSkills.map((s) => (
-                      <TouchableOpacity 
-                        key={s.id} 
-                        onPress={() => setSelectedOfferedSkillId(s.id)} 
+                      <TouchableOpacity
+                        key={s.id}
+                        activeOpacity={0.88}
+                        onPress={() => setSelectedOfferedSkillId(s.id)}
                         className={`mb-2 mr-2 rounded-2xl px-4 py-3 border ${selectedOfferedSkillId === s.id ? "bg-brand border-brand" : "bg-white border-slate-200"}`}
+                        style={selectedOfferedSkillId === s.id ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
                       >
-                        <Text className={`text-sm font-semibold ${selectedOfferedSkillId === s.id ? "text-white" : "text-ink"}`}>{s.title}</Text>
+                        <Text
+                          className={`text-sm font-semibold ${selectedOfferedSkillId === s.id ? "text-white" : "text-ink"}`}
+                          style={selectedOfferedSkillId === s.id ? { color: "#FFFFFF" } : undefined}
+                        >{s.title}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>
@@ -219,12 +229,17 @@ export default function PublicProfileScreen() {
                   <Text className="mb-2 text-sm font-semibold text-ink">Choose a skill you want to request *</Text>
                   <View className="mb-5 flex-row flex-wrap">
                     {targetOfferedSkills.map((s) => (
-                      <TouchableOpacity 
-                        key={s.id} 
-                        onPress={() => setSelectedRequestedSkillId(s.id)} 
+                      <TouchableOpacity
+                        key={s.id}
+                        activeOpacity={0.88}
+                        onPress={() => setSelectedRequestedSkillId(s.id)}
                         className={`mb-2 mr-2 rounded-2xl px-4 py-3 border ${selectedRequestedSkillId === s.id ? "bg-brand border-brand" : "bg-white border-slate-200"}`}
+                        style={selectedRequestedSkillId === s.id ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
                       >
-                        <Text className={`text-sm font-semibold ${selectedRequestedSkillId === s.id ? "text-white" : "text-ink"}`}>{s.title}</Text>
+                        <Text
+                          className={`text-sm font-semibold ${selectedRequestedSkillId === s.id ? "text-white" : "text-ink"}`}
+                          style={selectedRequestedSkillId === s.id ? { color: "#FFFFFF" } : undefined}
+                        >{s.title}</Text>
                       </TouchableOpacity>
                     ))}
                   </View>

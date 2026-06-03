@@ -25,11 +25,13 @@ export default function PostScreen() {
   const comments = commentsData?.data ?? [];
 
   const handleAddComment = async () => {
-    if (!newComment.trim()) return;
+    const text = newComment.trim();
+    if (!text) return;
+    setNewComment(""); // Clear immediately for instant feedback
     try {
-      await addComment.mutateAsync({ postId: postId!, content: newComment.trim() });
-      setNewComment("");
+      await addComment.mutateAsync({ postId: postId!, content: text });
     } catch (error) {
+      setNewComment(text); // Restore on failure
       Toast.show({ type: "error", text1: "Failed", text2: readApiError(error) });
     }
   };
@@ -93,8 +95,15 @@ export default function PostScreen() {
               value={newComment}
               onChangeText={setNewComment}
             />
-            <TouchableOpacity onPress={handleAddComment} disabled={!newComment.trim()} className="ml-2 h-10 w-10 items-center justify-center rounded-full bg-slate-50">
-              <Ionicons name="send" size={20} color={newComment.trim() ? "#5B4DFF" : "#D0D5DD"} />
+            <TouchableOpacity
+              onPress={handleAddComment}
+              disabled={!newComment.trim() || addComment.isPending}
+              className="ml-2 h-10 w-10 items-center justify-center rounded-full bg-slate-50"
+            >
+              {addComment.isPending
+                ? <ActivityIndicator size="small" color="#5B4DFF" />
+                : <Ionicons name="send" size={20} color={newComment.trim() ? "#5B4DFF" : "#D0D5DD"} />
+              }
             </TouchableOpacity>
           </View>
         </View>
