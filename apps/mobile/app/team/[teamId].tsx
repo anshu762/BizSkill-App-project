@@ -162,7 +162,7 @@ export default function TeamDetailScreen() {
                   )}
                   {!isMember && !isOwner && (
                     role.applications && role.applications.length > 0 ? (
-                      <AppButton label="Applied (Pending)" disabled variant="outline" className="mt-3" />
+                      <AppButton label="Applied (Pending)" disabled variant="secondary" className="mt-3" />
                     ) : (
                       <AppButton label="Apply" onPress={() => setApplyRoleId(role.id)} className="mt-3" />
                     )
@@ -288,7 +288,7 @@ function CloseRoleButton({ roleId }: { roleId: string }) {
     }
   };
   return (
-    <AppButton label="Close Role" variant="outline" onPress={handleClose} className="mt-2" />
+    <AppButton label="Close Role" variant="secondary" onPress={handleClose} className="mt-2" />
   );
 }
 
@@ -368,5 +368,5 @@ function RejectBtn({ appId }: { appId: string }) {
       Alert.alert("Error", e?.response?.data?.message || e.message);
     }
   };
-  return <AppButton label="Reject" variant="outline" onPress={handleReject} loading={isPending} className="flex-1" />;
+  return <AppButton label="Reject" variant="secondary" onPress={handleReject} loading={isPending} className="flex-1" />;
 }

@@ -213,7 +213,7 @@ export default function MarketplaceScreen() {
               </View>
 
               <View className="flex-row">
-                <AppButton label="Reset" variant="outline" onPress={() => { setCategory(""); setLevel(""); setMinCoins(""); setMaxCoins(""); setSort("newest"); }} className="mr-3 flex-1" />
+                <AppButton label="Reset" variant="secondary" onPress={() => { setCategory(""); setLevel(""); setMinCoins(""); setMaxCoins(""); setSort("newest"); }} className="mr-3 flex-1" />
                 <AppButton label="Apply" onPress={() => setFilterOpen(false)} className="flex-1" />
               </View>
             </ScrollView>

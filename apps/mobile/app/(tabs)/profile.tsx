@@ -135,8 +135,8 @@ export default function ProfileScreen() {
 
   const p = profile;
   const bp = p?.businessProfile;
-  const offeredSkills = p?.skills?.filter((s) => s.isOffering) ?? [];
-  const neededSkills = p?.skills?.filter((s) => !s.isOffering) ?? [];
+  const offeredSkills = p?.skills?.filter((s: any) => s.isOffering) ?? [];
+  const neededSkills = p?.skills?.filter((s: any) => !s.isOffering) ?? [];
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
@@ -204,7 +204,7 @@ export default function ProfileScreen() {
         </View>
         {offeredSkills.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-            {offeredSkills.map((skill) => (
+            {offeredSkills.map((skill: any) => (
               <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)}>
                 <SkillChip title={skill.title} category={skill.category as SkillCategory} level={skill.level as SkillLevel} coinValue={skill.coinValue} />
               </TouchableOpacity>
@@ -220,7 +220,7 @@ export default function ProfileScreen() {
         </View>
         {neededSkills.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
-            {neededSkills.map((skill) => (
+            {neededSkills.map((skill: any) => (
               <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)}>
                 <SkillChip title={skill.title} category={skill.category as SkillCategory} level={skill.level as SkillLevel} coinValue={skill.coinValue} />
               </TouchableOpacity>
@@ -340,7 +340,7 @@ export default function ProfileScreen() {
                 ))}
               </View>
               <View className="flex-row">
-                <AppButton label="Cancel" variant="outline" onPress={() => setEditSkill(null)} className="mr-2 flex-1" />
+                <AppButton label="Cancel" variant="secondary" onPress={() => setEditSkill(null)} className="mr-2 flex-1" />
                 <AppButton label="Save" onPress={handleSaveSkill} className="flex-1" />
               </View>
               <TouchableOpacity onPress={() => handleDeleteSkill(editSkill?.id, editSkill?.title)} className="mt-6 items-center">

@@ -59,16 +59,16 @@ export default function ExchangesScreen() {
             {isIncoming && (
               <>
                 <AppButton label="Accept" onPress={() => handleAction(item.id, "accept")} className="mr-2 flex-1" />
-                <AppButton label="Reject" variant="outline" onPress={() => handleAction(item.id, "reject")} className="flex-1" />
+                <AppButton label="Reject" variant="secondary" onPress={() => handleAction(item.id, "reject")} className="flex-1" />
               </>
             )}
-            {isOutgoing && <AppButton label="Cancel" variant="outline" onPress={() => handleAction(item.id, "cancel")} className="flex-1" />}
+            {isOutgoing && <AppButton label="Cancel" variant="secondary" onPress={() => handleAction(item.id, "cancel")} className="flex-1" />}
           </View>
         );
       case "ACCEPTED":
         return <AppButton label="Mark Complete" onPress={() => handleAction(item.id, "complete")} className="mt-3" />;
       case "COMPLETED":
-        return <AppButton label="Leave Review" variant="outline" onPress={() => setReviewExchange(item.id)} className="mt-3" />;
+        return <AppButton label="Leave Review" variant="secondary" onPress={() => setReviewExchange(item.id)} className="mt-3" />;
       default:
         return null;
     }

@@ -47,7 +47,7 @@ export default function WelcomeScreen() {
         <AppButton label="Create Account" onPress={() => router.push("/(auth)/register")} />
         <AppButton
           label="Sign In"
-          variant="outline"
+          variant="secondary"
           className="mt-3"
           onPress={() => router.push("/(auth)/login")}
         />

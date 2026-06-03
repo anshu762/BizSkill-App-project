@@ -246,8 +246,8 @@ export default function TeamsScreen() {
                       </View>
                     </View>
                     <View className="mt-3 flex-row">
-                      <AppButton label="View Applications" variant="outline" className="mr-2 flex-1" onPress={() => router.push(`/team/${team.id}?tab=apps`)} />
-                      <AppButton label="Edit" variant="outline" className="flex-1" onPress={() => router.push(`/team/${team.id}`)} />
+                      <AppButton label="View Applications" variant="secondary" className="mr-2 flex-1" onPress={() => router.push(`/team/${team.id}?tab=apps`)} />
+                      <AppButton label="Edit" variant="secondary" className="flex-1" onPress={() => router.push(`/team/${team.id}`)} />
                     </View>
                   </TouchableOpacity>
                 ))}

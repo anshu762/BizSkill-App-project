@@ -26,7 +26,7 @@ export default function ExchangeDetailScreen() {
       <SafeAreaView className="flex-1 bg-surface">
         <View className="flex-1 items-center justify-center px-6">
           <Text className="text-lg text-muted">Exchange not found</Text>
-          <AppButton label="Go back" variant="outline" onPress={() => router.back()} className="mt-4" />
+          <AppButton label="Go back" variant="secondary" onPress={() => router.back()} className="mt-4" />
         </View>
       </SafeAreaView>
     );

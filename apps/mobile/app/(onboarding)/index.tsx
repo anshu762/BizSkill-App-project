@@ -225,7 +225,7 @@ export default function OnboardingScreen() {
           </View>
         </View>
         <View className="flex-row">
-          <AppButton label="Cancel" variant="outline" onPress={() => setShowSkillForm(null)} className="mr-2 flex-1" />
+          <AppButton label="Cancel" variant="secondary" onPress={() => setShowSkillForm(null)} className="mr-2 flex-1" />
           <AppButton label="Add" onPress={addSkillToList} className="flex-1" disabled={!canAddSkill} />
         </View>
       </View>
@@ -308,7 +308,7 @@ export default function OnboardingScreen() {
               );
             }} />
             <View className="flex-row">
-              <AppButton label="Back" variant="outline" onPress={() => setStep(0)} className="mr-2 flex-1" />
+              <AppButton label="Back" variant="secondary" onPress={() => setStep(0)} className="mr-2 flex-1" />
               <AppButton label="Next" onPress={() => void next()} className="flex-1" />
             </View>
           </>
@@ -322,7 +322,7 @@ export default function OnboardingScreen() {
             {renderSkillCards(offeredSkills, "offered")}
             {renderSkillForm()}
             <View className="flex-row">
-              <AppButton label="Back" variant="outline" onPress={() => setStep(1)} className="mr-2 flex-1" />
+              <AppButton label="Back" variant="secondary" onPress={() => setStep(1)} className="mr-2 flex-1" />
               <AppButton label="Next" onPress={() => setStep(3)} className="flex-1" />
             </View>
           </>
@@ -336,7 +336,7 @@ export default function OnboardingScreen() {
             {renderSkillCards(neededSkills, "needed")}
             {renderSkillForm()}
             <View className="flex-row">
-              <AppButton label="Back" variant="outline" onPress={() => setStep(2)} className="mr-2 flex-1" />
+              <AppButton label="Back" variant="secondary" onPress={() => setStep(2)} className="mr-2 flex-1" />
               <AppButton label="Next" onPress={() => setStep(4)} className="flex-1" />
             </View>
           </>
@@ -390,7 +390,7 @@ export default function OnboardingScreen() {
               )}
             </View>
             <View className="mt-6 flex-row">
-              <AppButton label="Back" variant="outline" onPress={() => setStep(3)} className="mr-2 flex-1" />
+              <AppButton label="Back" variant="secondary" onPress={() => setStep(3)} className="mr-2 flex-1" />
               <AppButton label="Looks Good" onPress={handleSubmit(submit)} className="flex-1" />
             </View>
           </>
