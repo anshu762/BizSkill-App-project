@@ -146,9 +146,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
             <Ionicons name="chatbubble-outline" size={19} color="#98A2B3" />
             <Text className="ml-1.5 text-sm text-muted">{localCommentCount}</Text>
           </TouchableOpacity>
-          <TouchableOpacity className="flex-row items-center">
-            <Ionicons name="share-outline" size={19} color="#98A2B3" />
-          </TouchableOpacity>
+
         </View>
         {post.isOwnPost && (
           <TouchableOpacity onPress={() => setShowMenu(!showMenu)} className="p-1">

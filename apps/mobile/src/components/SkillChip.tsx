@@ -5,7 +5,7 @@ import { BizCoinBadge } from "./BizCoinBadge";
 
 const categoryIcons: Record<string, keyof typeof Ionicons.glyphMap> = {
   GRAPHIC_DESIGN: "color-palette-outline",
-  SOCIAL_MEDIA: "share-social-outline",
+  SOCIAL_MEDIA: "globe-outline",
   PHOTOGRAPHY: "camera-outline",
   WEBSITE: "code-slash-outline",
   MARKETING: "megaphone-outline",
