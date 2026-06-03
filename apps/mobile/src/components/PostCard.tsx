@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Image, Modal, TextInput, TouchableOpacity, View, Platform, Animated, KeyboardAvoidingView } from "react-native";
+import { Image, Modal, TextInput, TouchableOpacity, View, Platform, Animated, KeyboardAvoidingView, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 
@@ -50,6 +50,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
   const [editModal, setEditModal] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [editContent, setEditContent] = useState(post.content);
+  const [isEditing, setIsEditing] = useState(false);
   const config = typeConfig[post.type] ?? typeConfig.UPDATE;
 
   const [localLiked, setLocalLiked] = useState(post.isLikedByMe);
@@ -82,13 +83,17 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
   };
 
   const handleEdit = async () => {
-    if (!editContent.trim()) return;
+    if (!editContent.trim() || isEditing) return;
+    Keyboard.dismiss();
+    setIsEditing(true);
     try {
       await onEdit?.(post.id, editContent.trim());
       setEditModal(false);
       Toast.show({ type: "success", text1: "Post updated" });
     } catch (error) {
       Toast.show({ type: "error", text1: "Failed to update", text2: readApiError(error) });
+    } finally {
+      setIsEditing(false);
     }
   };
 
@@ -112,8 +117,15 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
               <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>{post.user?.businessProfile?.businessName ?? "Founder"} · {timeAgo(post.createdAt)}</AppText>
             </View>
           </TouchableOpacity>
-          <View style={{ borderRadius: 999, backgroundColor: config.bg, paddingHorizontal: 12, paddingVertical: 6 }}>
-            <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: config.color }}>{config.label}</AppText>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ borderRadius: 999, backgroundColor: config.bg, paddingHorizontal: 12, paddingVertical: 6, marginRight: post.isOwnPost ? 8 : 0 }}>
+              <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: config.color }}>{config.label}</AppText>
+            </View>
+            {post.isOwnPost && (
+              <TouchableOpacity onPress={() => setShowMenu(true)} style={{ padding: 4 }}>
+                <Ionicons name="ellipsis-horizontal" size={20} color={theme.textSecondary} />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
 
@@ -131,30 +143,23 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
         <Image source={{ uri: post.imageUrl ?? post.image! }} style={{ width: '100%', aspectRatio: 16 / 9 }} resizeMode="cover" />
       )}
 
-      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderTopWidth: 0.5, borderTopColor: theme.border, paddingHorizontal: 20, paddingVertical: 12 }}>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-          <TouchableOpacity
-            onPress={handleLike}
-            activeOpacity={1}
-            style={{ flexDirection: 'row', alignItems: 'center', marginRight: 24 }}
-          >
-            <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
-              <Ionicons name={localLiked ? "heart" : "heart-outline"} size={22} color={localLiked ? Colors.danger : theme.textSecondary} />
-            </Animated.View>
-            <AppText style={{ marginLeft: 6, fontSize: 14, fontFamily: 'Outfit_500Medium', color: localLiked ? Colors.danger : theme.textSecondary }}>
-              {localLikeCount}
-            </AppText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { setLocalCommentCount((c) => c + 1); onCommentPress?.(post.id); }} style={{ flexDirection: 'row', alignItems: 'center', marginRight: 24 }}>
-            <Ionicons name="chatbubble-outline" size={20} color={theme.textSecondary} />
-            <AppText style={{ marginLeft: 6, fontSize: 14, color: theme.textSecondary }}>{localCommentCount}</AppText>
-          </TouchableOpacity>
-        </View>
-        {post.isOwnPost && (
-          <TouchableOpacity onPress={() => setShowMenu(!showMenu)} style={{ padding: 4 }}>
-            <Ionicons name="ellipsis-horizontal" size={20} color={theme.textSecondary} />
-          </TouchableOpacity>
-        )}
+      <View style={{ flexDirection: 'row', alignItems: 'center', borderTopWidth: 0.5, borderTopColor: theme.border, paddingHorizontal: 20, paddingVertical: 12 }}>
+        <TouchableOpacity
+          onPress={handleLike}
+          activeOpacity={1}
+          style={{ flexDirection: 'row', alignItems: 'center', marginRight: 24 }}
+        >
+          <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
+            <Ionicons name={localLiked ? "heart" : "heart-outline"} size={22} color={localLiked ? Colors.danger : theme.textSecondary} />
+          </Animated.View>
+          <AppText style={{ marginLeft: 6, fontSize: 14, fontFamily: 'Outfit_500Medium', color: localLiked ? Colors.danger : theme.textSecondary }}>
+            {localLikeCount}
+          </AppText>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => { setLocalCommentCount((c) => c + 1); onCommentPress?.(post.id); }} style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <Ionicons name="chatbubble-outline" size={20} color={theme.textSecondary} />
+          <AppText style={{ marginLeft: 6, fontSize: 14, color: theme.textSecondary }}>{localCommentCount}</AppText>
+        </TouchableOpacity>
       </View>
 
       {/* Premium Bottom Sheet Menu (Custom implementation) */}
@@ -175,20 +180,6 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
                 <Ionicons name="trash-outline" size={20} color={Colors.danger} />
               </View>
               <AppText variant="h3" style={{ color: Colors.danger }}>Delete Post</AppText>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => { setShowMenu(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
-              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.elevated, alignItems: 'center', justifyContent: 'center', marginRight: 16 }}>
-                <Ionicons name="share-outline" size={20} color={theme.textPrimary} />
-              </View>
-              <AppText variant="h3">Share Post</AppText>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={() => { setShowMenu(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
-              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.elevated, alignItems: 'center', justifyContent: 'center', marginRight: 16 }}>
-                <Ionicons name="link-outline" size={20} color={theme.textPrimary} />
-              </View>
-              <AppText variant="h3">Copy Link</AppText>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -228,6 +219,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
                   <Ionicons name="close" size={24} color={theme.textPrimary} />
                 </TouchableOpacity>
               </View>
+              <TextInput
                 autoFocus
                 multiline
                 placeholder="What's happening with your business?"
@@ -240,7 +232,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
               />
               <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, borderTopWidth: 1, borderTopColor: theme.border }}>
                 <AppText style={{ fontSize: 14, color: theme.textTertiary }}>{editContent.length}/500</AppText>
-                <AppButton title="Save Changes" onPress={handleEdit} disabled={!editContent.trim()} />
+                <AppButton title="Save Changes" onPress={handleEdit} disabled={!editContent.trim()} loading={isEditing} />
               </View>
             </View>
           </KeyboardAvoidingView>

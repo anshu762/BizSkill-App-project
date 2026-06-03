@@ -321,7 +321,7 @@ export default function TeamsScreen() {
         {tab !== "applications" && (
           <TouchableOpacity
             onPress={() => setCreateOpen(true)}
-            style={{ position: 'absolute', bottom: 24, right: 24, height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 28, backgroundColor: Colors.brand, shadowColor: Colors.brand, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 }}
+            style={{ position: 'absolute', bottom: Platform.OS === 'ios' ? 100 : 90, right: 24, height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 28, backgroundColor: Colors.brand, shadowColor: Colors.brand, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 }}
           >
             <Ionicons name="add" size={28} color="white" />
           </TouchableOpacity>

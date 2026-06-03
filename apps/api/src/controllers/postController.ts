@@ -156,6 +156,7 @@ export const deletePost = async (req: Request, res: Response) => {
   if (!post) throw new AppError(404, "Post not found");
   if (post.userId !== userId) throw new AppError(403, "Not your post");
 
+  await prisma.notification.deleteMany({ where: { relatedId: postId } });
   await prisma.post.delete({ where: { id: postId } });
   res.json({ success: true, message: "Post deleted" });
 };

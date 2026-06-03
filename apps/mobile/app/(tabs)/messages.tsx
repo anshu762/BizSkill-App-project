@@ -52,28 +52,25 @@ export default function MessagesScreen() {
               renderItem={({ item }: any) => (
                 <TouchableOpacity
                   onPress={() => router.push(`/messages/${item.user.id}` as any)}
-                  activeOpacity={0.8}
-                  style={{ marginBottom: 12 }}
+                  activeOpacity={0.7}
                 >
-                  <AppCard style={{ flexDirection: 'row', alignItems: 'center', padding: 16 }}>
+                  <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 0.5, borderBottomColor: theme.border }}>
                     <Avatar uri={item.user?.avatar} name={item.user?.name?.[0] ?? "?"} size={52} />
                     <View style={{ marginLeft: 16, flex: 1 }}>
-                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{item.user.name}</AppText>
-                        <AppText variant="caption" style={{ color: theme.textTertiary }}>{item.lastMessage ? timeAgo(item.lastMessage.createdAt) : ""}</AppText>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                        <AppText variant="body" style={{ fontFamily: item.unreadCount > 0 ? 'Outfit_700Bold' : 'Outfit_600SemiBold', color: theme.textPrimary, fontSize: 16 }}>{item.user.name}</AppText>
+                        <AppText variant="caption" style={{ color: item.unreadCount > 0 ? Colors.brand : theme.textTertiary, fontFamily: item.unreadCount > 0 ? 'Outfit_600SemiBold' : 'Outfit_400Regular' }}>{item.lastMessage ? timeAgo(item.lastMessage.createdAt) : ""}</AppText>
                       </View>
-                      <View style={{ marginTop: 4, flexDirection: 'row', alignItems: 'center' }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                         <AppText numberOfLines={1} style={{ flex: 1, fontSize: 14, color: item.unreadCount > 0 ? theme.textPrimary : theme.textSecondary, fontFamily: item.unreadCount > 0 ? 'Outfit_600SemiBold' : 'Outfit_400Regular' }}>
                           {item.lastMessage?.content ?? "No messages yet"}
                         </AppText>
                         {item.unreadCount > 0 && (
-                          <View style={{ marginLeft: 8, height: 24, minWidth: 24, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: Colors.danger, paddingHorizontal: 8 }}>
-                            <AppText style={{ fontSize: 12, fontFamily: 'Outfit_700Bold', color: '#FFFFFF' }}>{item.unreadCount}</AppText>
-                          </View>
+                          <View style={{ marginLeft: 12, height: 10, width: 10, borderRadius: 5, backgroundColor: Colors.brand }} />
                         )}
                       </View>
                     </View>
-                  </AppCard>
+                  </View>
                 </TouchableOpacity>
               )}
             />

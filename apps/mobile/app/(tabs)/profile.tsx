@@ -69,6 +69,8 @@ export default function ProfileScreen() {
   const [editSkillCategory, setEditSkillCategory] = useState("");
   const [editSkillLevel, setEditSkillLevel] = useState("");
   const [editSkillCoins, setEditSkillCoins] = useState(10);
+  const [skillToDelete, setSkillToDelete] = useState<{ id: string; title: string } | null>(null);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
 
   const { control, handleSubmit } = useForm<EditValues>({
     resolver: zodResolver(editSchema),
@@ -119,17 +121,19 @@ export default function ProfileScreen() {
   };
 
   const handleDeleteSkill = (skillId: string, skillTitle: string) => {
-    Alert.alert("Delete Skill", `Remove "${skillTitle}"?`, [
-      { text: "Cancel", style: "cancel" },
-      { text: "Delete", style: "destructive", onPress: async () => {
-        try {
-          await deleteSkillMutation.mutateAsync(skillId);
-          Toast.show({ type: "success", text1: "Skill deleted" });
-        } catch (error) {
-          Toast.show({ type: "error", text1: "Failed to delete skill", text2: readApiError(error) });
-        }
-      }},
-    ]);
+    setSkillToDelete({ id: skillId, title: skillTitle });
+  };
+
+  const confirmDeleteSkill = async () => {
+    if (!skillToDelete) return;
+    try {
+      await deleteSkillMutation.mutateAsync(skillToDelete.id);
+      Toast.show({ type: "success", text1: "Skill deleted" });
+      setSkillToDelete(null);
+      if (editSkill?.id === skillToDelete.id) setEditSkill(null);
+    } catch (error) {
+      Toast.show({ type: "error", text1: "Failed to delete skill", text2: readApiError(error) });
+    }
   };
 
   if (isLoading) {
@@ -148,16 +152,7 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
       <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}>
-        <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <TouchableOpacity onPress={() => setEditOpen(true)} style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.border }}>
-            <Ionicons name="settings-outline" size={24} color={theme.textPrimary} />
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => void logout()} style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.border }}>
-            <Ionicons name="log-out-outline" size={24} color={Colors.danger} />
-          </TouchableOpacity>
-        </View>
-
-        <View style={{ marginTop: 8, alignItems: 'center' }}>
+        <View style={{ marginTop: 24, alignItems: 'center' }}>
           <Avatar uri={p?.avatar} name={p?.name ?? "B"} size={96} />
           <AppText variant="h1" style={{ marginTop: 16 }}>{p?.name}</AppText>
           {bp && (
@@ -201,10 +196,10 @@ export default function ProfileScreen() {
         </AppCard>
 
         {p?.bio && (
-          <AppCard style={{ marginBottom: 24 }}>
-            <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>About</AppText>
-            <AppText style={{ fontSize: 14, lineHeight: 24, color: theme.textSecondary }}>{p.bio}</AppText>
-          </AppCard>
+          <View style={{ marginBottom: 24, paddingHorizontal: 4 }}>
+            <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 8 }}>About</AppText>
+            <AppText style={{ fontSize: 15, lineHeight: 24, color: theme.textSecondary }}>{p.bio}</AppText>
+          </View>
         )}
 
         <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -237,7 +232,8 @@ export default function ProfileScreen() {
           <AppText variant="body" style={{ marginBottom: 24, color: theme.textTertiary }}>No skills needed yet.</AppText>
         )}
 
-        <AppButton title="Edit Profile" onPress={() => setEditOpen(true)} style={{ marginBottom: 24 }} />
+        <AppButton title="Edit Profile" onPress={() => setEditOpen(true)} style={{ marginBottom: 12 }} />
+        <AppButton title="Log Out" variant="secondary" onPress={() => setShowLogoutModal(true)} style={{ marginBottom: 24 }} />
 
         <TouchableOpacity onPress={() => router.push("/exchanges" as any)} activeOpacity={0.8} style={{ marginBottom: 12 }}>
           <AppCard style={{ flexDirection: 'row', alignItems: 'center' }}>
@@ -368,6 +364,40 @@ export default function ProfileScreen() {
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
+      </Modal>
+
+      {/* Custom Delete Modal */}
+      <Modal visible={!!skillToDelete} transparent animationType="fade" onRequestClose={() => setSkillToDelete(null)}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 24 }}>
+          <View style={{ width: '100%', borderRadius: 24, backgroundColor: theme.elevated, padding: 24 }}>
+            <View style={{ marginBottom: 16, height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24, backgroundColor: Colors.dangerTint }}>
+              <Ionicons name="trash-outline" size={24} color={Colors.danger} />
+            </View>
+            <AppText variant="h2" style={{ marginBottom: 8 }}>Delete Skill?</AppText>
+            <AppText variant="body" style={{ color: theme.textSecondary, marginBottom: 24 }}>Are you sure you want to remove "{skillToDelete?.title}" from your profile?</AppText>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <AppButton title="Cancel" variant="secondary" style={{ flex: 1, marginRight: 12 }} onPress={() => setSkillToDelete(null)} />
+              <AppButton title="Delete" variant="danger" style={{ flex: 1 }} onPress={confirmDeleteSkill} loading={deleteSkillMutation.isPending} />
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Logout Modal */}
+      <Modal visible={showLogoutModal} transparent animationType="fade" onRequestClose={() => setShowLogoutModal(false)}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 24 }}>
+          <View style={{ width: '100%', borderRadius: 24, backgroundColor: theme.elevated, padding: 24 }}>
+            <View style={{ marginBottom: 16, height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24, backgroundColor: Colors.dangerTint }}>
+              <Ionicons name="log-out-outline" size={24} color={Colors.danger} />
+            </View>
+            <AppText variant="h2" style={{ marginBottom: 8 }}>Log Out</AppText>
+            <AppText variant="body" style={{ color: theme.textSecondary, marginBottom: 24 }}>Are you sure you want to log out of your account?</AppText>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <AppButton title="Cancel" variant="secondary" style={{ flex: 1, marginRight: 12 }} onPress={() => setShowLogoutModal(false)} />
+              <AppButton title="Log Out" variant="danger" style={{ flex: 1 }} onPress={() => { setShowLogoutModal(false); void logout(); }} />
+            </View>
+          </View>
+        </View>
       </Modal>
     </SafeAreaView>
   );

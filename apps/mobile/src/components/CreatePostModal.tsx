@@ -80,10 +80,24 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
         <SafeAreaView className="flex-1 bg-surface">
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
-            <View className="mt-4 mb-6 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-ink">Create Post</Text>
-              <TouchableOpacity onPress={onClose}>
+            <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+              <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
                 <Ionicons name="close" size={24} color="#101828" />
+              </TouchableOpacity>
+              <Text className="text-lg font-bold text-ink">New Post</Text>
+              <TouchableOpacity 
+                onPress={handlePost} 
+                disabled={!content.trim() || createPost.isPending}
+                style={{
+                  backgroundColor: content.trim() ? '#5B4DFF' : '#E2E8F0',
+                  paddingHorizontal: 16,
+                  paddingVertical: 8,
+                  borderRadius: 20
+                }}
+              >
+                <Text style={{ color: content.trim() ? '#FFFFFF' : '#94A3B8', fontWeight: 'bold' }}>
+                  {createPost.isPending ? "Posting..." : "Post"}
+                </Text>
               </TouchableOpacity>
             </View>
 
@@ -102,30 +116,44 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
 
             <TextInput
               multiline
-              placeholder="What's happening with your business?"
-              placeholderTextColor="#98A2B3"
+              autoFocus
+              placeholder="What do you want to share with your network?"
+              placeholderTextColor="#94A3B8"
               maxLength={500}
-              className="mb-2 h-40 rounded-3xl border border-slate-200 bg-white px-5 pt-5 text-base leading-6 text-ink"
+              style={{
+                fontSize: 18,
+                color: '#101828',
+                lineHeight: 28,
+                minHeight: 160,
+                textAlignVertical: 'top',
+                marginBottom: 16,
+              }}
               value={content}
               onChangeText={setContent}
             />
-            <Text className="mb-5 text-right text-xs text-muted">{content.length}/500</Text>
+            
+            <View className="flex-row items-center justify-between mb-6 border-b border-slate-100 pb-4">
+              <Text className="text-xs text-slate-400">{content.length}/500</Text>
+            </View>
 
             {imageUrl ? (
               <View className="mb-5 relative">
-                <Image source={{ uri: imageUrl }} className="h-48 w-full rounded-2xl" resizeMode="cover" />
-                <TouchableOpacity onPress={() => setImageUrl("")} className="absolute right-2 top-2 h-8 w-8 items-center justify-center rounded-full bg-black/50">
+                <Image source={{ uri: imageUrl }} className="h-64 w-full rounded-2xl" resizeMode="cover" />
+                <TouchableOpacity onPress={() => setImageUrl("")} className="absolute right-3 top-3 h-8 w-8 items-center justify-center rounded-full bg-black/60">
                   <Ionicons name="close" size={18} color="#FFF" />
                 </TouchableOpacity>
               </View>
             ) : (
-              <TouchableOpacity onPress={handlePickImage} className="mb-5 flex-row items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 py-5">
-                <Ionicons name={imageUploading ? "hourglass-outline" : "image-outline"} size={20} color="#5B4DFF" />
-                <Text className="ml-2 font-semibold text-brand">{imageUploading ? "Uploading..." : "Add Image"}</Text>
+              <TouchableOpacity onPress={handlePickImage} className="mb-5 flex-row items-center rounded-2xl bg-slate-50 px-4 py-4 border border-slate-200 border-dashed">
+                <View className="h-10 w-10 items-center justify-center rounded-full bg-brand/10">
+                  <Ionicons name={imageUploading ? "hourglass-outline" : "image-outline"} size={20} color="#5B4DFF" />
+                </View>
+                <View className="ml-3">
+                  <Text className="font-semibold text-ink">{imageUploading ? "Uploading image..." : "Add a photo"}</Text>
+                  <Text className="text-xs text-slate-500">Showcase your work or milestone</Text>
+                </View>
               </TouchableOpacity>
             )}
-
-            <AppButton label="Post" onPress={handlePost} disabled={!content.trim()} />
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
