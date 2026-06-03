@@ -6,6 +6,7 @@ import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { AppButton } from "../src/components/AppButton";
 import { AvatarWithFallback } from "../src/components/AvatarWithFallback";
+import { SelectableChip } from "../src/components/SelectableChip";
 import { ReviewModal } from "../src/components/ReviewModal";
 import { ErrorBoundary } from "../src/components/ErrorBoundary";
 import { useExchanges, useUpdateExchangeStatus } from "../src/lib/apiHooks";
@@ -86,11 +87,15 @@ export default function ExchangesScreen() {
       <SafeAreaView className="flex-1 bg-surface">
         <View className="px-6">
           <Text className="mb-6 mt-4 text-2xl font-bold text-ink">Exchanges</Text>
-          <View className="mb-4 flex-row">
+          <View className="mb-4 flex-row flex-wrap">
             {tabs.map((t) => (
-              <TouchableOpacity key={t.key} onPress={() => setTab(t.key)} className={`mr-2 rounded-full px-5 py-3 ${tab === t.key ? "bg-brand" : "bg-white"}`}>
-                <Text className={`text-sm font-medium ${tab === t.key ? "text-white" : "text-muted"}`}>{t.label}</Text>
-              </TouchableOpacity>
+              <SelectableChip
+                key={t.key}
+                label={t.label}
+                selected={tab === t.key}
+                onPress={() => setTab(t.key)}
+                chipStyle="pill"
+              />
             ))}
           </View>
         </View>

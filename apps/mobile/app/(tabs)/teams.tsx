@@ -5,6 +5,7 @@ import { ActivityIndicator, FlatList, Modal, ScrollView, Text, TextInput, Toucha
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/AppButton";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
+import { SelectableChip } from "../../src/components/SelectableChip";
 import { PageHeader } from "../../src/components/PageHeader";
 import { useCreateTeam, useMyTeams, useTeams } from "../../src/lib/apiHooks";
 import { TeamCardSkeleton } from "../../src/components/Skeletons";
@@ -86,17 +87,19 @@ export default function TeamsScreen() {
 
   const TabButton = ({ label, value }: { label: string; value: typeof tab }) => (
     <TouchableOpacity
+      activeOpacity={0.88}
       onPress={() => setTab(value)}
-      className={`mr-3 last:mr-0 flex-1 flex-row items-center justify-center rounded-2xl py-3 ${
-        tab === value ? "bg-brand" : "bg-white border border-slate-200"
+      className={`mr-3 flex-1 flex-row items-center justify-center rounded-2xl py-3 border ${
+        tab === value ? "bg-brand border-brand" : "bg-white border-slate-200"
       }`}
+      style={tab === value ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
     >
       <Ionicons
         name={tabIcons[value] as any}
         size={16}
         color={tab === value ? "#FFFFFF" : "#667085"}
       />
-      <Text className={`ml-1.5 text-sm font-semibold ${tab === value ? "text-white" : "text-muted"}`}>{label}</Text>
+      <Text className={`ml-1.5 text-sm font-semibold ${tab === value ? "text-white" : "text-muted"}`} style={tab === value ? { color: "#FFFFFF" } : undefined}>{label}</Text>
     </TouchableOpacity>
   );
 
@@ -174,15 +177,12 @@ export default function TeamsScreen() {
               <Text className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted">Category</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {categories.map((c) => (
-                  <TouchableOpacity key={c.value} onPress={() => setCategory(c.value)} className={`mr-2 rounded-xl border px-4 py-2.5 ${
-                    category === c.value
-                      ? "border-brand bg-brand"
-                      : "border-slate-200 bg-white"
-                  }`}>
-                    <Text className={`text-sm font-medium ${
-                      category === c.value ? "text-white" : "text-muted"
-                    }`}>{c.label}</Text>
-                  </TouchableOpacity>
+                  <SelectableChip
+                    key={c.value}
+                    label={c.label}
+                    selected={category === c.value}
+                    onPress={() => setCategory(c.value)}
+                  />
                 ))}
               </ScrollView>
             </View>
@@ -190,15 +190,12 @@ export default function TeamsScreen() {
               <Text className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted">Status</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {stages.map((s) => (
-                  <TouchableOpacity key={s.value} onPress={() => setStage(s.value)} className={`mr-2 rounded-lg border px-4 py-2.5 ${
-                    stage === s.value
-                      ? "border-brand bg-brand"
-                      : "border-slate-200 bg-white"
-                  }`}>
-                    <Text className={`text-sm font-semibold ${
-                      stage === s.value ? "text-white" : "text-muted"
-                    }`}>{s.label}</Text>
-                  </TouchableOpacity>
+                  <SelectableChip
+                    key={s.value}
+                    label={s.label}
+                    selected={stage === s.value}
+                    onPress={() => setStage(s.value)}
+                  />
                 ))}
               </ScrollView>
             </View>
@@ -352,12 +349,16 @@ export default function TeamsScreen() {
               <Text className="mb-3 text-sm font-semibold text-ink">Category</Text>
               <View className="mb-6 flex-row flex-wrap">
                 {categories.filter((c) => c.value !== "ALL").map((c) => (
-                  <TouchableOpacity key={c.value} onPress={() => setCreateCat(c.value)} className={`mb-2 mr-2 rounded-full px-5 py-3 ${createCat === c.value ? "bg-brand" : "bg-white"}`}>
-                    <Text className={`text-sm font-medium ${createCat === c.value ? "text-white" : "text-muted"}`}>{c.label}</Text>
-                  </TouchableOpacity>
+                  <SelectableChip
+                    key={c.value}
+                    label={c.label}
+                    selected={createCat === c.value}
+                    onPress={() => setCreateCat(c.value)}
+                    chipStyle="pill"
+                  />
                 ))}
               </View>
-              <AppButton label="Create Team" onPress={handleCreate} loading={createTeam.isPending} />
+              <AppButton label="Create Team" onPress={handleCreate} />
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>

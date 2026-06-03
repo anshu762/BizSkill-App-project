@@ -1,19 +1,41 @@
+import { useState, useRef } from "react";
 import { ActivityIndicator, Text, TouchableOpacity, type TouchableOpacityProps } from "react-native";
 
-interface AppButtonProps extends TouchableOpacityProps {
+interface AppButtonProps extends Omit<TouchableOpacityProps, 'onPress'> {
   label: string;
   loading?: boolean;
   variant?: "primary" | "secondary" | "outline";
+  onPress?: () => void | Promise<void>;
 }
 
 export function AppButton({
   label,
-  loading = false,
+  loading: externalLoading = false,
   variant = "primary",
   disabled,
   className,
+  onPress,
   ...props
 }: AppButtonProps) {
+  const [internalLoading, setInternalLoading] = useState(false);
+  const isExecuting = useRef(false);
+  const loading = externalLoading || internalLoading;
+
+  const handlePress = async () => {
+    if (!onPress || loading || disabled || isExecuting.current) return;
+    const result = onPress();
+    if (result && typeof (result as any).then === "function") {
+      isExecuting.current = true;
+      setInternalLoading(true);
+      try {
+        await result;
+      } finally {
+        isExecuting.current = false;
+        setInternalLoading(false);
+      }
+    }
+  };
+
   const styles = {
     primary: "bg-brand",
     secondary: "bg-ink",
@@ -25,9 +47,9 @@ export function AppButton({
     <TouchableOpacity
       activeOpacity={0.88}
       disabled={disabled || loading}
-      className={`h-14 items-center justify-center rounded-2xl ${styles[variant]} ${
-        disabled || loading ? "opacity-60" : ""
-      } ${className ?? ""}`}
+      onPress={handlePress}
+      className={`h-14 items-center justify-center rounded-2xl ${styles[variant]} ${className ?? ""}`}
+      style={{ opacity: disabled || loading ? 0.6 : 1 }}
       {...props}
     >
       {loading ? (

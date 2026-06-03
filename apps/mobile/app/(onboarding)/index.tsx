@@ -10,6 +10,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { AppButton } from "../../src/components/AppButton";
 import { FormField } from "../../src/components/FormField";
+import { SelectableChip } from "../../src/components/SelectableChip";
 import { api, readApiError } from "../../src/lib/axios";
 import { useAuthStore } from "../../src/store/useAuthStore";
 
@@ -66,7 +67,6 @@ const stepLabels = ["Personal", "Business", "Offer", "Need", "Preview"];
 export default function OnboardingScreen() {
   const router = useRouter();
   const [step, setStep] = useState(0);
-  const [submitting, setSubmitting] = useState(false);
   const [offeredSkills, setOfferedSkills] = useState<Array<{ title: string; category: string; description?: string; level: string; coinValue: number }>>([]);
   const [neededSkills, setNeededSkills] = useState<Array<{ title: string; category: string; description?: string; level: string; coinValue: number }>>([]);
   const [showSkillForm, setShowSkillForm] = useState<"offered" | "needed" | null>(null);
@@ -110,8 +110,6 @@ export default function OnboardingScreen() {
   };
 
   const submit = async (values: Values) => {
-    if (submitting) return;
-    setSubmitting(true);
     try {
       const response = await api.post<ApiResponse<{ id: string; hasOnboarded: boolean }>>("/profile/onboarding", {
         name: values.name,
@@ -132,8 +130,6 @@ export default function OnboardingScreen() {
       router.replace("/(tabs)");
     } catch (error) {
       Toast.show({ type: "error", text1: "Could not finish onboarding", text2: readApiError(error) });
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -191,17 +187,24 @@ export default function OnboardingScreen() {
         <Text className="mb-2 text-sm font-medium text-ink">Category</Text>
         <View className="mb-4 flex-row flex-wrap">
           {categories.map((c) => (
-            <TouchableOpacity key={c.value} onPress={() => setSkillForm((p) => ({ ...p, category: c.value }))} className={`mb-2 mr-2 rounded-full px-4 py-2 border ${skillForm.category === c.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
-              <Text className={`text-xs font-medium ${skillForm.category === c.value ? "text-white" : "text-ink"}`}>{c.label}</Text>
-            </TouchableOpacity>
+            <SelectableChip
+              key={c.value}
+              label={c.label}
+              selected={skillForm.category === c.value}
+              onPress={() => setSkillForm((p) => ({ ...p, category: c.value }))}
+            />
           ))}
         </View>
         <Text className="mb-2 text-sm font-medium text-ink">Level</Text>
-        <View className="mb-4 flex-row">
+        <View className="mb-4 flex-row flex-wrap">
           {levels.map((l) => (
-            <TouchableOpacity key={l.value} onPress={() => setSkillForm((p) => ({ ...p, level: l.value }))} className={`mr-2 rounded-full px-5 py-2 border ${skillForm.level === l.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
-              <Text className={`text-xs font-medium ${skillForm.level === l.value ? "text-white" : "text-ink"}`}>{l.label}</Text>
-            </TouchableOpacity>
+            <SelectableChip
+              key={l.value}
+              label={l.label}
+              selected={skillForm.level === l.value}
+              onPress={() => setSkillForm((p) => ({ ...p, level: l.value }))}
+              chipStyle="pill"
+            />
           ))}
         </View>
         <Text className="mb-1 text-sm font-medium text-ink">BizCoin Value: {Math.round(skillForm.coinValue / 10) * 10} BC</Text>
@@ -270,18 +273,26 @@ export default function OnboardingScreen() {
             <Text className="mb-2 text-sm font-medium text-ink">Industry</Text>
             <View className="mb-4 flex-row flex-wrap">
               {categories.map((c) => (
-                <TouchableOpacity key={c.value} onPress={() => setValue("industry", c.value)} className={`mb-2 mr-2 rounded-full px-4 py-3 border ${watch("industry") === c.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
-                  <Text className={`text-sm font-semibold ${watch("industry") === c.value ? "text-white" : "text-ink"}`}>{c.label}</Text>
-                </TouchableOpacity>
+                <SelectableChip
+                  key={c.value}
+                  label={c.label}
+                  selected={watch("industry") === c.value}
+                  onPress={() => setValue("industry", c.value)}
+                  chipStyle="pill"
+                />
               ))}
             </View>
             {errors.industry && <Text className="-mt-3 mb-3 text-xs text-red-500">{errors.industry.message}</Text>}
             <Text className="mb-2 text-sm font-medium text-ink">Stage</Text>
             <View className="mb-4 flex-row">
               {stages.map((s) => (
-                <TouchableOpacity key={s.value} onPress={() => setValue("stage", s.value)} className={`mr-2 flex-1 items-center rounded-2xl py-4 border ${watch("stage") === s.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
-                  <Text className={`text-sm font-bold ${watch("stage") === s.value ? "text-white" : "text-ink"}`}>{s.label}</Text>
-                </TouchableOpacity>
+                <SelectableChip
+                  key={s.value}
+                  label={s.label}
+                  selected={watch("stage") === s.value}
+                  onPress={() => setValue("stage", s.value)}
+                  chipStyle="large"
+                />
               ))}
             </View>
             <Controller control={control} name="description" render={({ field, fieldState }) => (
@@ -379,8 +390,8 @@ export default function OnboardingScreen() {
               )}
             </View>
             <View className="mt-6 flex-row">
-              <AppButton label="Back" variant="outline" onPress={() => setStep(3)} disabled={submitting} className="mr-2 flex-1" />
-              <AppButton label="Looks Good" loading={submitting} disabled={submitting} onPress={handleSubmit(submit)} className="flex-1" />
+              <AppButton label="Back" variant="outline" onPress={() => setStep(3)} className="mr-2 flex-1" />
+              <AppButton label="Looks Good" onPress={handleSubmit(submit)} className="flex-1" />
             </View>
           </>
         );

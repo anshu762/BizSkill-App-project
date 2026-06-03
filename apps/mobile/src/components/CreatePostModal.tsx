@@ -6,6 +6,7 @@ import Toast from "react-native-toast-message";
 import { readApiError } from "../lib/axios";
 import { useCreatePost } from "../lib/apiHooks";
 import { AppButton } from "./AppButton";
+import { SelectableChip } from "./SelectableChip";
 
 const postTypes = [
   { value: "UPDATE", label: "Update" },
@@ -89,9 +90,13 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
             <Text className="mb-3 text-sm font-semibold text-ink">Post Type</Text>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5">
               {postTypes.map((t) => (
-                <TouchableOpacity key={t.value} onPress={() => setType(t.value)} className={`mr-2 rounded-full px-5 py-3 ${type === t.value ? "bg-brand" : "bg-white"}`}>
-                  <Text className={`text-sm font-medium ${type === t.value ? "text-white" : "text-muted"}`}>{t.label}</Text>
-                </TouchableOpacity>
+                <SelectableChip
+                  key={t.value}
+                  label={t.label}
+                  selected={type === t.value}
+                  onPress={() => setType(t.value)}
+                  chipStyle="pill"
+                />
               ))}
             </ScrollView>
 
@@ -120,7 +125,7 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
               </TouchableOpacity>
             )}
 
-            <AppButton label="Post" onPress={handlePost} disabled={!content.trim()} loading={createPost.isPending} />
+            <AppButton label="Post" onPress={handlePost} disabled={!content.trim()} />
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>

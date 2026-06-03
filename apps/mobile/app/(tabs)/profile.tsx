@@ -12,6 +12,7 @@ import { StageBadge } from "../../src/components/StageBadge";
 import { SkillChip } from "../../src/components/SkillChip";
 import { AppButton } from "../../src/components/AppButton";
 import { FormField } from "../../src/components/FormField";
+import { SelectableChip } from "../../src/components/SelectableChip";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import { useProfile, useUpdateProfile, useUpdateSkill, useDeleteSkill } from "../../src/lib/apiHooks";
 import { readApiError } from "../../src/lib/axios";
@@ -280,7 +281,7 @@ export default function ProfileScreen() {
                 <FormField label="Description" placeholder="What you do" multiline className="h-24 pt-4" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
 
-              <AppButton label="Save" loading={updateMutation.isPending} onPress={handleSubmit(onSubmit)} className="mt-6" />
+              <AppButton label="Save" onPress={handleSubmit(onSubmit)} className="mt-6" />
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
@@ -307,30 +308,40 @@ export default function ProfileScreen() {
               <Text className="mb-2 text-sm font-medium text-ink">Category</Text>
               <View className="mb-4 flex-row flex-wrap">
                 {categories.map((c) => (
-                  <TouchableOpacity key={c.value} onPress={() => setEditSkillCategory(c.value)} className={`mb-2 mr-2 rounded-full px-4 py-2 border ${editSkillCategory === c.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
-                    <Text className={`text-xs font-medium ${editSkillCategory === c.value ? "text-white" : "text-ink"}`}>{c.label}</Text>
-                  </TouchableOpacity>
+                  <SelectableChip
+                    key={c.value}
+                    label={c.label}
+                    selected={editSkillCategory === c.value}
+                    onPress={() => setEditSkillCategory(c.value)}
+                  />
                 ))}
               </View>
               <Text className="mb-2 text-sm font-medium text-ink">Level</Text>
-              <View className="mb-4 flex-row">
+              <View className="mb-4 flex-row flex-wrap">
                 {levels.map((l) => (
-                  <TouchableOpacity key={l.value} onPress={() => setEditSkillLevel(l.value)} className={`mr-2 rounded-full px-5 py-2 border ${editSkillLevel === l.value ? "bg-brand border-brand" : "bg-white border-slate-200"}`}>
-                    <Text className={`text-xs font-medium ${editSkillLevel === l.value ? "text-white" : "text-ink"}`}>{l.label}</Text>
-                  </TouchableOpacity>
+                  <SelectableChip
+                    key={l.value}
+                    label={l.label}
+                    selected={editSkillLevel === l.value}
+                    onPress={() => setEditSkillLevel(l.value)}
+                    chipStyle="pill"
+                  />
                 ))}
               </View>
               <Text className="mb-1 text-sm font-medium text-ink">BizCoin Value: {Math.round(editSkillCoins / 10) * 10} BC</Text>
               <View className="mb-4 flex-row flex-wrap">
                 {[10, 20, 30, 50, 100, 150, 200].map((v) => (
-                  <TouchableOpacity key={v} onPress={() => setEditSkillCoins(v)} className={`mb-2 mr-2 rounded px-3 py-1.5 border ${Math.round(editSkillCoins / 10) * 10 === v ? "bg-brand/10 border-brand" : "bg-white border-slate-200"}`}>
-                    <Text className={`text-xs font-medium ${Math.round(editSkillCoins / 10) * 10 === v ? "text-brand" : "text-muted"}`}>{v} BC</Text>
-                  </TouchableOpacity>
+                  <SelectableChip
+                    key={v}
+                    label={`${v} BC`}
+                    selected={Math.round(editSkillCoins / 10) * 10 === v}
+                    onPress={() => setEditSkillCoins(v)}
+                  />
                 ))}
               </View>
               <View className="flex-row">
                 <AppButton label="Cancel" variant="outline" onPress={() => setEditSkill(null)} className="mr-2 flex-1" />
-                <AppButton label="Save" onPress={handleSaveSkill} loading={updateSkillMutation.isPending} className="flex-1" />
+                <AppButton label="Save" onPress={handleSaveSkill} className="flex-1" />
               </View>
               <TouchableOpacity onPress={() => handleDeleteSkill(editSkill?.id, editSkill?.title)} className="mt-6 items-center">
                 <Text className="text-sm font-medium text-red-500">Delete Skill</Text>

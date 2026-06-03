@@ -119,8 +119,7 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
             <AppButton
               label={createExchange.isPending ? "Sending Request..." : "Send Request"}
               onPress={handleSend}
-              disabled={!selectedSkillId || createExchange.isPending}
-              loading={createExchange.isPending}
+              disabled={!selectedSkillId}
             />
 
             {createExchange.isError && (
