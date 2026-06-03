@@ -2,8 +2,15 @@ import axios, { AxiosError, InternalAxiosRequestConfig } from "axios";
 import Constants from "expo-constants";
 import { Platform } from "react-native";
 
-function getBaseUrl(): string {
-  if (Platform.OS === "web") return process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+export function getBaseUrl(): string {
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+  const isLocalhost = apiUrl && (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1"));
+
+  if (apiUrl && !(Platform.OS !== "web" && isLocalhost)) {
+    return apiUrl;
+  }
+
+  if (Platform.OS === "web") return "http://localhost:3000";
 
   try {
     const hostUri = (Constants.expoConfig as any)?.hostUri;
@@ -15,7 +22,7 @@ function getBaseUrl(): string {
 
   if (Platform.OS === "android") return "http://10.0.2.2:3000";
 
-  return process.env.EXPO_PUBLIC_API_URL ?? "http://localhost:3000";
+  return "http://localhost:3000";
 }
 
 const baseURL = getBaseUrl();

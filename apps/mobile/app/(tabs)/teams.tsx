@@ -1,12 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, FlatList, Modal, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { ActivityIndicator, FlatList, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/AppButton";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
+import { SelectableChip } from "../../src/components/SelectableChip";
 import { PageHeader } from "../../src/components/PageHeader";
 import { useCreateTeam, useMyTeams, useTeams } from "../../src/lib/apiHooks";
+import { TeamCardSkeleton } from "../../src/components/Skeletons";
 
 const categories = [
   { value: "ALL", label: "All" },
@@ -62,11 +64,11 @@ export default function TeamsScreen() {
 
   const allTeams = useMemo(() => data?.pages.flatMap((p: any) => p.data ?? []) ?? [], [data]);
 
-  let debounceTimer: ReturnType<typeof setTimeout>;
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleSearch = useCallback((text: string) => {
     setSearch(text);
-    clearTimeout(debounceTimer);
-    debounceTimer = setTimeout(() => setDebouncedSearch(text), 400);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => setDebouncedSearch(text), 400);
   }, []);
 
   const handleCreate = async () => {
@@ -85,17 +87,19 @@ export default function TeamsScreen() {
 
   const TabButton = ({ label, value }: { label: string; value: typeof tab }) => (
     <TouchableOpacity
+      activeOpacity={0.88}
       onPress={() => setTab(value)}
-      className={`mr-3 last:mr-0 flex-1 flex-row items-center justify-center rounded-2xl py-3 ${
-        tab === value ? "bg-brand" : "bg-white border border-slate-200"
+      className={`mr-3 flex-1 flex-row items-center justify-center rounded-2xl py-3 border ${
+        tab === value ? "bg-brand border-brand" : "bg-white border-slate-200"
       }`}
+      style={tab === value ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
     >
       <Ionicons
         name={tabIcons[value] as any}
         size={16}
         color={tab === value ? "#FFFFFF" : "#667085"}
       />
-      <Text className={`ml-1.5 text-sm font-semibold ${tab === value ? "text-white" : "text-muted"}`}>{label}</Text>
+      <Text className={`ml-1.5 text-sm font-semibold ${tab === value ? "text-white" : "text-muted"}`} style={tab === value ? { color: "#FFFFFF" } : undefined}>{label}</Text>
     </TouchableOpacity>
   );
 
@@ -126,7 +130,7 @@ export default function TeamsScreen() {
           <Text className="text-xs font-medium capitalize">{item.stage?.toLowerCase()}</Text>
         </View>
       </View>
-      {item.description && (
+      {!!item.description && (
         <Text numberOfLines={2} className="mt-3 text-sm leading-5 text-muted">{item.description}</Text>
       )}
       <View className="mt-4 flex-row items-center justify-between">
@@ -146,14 +150,6 @@ export default function TeamsScreen() {
       </View>
     </TouchableOpacity>
   );
-
-  if (isLoading || myLoading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
-        <ActivityIndicator color="#5B4DFF" size="large" />
-      </SafeAreaView>
-    );
-  }
 
   return (
     <SafeAreaView className="flex-1 bg-surface">
@@ -181,15 +177,12 @@ export default function TeamsScreen() {
               <Text className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted">Category</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {categories.map((c) => (
-                  <TouchableOpacity key={c.value} onPress={() => setCategory(c.value)} className={`mr-2 rounded-xl border px-4 py-2.5 ${
-                    category === c.value
-                      ? "border-brand bg-brand"
-                      : "border-slate-200 bg-white"
-                  }`}>
-                    <Text className={`text-sm font-medium ${
-                      category === c.value ? "text-white" : "text-muted"
-                    }`}>{c.label}</Text>
-                  </TouchableOpacity>
+                  <SelectableChip
+                    key={c.value}
+                    label={c.label}
+                    selected={category === c.value}
+                    onPress={() => setCategory(c.value)}
+                  />
                 ))}
               </ScrollView>
             </View>
@@ -197,18 +190,22 @@ export default function TeamsScreen() {
               <Text className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted">Status</Text>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {stages.map((s) => (
-                  <TouchableOpacity key={s.value} onPress={() => setStage(s.value)} className={`mr-2 rounded-lg border px-4 py-2.5 ${
-                    stage === s.value
-                      ? "border-brand bg-brand"
-                      : "border-slate-200 bg-white"
-                  }`}>
-                    <Text className={`text-sm font-semibold ${
-                      stage === s.value ? "text-white" : "text-muted"
-                    }`}>{s.label}</Text>
-                  </TouchableOpacity>
+                  <SelectableChip
+                    key={s.value}
+                    label={s.label}
+                    selected={stage === s.value}
+                    onPress={() => setStage(s.value)}
+                  />
                 ))}
               </ScrollView>
             </View>
+            {isLoading ? (
+              <View className="pb-20">
+                <TeamCardSkeleton />
+                <TeamCardSkeleton />
+                <TeamCardSkeleton />
+              </View>
+            ) : (
             <FlatList
               data={allTeams}
               keyExtractor={(item: any) => item.id}
@@ -218,6 +215,7 @@ export default function TeamsScreen() {
               ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}
               contentContainerClassName="pb-20"
             />
+            )}
             <TouchableOpacity
               onPress={() => setCreateOpen(true)}
               className="absolute bottom-6 right-0 h-14 w-14 items-center justify-center rounded-full bg-brand"
@@ -281,8 +279,12 @@ export default function TeamsScreen() {
             )}
 
             {(!myTeamsData?.owned?.length && !myTeamsData?.member?.length) && (
-              <View className="mt-10 items-center">
-                <Text className="text-muted">You haven't joined any teams yet</Text>
+              <View className="mt-16 items-center px-4">
+                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
+                  <Ionicons name="people-outline" size={36} color="#5B4DFF" />
+                </View>
+                <Text className="mt-5 text-xl font-bold text-ink">No teams yet</Text>
+                <Text className="mt-2 text-center text-sm leading-5 text-muted">Start or join a team to collaborate with other founders on projects, competitions, and business ideas.</Text>
               </View>
             )}
 
@@ -305,8 +307,12 @@ export default function TeamsScreen() {
                 </View>
               ))
             ) : (
-              <View className="mt-10 items-center">
-                <Text className="text-muted">No applications yet</Text>
+              <View className="mt-16 items-center px-4">
+                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
+                  <Ionicons name="documents-outline" size={36} color="#5B4DFF" />
+                </View>
+                <Text className="mt-5 text-xl font-bold text-ink">No applications yet</Text>
+                <Text className="mt-2 text-center text-sm leading-5 text-muted">Apply to open team roles to see your applications here.</Text>
               </View>
             )}
           </ScrollView>
@@ -314,42 +320,48 @@ export default function TeamsScreen() {
       </View>
 
       <Modal visible={createOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setCreateOpen(false)}>
-        <SafeAreaView className="flex-1 bg-surface">
-          <ScrollView contentContainerClassName="px-6 pb-8">
-            <View className="mt-4 mb-6 flex-row items-center justify-between">
-              <Text className="text-xl font-bold text-ink">Create Team</Text>
-              <TouchableOpacity onPress={() => setCreateOpen(false)}>
-                <Ionicons name="close" size={24} color="#101828" />
-              </TouchableOpacity>
-            </View>
-            <Text className="mb-2 text-sm font-semibold text-ink">Team Name</Text>
-            <TextInput
-              placeholder="e.g. Launch Lab"
-              placeholderTextColor="#98A2B3"
-              className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
-              value={createName}
-              onChangeText={setCreateName}
-            />
-            <Text className="mb-2 text-sm font-semibold text-ink">Description (optional)</Text>
-            <TextInput
-              placeholder="What's your team about?"
-              placeholderTextColor="#98A2B3"
-              multiline
-              className="mb-4 min-h-[100px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-ink"
-              value={createDesc}
-              onChangeText={setCreateDesc}
-            />
-            <Text className="mb-3 text-sm font-semibold text-ink">Category</Text>
-            <View className="mb-6 flex-row flex-wrap">
-              {categories.filter((c) => c.value !== "ALL").map((c) => (
-                <TouchableOpacity key={c.value} onPress={() => setCreateCat(c.value)} className={`mb-2 mr-2 rounded-full px-5 py-3 ${createCat === c.value ? "bg-brand" : "bg-white"}`}>
-                  <Text className={`text-sm font-medium ${createCat === c.value ? "text-white" : "text-muted"}`}>{c.label}</Text>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+          <SafeAreaView className="flex-1 bg-surface">
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+              <View className="mt-4 mb-6 flex-row items-center justify-between">
+                <Text className="text-xl font-bold text-ink">Create Team</Text>
+                <TouchableOpacity onPress={() => setCreateOpen(false)}>
+                  <Ionicons name="close" size={24} color="#101828" />
                 </TouchableOpacity>
-              ))}
-            </View>
-            <AppButton label="Create Team" onPress={handleCreate} loading={createTeam.isPending} />
-          </ScrollView>
-        </SafeAreaView>
+              </View>
+              <Text className="mb-2 text-sm font-semibold text-ink">Team Name</Text>
+              <TextInput
+                placeholder="e.g. Launch Lab"
+                placeholderTextColor="#98A2B3"
+                className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
+                value={createName}
+                onChangeText={setCreateName}
+              />
+              <Text className="mb-2 text-sm font-semibold text-ink">Description (optional)</Text>
+              <TextInput
+                placeholder="What's your team about?"
+                placeholderTextColor="#98A2B3"
+                multiline
+                className="mb-4 min-h-[100px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-ink"
+                value={createDesc}
+                onChangeText={setCreateDesc}
+              />
+              <Text className="mb-3 text-sm font-semibold text-ink">Category</Text>
+              <View className="mb-6 flex-row flex-wrap">
+                {categories.filter((c) => c.value !== "ALL").map((c) => (
+                  <SelectableChip
+                    key={c.value}
+                    label={c.label}
+                    selected={createCat === c.value}
+                    onPress={() => setCreateCat(c.value)}
+                    chipStyle="pill"
+                  />
+                ))}
+              </View>
+              <AppButton label="Create Team" onPress={handleCreate} />
+            </ScrollView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
       </Modal>
     </SafeAreaView>
   );

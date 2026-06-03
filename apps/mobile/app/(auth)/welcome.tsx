@@ -15,16 +15,11 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface px-6">
-      <View className="mt-4 flex-row items-center justify-between">
-        <View className="flex-row items-center">
-          <View className="h-12 w-12 items-center justify-center rounded-2xl bg-brand">
-            <Text className="text-2xl font-bold text-white">B</Text>
-          </View>
-          <Text className="ml-3 text-xl font-bold text-ink">BizSkills</Text>
+      <View className="mt-4 flex-row items-center">
+        <View className="h-12 w-12 items-center justify-center rounded-2xl bg-brand">
+          <Text className="text-2xl font-bold text-white">B</Text>
         </View>
-        <View className="rounded-full bg-white px-3 py-2">
-          <Text className="text-xs font-semibold text-brand">STUDENT FOUNDERS</Text>
-        </View>
+        <Text className="ml-3 text-xl font-bold text-ink">BizSkills</Text>
       </View>
 
       <View className="mt-14 rounded-[32px] bg-ink p-7">

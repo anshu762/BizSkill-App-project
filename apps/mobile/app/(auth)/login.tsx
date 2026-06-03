@@ -35,7 +35,7 @@ export default function LoginScreen() {
   };
 
   return (
-    <AuthShell title="Welcome back" subtitle="Sign in to continue exchanging skills with student founders.">
+    <AuthShell title="Welcome back" subtitle="Sign in to continue exchanging skills with fellow entrepreneurs.">
       <Controller
         control={control}
         name="email"

@@ -93,12 +93,43 @@ export const createTeam = async (req: Request, res: Response) => {
 };
 
 export const getTeam = async (req: Request, res: Response) => {
+  const userId = authenticatedUserId(req);
   const { teamId } = req.params;
+  
+  const teamCheck = await prisma.team.findUnique({
+    where: { id: teamId },
+    select: { ownerId: true },
+  });
+  if (!teamCheck) throw new AppError(404, "Team not found");
+
+  const isOwner = teamCheck.ownerId === userId;
+
   const team = await prisma.team.findUnique({
     where: { id: teamId },
-    include: teamInclude,
+    include: {
+      owner: { select: { id: true, name: true, avatar: true } },
+      members: { include: { user: { select: { id: true, name: true, avatar: true } } }, orderBy: { joinedAt: "asc" as const } },
+      roles: {
+        where: { isOpen: true },
+        include: {
+          _count: { select: { applications: true } },
+          applications: isOwner
+            ? {
+                include: {
+                  applicant: { select: { id: true, name: true, avatar: true } },
+                },
+                orderBy: { createdAt: "desc" },
+              }
+            : {
+                where: { applicantId: userId, status: "PENDING" },
+              },
+        },
+        orderBy: { createdAt: "asc" as const },
+      },
+      _count: { select: { members: true, roles: true } },
+    },
   });
-  if (!team) throw new AppError(404, "Team not found");
+
   res.json({ success: true, data: team });
 };
 

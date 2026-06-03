@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -9,7 +9,7 @@ import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { CreatePostModal } from "../../src/components/CreatePostModal";
 import { ErrorBoundary } from "../../src/components/ErrorBoundary";
 import { PostCardSkeleton } from "../../src/components/Skeletons";
-import { useFeed, useProfileCompletion, useUnreadCount } from "../../src/lib/apiHooks";
+import { useFeed, useProfileCompletion, useUnreadCount, useUpdatePost, useDeletePost, useUnreadMessageCount } from "../../src/lib/apiHooks";
 import { api } from "../../src/lib/axios";
 import { storage } from "../../src/lib/storage";
 import { useAuthStore } from "../../src/store/useAuthStore";
@@ -38,7 +38,7 @@ function DashboardCard() {
 
   const { data: wallet } = useQuery({ queryKey: ["wallet"], queryFn: async () => { const r = await api.get("/wallet"); return r.data.data; } });
   const { data: exchanges } = useQuery({ queryKey: ["exchanges"], queryFn: async () => { const r = await api.get("/exchanges?status=PENDING"); return r.data; } });
-  const { data: messages } = useQuery({ queryKey: ["conversations"], queryFn: async () => { const r = await api.get("/messages/conversations"); const c = r.data.data; return c?.reduce((s: number, x: any) => s + (x.unreadCount ?? 0), 0) ?? 0; } });
+  const { data: messages } = useUnreadMessageCount();
 
   useEffect(() => {
     storage.getItem("dashboard_last_seen").then((d) => {
@@ -99,6 +99,8 @@ export default function FeedScreen() {
   const [createOpen, setCreateOpen] = useState(false);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useFeed(filter);
   const { data: unreadCount } = useUnreadCount();
+  const updatePost = useUpdatePost();
+  const deletePost = useDeletePost();
 
   const allPosts = data?.pages.flatMap((p) => p.data) ?? [];
 
@@ -135,20 +137,25 @@ export default function FeedScreen() {
             renderItem={({ item }) => (
               <TouchableOpacity
                 onPress={() => setFilter(item.key)}
+                activeOpacity={0.88}
                 className={`mr-2 flex-row items-center rounded-xl border px-4 py-2.5 ${
                   filter === item.key
                     ? "border-brand bg-brand"
                     : "border-slate-200 bg-white"
                 }`}
+                style={filter === item.key ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
               >
                 <Ionicons
                   name={filterIcons[item.key] as any}
                   size={14}
                   color={filter === item.key ? "#FFFFFF" : "#667085"}
                 />
-                <Text className={`ml-1.5 text-sm font-medium ${
-                  filter === item.key ? "text-white" : "text-muted"
-                }`}>{item.label}</Text>
+                <Text
+                  className={`ml-1.5 text-sm font-medium ${
+                    filter === item.key ? "text-white" : "text-muted"
+                  }`}
+                  style={filter === item.key ? { color: "#FFFFFF" } : undefined}
+                >{item.label}</Text>
               </TouchableOpacity>
             )}
           />
@@ -170,14 +177,17 @@ export default function FeedScreen() {
                 <PostCardSkeleton />
               </>
             ) : (
-              <View className="mt-10 items-center">
-                <Text className="mb-2 text-lg font-semibold text-ink">No posts yet</Text>
-                <Text className="mb-4 text-sm text-muted">Be the first to share!</Text>
+              <View className="mt-16 items-center px-4">
+                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
+                  <Ionicons name="newspaper-outline" size={36} color="#5B4DFF" />
+                </View>
+                <Text className="mt-5 text-xl font-bold text-ink">No posts yet</Text>
+                <Text className="mt-2 text-center text-sm leading-5 text-muted">The feed is empty. Share your first update, milestone, or launch with the community!</Text>
                 <TouchableOpacity
                   onPress={() => setCreateOpen(true)}
-                  className="rounded-full bg-brand px-8 py-3"
+                  className="mt-6 rounded-full bg-brand px-8 py-3.5"
                 >
-                  <Text className="font-semibold text-white">Create Post</Text>
+                  <Text className="font-semibold text-white">Create Your First Post</Text>
                 </TouchableOpacity>
               </View>
             )
@@ -188,6 +198,8 @@ export default function FeedScreen() {
                 post={item}
                 onCommentPress={(postId) => router.push(`/post/${postId}` as any)}
                 onUserPress={(userId) => router.push(`/profile/${userId}` as any)}
+                onDelete={(postId) => deletePost.mutate(postId)}
+                onEdit={(postId, content) => updatePost.mutateAsync({ postId, content })}
               />
             )
           }

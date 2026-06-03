@@ -1,6 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
-import { View, Text } from "react-native";
+import { View, Text, Platform } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useUnreadMessageCount } from "../../src/lib/apiHooks";
 
 const icons = {
@@ -26,14 +27,28 @@ function MessagesIcon({ color, size }: { color: string; size: number }) {
 }
 
 export default function TabLayout() {
+  const insets = useSafeAreaInsets();
+  const bottomPadding = Math.max(insets.bottom, Platform.OS === "ios" ? 8 : 4);
+
   return (
     <Tabs
       screenOptions={({ route }) => ({
         headerShown: false,
         tabBarActiveTintColor: "#5B4DFF",
         tabBarInactiveTintColor: "#98A2B3",
-        tabBarStyle: { height: 78, paddingTop: 10, paddingBottom: 18, borderTopColor: "#EAECF0" },
-        tabBarLabelStyle: { fontSize: 11, fontWeight: "600" },
+        tabBarStyle: {
+          height: 60 + bottomPadding,
+          paddingTop: 8,
+          paddingBottom: bottomPadding,
+          borderTopColor: "#EAECF0",
+          elevation: 8,
+          shadowColor: "#000",
+          shadowOpacity: 0.08,
+          shadowRadius: 12,
+          shadowOffset: { width: 0, height: -4 },
+        },
+        tabBarLabelStyle: { fontSize: 11, fontWeight: "600", marginTop: 2 },
+        tabBarItemStyle: { paddingVertical: 4, minHeight: 48 },
         tabBarIcon: ({ color, size }) =>
           route.name === "messages" ? (
             <MessagesIcon color={color} size={size} />
