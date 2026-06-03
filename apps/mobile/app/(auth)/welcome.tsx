@@ -5,7 +5,6 @@ import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { AppText } from "../../src/components/ui/AppText";
-import { AppCard } from "../../src/components/ui/AppCard";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import { Colors } from "../../src/constants/theme";
 
@@ -21,33 +20,33 @@ export default function WelcomeScreen() {
 
   return (
     <SafeAreaView className="flex-1 px-6" style={{ backgroundColor: theme.background }}>
-      <View className="mt-4 flex-row items-center">
-        <View className="h-12 w-12 items-center justify-center rounded-2xl" style={{ backgroundColor: Colors.brand }}>
-          <AppText variant="h2" style={{ color: '#FFFFFF' }}>B</AppText>
+      <View style={{ marginTop: 24, flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: Colors.brand, shadowColor: Colors.brand, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 }}>
+          <AppText variant="h2" style={{ color: '#FFFFFF', fontFamily: 'Outfit_700Bold' }}>B</AppText>
         </View>
-        <AppText variant="h1" className="ml-3">BizSkills</AppText>
+        <AppText variant="h1" style={{ marginLeft: 16, fontSize: 28 }}>BizSkills</AppText>
       </View>
 
-      <AppCard elevated style={{ marginTop: 56, padding: 28, backgroundColor: theme.isDark ? '#231F35' : Colors.ink }}>
-        <View className="mb-8 h-14 w-14 items-center justify-center rounded-2xl bg-white/10">
-          <Ionicons name="sparkles-outline" size={26} color="#FFB547" />
+      <View style={{ marginTop: 48, padding: 32, borderRadius: 32, backgroundColor: Colors.inkPrimary, shadowColor: '#000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.15, shadowRadius: 24, elevation: 12 }}>
+        <View style={{ marginBottom: 32, height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 20, backgroundColor: 'rgba(255, 255, 255, 0.1)' }}>
+          <Ionicons name="sparkles" size={28} color="#FFB547" />
         </View>
-        <AppText variant="h1" style={{ color: '#FFFFFF', fontSize: 36, lineHeight: 46 }}>
+        <AppText variant="h1" style={{ color: '#FFFFFF', fontSize: 36, lineHeight: 44, fontFamily: 'Outfit_700Bold' }}>
           Trade skills.{"\n"}Build businesses.{"\n"}Grow together.
         </AppText>
-        <AppText variant="body" style={{ color: '#E2E8F0', marginTop: 20, fontSize: 16 }}>
+        <AppText variant="body" style={{ color: '#94A3B8', marginTop: 20, fontSize: 16, lineHeight: 24 }}>
           Exchange design, marketing and creative talent using BizCoins instead of cash.
         </AppText>
-      </AppCard>
+      </View>
 
-      <View className="mt-5 flex-row justify-between">
+      <View style={{ marginTop: 32, flexDirection: 'row', justifyContent: 'space-between' }}>
         {benefits.map((benefit) => (
-          <AppCard key={benefit.label} style={{ width: '31%', alignItems: 'center', paddingVertical: 16 }}>
-            <Ionicons name={benefit.icon} size={24} color={Colors.brand} />
-            <AppText variant="label" style={{ color: theme.textSecondary, marginTop: 12 }}>
+          <View key={benefit.label} style={{ width: '31%', alignItems: 'center', paddingVertical: 20, paddingHorizontal: 12, borderRadius: 24, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.border, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 }}>
+            <Ionicons name={benefit.icon} size={28} color={Colors.brand} />
+            <AppText variant="label" style={{ color: theme.textSecondary, marginTop: 12, textAlign: 'center', fontSize: 12, fontFamily: 'Outfit_600SemiBold' }}>
               {benefit.label}
             </AppText>
-          </AppCard>
+          </View>
         ))}
       </View>
 

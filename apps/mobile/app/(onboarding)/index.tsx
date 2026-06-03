@@ -8,7 +8,8 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { AppButton } from "../../src/components/AppButton";
+import { AppButton } from "../../src/components/ui/AppButton";
+import { AppText } from "../../src/components/ui/AppText";
 import { FormField } from "../../src/components/FormField";
 import { SelectableChip } from "../../src/components/SelectableChip";
 import { api, readApiError } from "../../src/lib/axios";
@@ -134,19 +135,18 @@ export default function OnboardingScreen() {
   };
 
   const renderStepIndicator = () => (
-    <View className="mb-6">
-      <View className="flex-row items-center justify-between">
+    <View style={{ marginBottom: 32 }}>
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 12 }}>
         {stepLabels.map((label, i) => (
-          <View key={label} className="items-center" style={{ width: "20%" }}>
-            <View className={`h-8 w-8 items-center justify-center rounded-full ${i <= step ? "bg-brand" : "bg-slate-200"}`}>
-              <Text className={`text-xs font-bold ${i <= step ? "text-white" : "text-slate-500"}`}>{i + 1}</Text>
-            </View>
-            <Text className={`mt-1 text-[10px] ${i <= step ? "font-semibold text-brand" : "text-muted"}`}>{label}</Text>
+          <View key={label} style={{ flex: 1, alignItems: 'center' }}>
+            <AppText style={{ fontSize: 10, fontFamily: i <= step ? 'Outfit_700Bold' : 'Outfit_600SemiBold', color: i <= step ? '#5B4DFF' : '#94A3B8' }}>{label}</AppText>
           </View>
         ))}
       </View>
-      <View className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200">
-        <View className={`h-full rounded-full bg-brand`} style={{ width: `${((step + 1) / 5) * 100}%` }} />
+      <View style={{ flexDirection: 'row', gap: 4 }}>
+        {stepLabels.map((_, i) => (
+          <View key={i} style={{ flex: 1, height: 4, borderRadius: 2, backgroundColor: i <= step ? '#5B4DFF' : '#E2E8F0', opacity: i === step ? 1 : i < step ? 0.5 : 1 }} />
+        ))}
       </View>
     </View>
   );
@@ -154,22 +154,22 @@ export default function OnboardingScreen() {
   const renderSkillCards = (skills: typeof offeredSkills, type: "offered" | "needed") => (
     <View>
       {skills.map((skill, i) => (
-        <View key={i} className="mb-2 flex-row items-center justify-between rounded-2xl bg-white p-4">
-          <View className="flex-1">
-            <Text className="font-semibold text-ink">{skill.title}</Text>
-            <Text className="text-xs text-muted">{skill.category} · {skill.level} · {Math.round(skill.coinValue / 10) * 10} BC</Text>
+        <View key={i} style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 20, backgroundColor: '#FFFFFF', padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 2 }}>
+          <View style={{ flex: 1 }}>
+            <AppText variant="h3">{skill.title}</AppText>
+            <AppText style={{ marginTop: 4, fontSize: 12, color: '#64748B', fontFamily: 'Outfit_500Medium' }}>{skill.category} · {skill.level} · {Math.round(skill.coinValue / 10) * 10} BC</AppText>
           </View>
-          <TouchableOpacity onPress={() => removeSkill(i, type)} className="ml-2 rounded-full bg-red-50 p-2">
-            <Ionicons name="trash-outline" size={16} color="#EF4444" />
+          <TouchableOpacity onPress={() => removeSkill(i, type)} style={{ marginLeft: 16, height: 36, width: 36, borderRadius: 18, backgroundColor: '#FEF2F2', alignItems: 'center', justifyContent: 'center' }}>
+            <Ionicons name="trash" size={18} color="#EF4444" />
           </TouchableOpacity>
         </View>
       ))}
       <TouchableOpacity
         onPress={() => setShowSkillForm(type)}
-        className="mb-4 flex-row items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 py-4"
+        style={{ marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', borderRadius: 20, borderWidth: 2, borderStyle: 'dashed', borderColor: '#CBD5E1', paddingVertical: 20 }}
       >
-        <Ionicons name="add-circle-outline" size={20} color="#5B4DFF" />
-        <Text className="ml-2 font-semibold text-brand">Add Skill</Text>
+        <Ionicons name="add" size={24} color="#5B4DFF" />
+        <AppText style={{ marginLeft: 8, fontSize: 16, fontFamily: 'Outfit_600SemiBold', color: '#5B4DFF' }}>Add Skill</AppText>
       </TouchableOpacity>
     </View>
   );
@@ -181,52 +181,41 @@ export default function OnboardingScreen() {
       return <Text className="mb-4 text-center text-sm text-muted">Maximum 5 skills added.</Text>;
     }
     return (
-      <View className="mb-4 rounded-2xl border border-brand/20 bg-white p-4">
-        <Text className="mb-3 text-base font-bold text-ink">Add Skill</Text>
+      <View style={{ marginBottom: 24, borderRadius: 24, backgroundColor: '#FFFFFF', padding: 24, shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.1, shadowRadius: 24, elevation: 4 }}>
+        <AppText variant="h3" style={{ marginBottom: 20 }}>Add Skill</AppText>
         <FormField label="Title" placeholder="e.g. Logo Design" value={skillForm.title} onChangeText={(t) => setSkillForm((p) => ({ ...p, title: t }))} />
-        <Text className="mb-2 text-sm font-medium text-ink">Category</Text>
-        <View className="mb-4 flex-row flex-wrap">
+        <AppText variant="label" style={{ marginBottom: 12 }}>Category</AppText>
+        <View style={{ marginBottom: 20, flexDirection: 'row', flexWrap: 'wrap' }}>
           {categories.map((c) => (
-            <SelectableChip
-              key={c.value}
-              label={c.label}
-              selected={skillForm.category === c.value}
-              onPress={() => setSkillForm((p) => ({ ...p, category: c.value }))}
-            />
+            <SelectableChip key={c.value} label={c.label} selected={skillForm.category === c.value} onPress={() => setSkillForm((p) => ({ ...p, category: c.value }))} />
           ))}
         </View>
-        <Text className="mb-2 text-sm font-medium text-ink">Level</Text>
-        <View className="mb-4 flex-row flex-wrap">
+        <AppText variant="label" style={{ marginBottom: 12 }}>Level</AppText>
+        <View style={{ marginBottom: 20, flexDirection: 'row', flexWrap: 'wrap' }}>
           {levels.map((l) => (
-            <SelectableChip
-              key={l.value}
-              label={l.label}
-              selected={skillForm.level === l.value}
-              onPress={() => setSkillForm((p) => ({ ...p, level: l.value }))}
-              chipStyle="pill"
-            />
+            <SelectableChip key={l.value} label={l.label} selected={skillForm.level === l.value} onPress={() => setSkillForm((p) => ({ ...p, level: l.value }))} chipStyle="pill" />
           ))}
         </View>
-        <Text className="mb-1 text-sm font-medium text-ink">BizCoin Value: {Math.round(skillForm.coinValue / 10) * 10} BC</Text>
-        <View className="mb-4 h-8 justify-center">
-          <View className="flex-row items-center">
-            <Text className="mr-2 text-xs text-muted">10</Text>
-            <View className="flex-1 rounded-full bg-surface">
-              <View className="mx-1 my-1.5 h-1 rounded-full bg-brand" style={{ width: `${(skillForm.coinValue / 200) * 100}%` }} />
+        <AppText variant="label" style={{ marginBottom: 8 }}>BizCoin Value: {Math.round(skillForm.coinValue / 10) * 10} BC</AppText>
+        <View style={{ marginBottom: 24, height: 32, justifyContent: 'center' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <AppText style={{ marginRight: 8, fontSize: 12, color: '#94A3B8' }}>10</AppText>
+            <View style={{ flex: 1, borderRadius: 999, backgroundColor: '#F1F5F9', height: 8 }}>
+              <View style={{ height: '100%', borderRadius: 999, backgroundColor: '#5B4DFF', width: `${(skillForm.coinValue / 200) * 100}%` }} />
             </View>
-            <Text className="ml-2 text-xs text-muted">200</Text>
+            <AppText style={{ marginLeft: 8, fontSize: 12, color: '#94A3B8' }}>200</AppText>
           </View>
-          <View className="mt-1 flex-row justify-between px-1">
+          <View style={{ marginTop: 8, flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 4 }}>
             {[10, 50, 100, 150, 200].map((v) => (
-              <TouchableOpacity key={v} onPress={() => setSkillForm((p) => ({ ...p, coinValue: v }))} className={`rounded px-2 py-0.5 ${Math.round(skillForm.coinValue / 10) * 10 === v ? "bg-brand/10" : ""}`}>
-                <Text className={`text-[10px] ${Math.round(skillForm.coinValue / 10) * 10 === v ? "font-bold text-brand" : "text-muted"}`}>{v}</Text>
+              <TouchableOpacity key={v} onPress={() => setSkillForm((p) => ({ ...p, coinValue: v }))} style={{ paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8, backgroundColor: Math.round(skillForm.coinValue / 10) * 10 === v ? 'rgba(91, 77, 255, 0.1)' : 'transparent' }}>
+                <AppText style={{ fontSize: 10, fontFamily: 'Outfit_700Bold', color: Math.round(skillForm.coinValue / 10) * 10 === v ? '#5B4DFF' : '#94A3B8' }}>{v}</AppText>
               </TouchableOpacity>
             ))}
           </View>
         </View>
-        <View className="flex-row">
-          <AppButton label="Cancel" variant="secondary" onPress={() => setShowSkillForm(null)} className="mr-2 flex-1" />
-          <AppButton label="Add" onPress={addSkillToList} className="flex-1" disabled={!canAddSkill} />
+        <View style={{ flexDirection: 'row' }}>
+          <AppButton label="Cancel" variant="secondary" onPress={() => setShowSkillForm(null)} style={{ marginRight: 12, flex: 1 }} />
+          <AppButton label="Add" onPress={addSkillToList} style={{ flex: 1 }} disabled={!canAddSkill} />
         </View>
       </View>
     );
@@ -345,32 +334,36 @@ export default function OnboardingScreen() {
       case 4:
         return (
           <>
-            <Text className="mb-2 text-2xl font-bold text-ink">Preview</Text>
-            <Text className="mb-6 text-sm text-muted">Here's your profile. Looks good?</Text>
-            <View className="rounded-3xl bg-white p-6">
-              <View className="items-center">
-                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-brand">
-                  <Text className="text-3xl font-bold text-white">{watch("name")[0] ?? "B"}</Text>
+            <AppText variant="h1" style={{ marginBottom: 8 }}>Preview</AppText>
+            <AppText variant="body" style={{ color: '#64748B', marginBottom: 32 }}>Here's your profile. Looks good?</AppText>
+            <View style={{ borderRadius: 32, backgroundColor: '#FFFFFF', padding: 32, shadowColor: '#000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.1, shadowRadius: 24, elevation: 8 }}>
+              <View style={{ alignItems: 'center' }}>
+                <View style={{ height: 96, width: 96, alignItems: 'center', justifyContent: 'center', borderRadius: 32, backgroundColor: '#5B4DFF', shadowColor: '#5B4DFF', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8 }}>
+                  <AppText style={{ fontSize: 40, fontFamily: 'Outfit_700Bold', color: '#FFFFFF' }}>{watch("name")[0] ?? "B"}</AppText>
                 </View>
-                <Text className="mt-4 text-xl font-bold text-ink">{watch("name")}</Text>
-                <Text className="text-sm text-muted">{watch("location")}</Text>
-                <View className="mt-3 flex-row items-center">
+                <AppText variant="h2" style={{ marginTop: 24 }}>{watch("name")}</AppText>
+                <AppText style={{ marginTop: 4, fontSize: 14, color: '#64748B', fontFamily: 'Outfit_500Medium' }}>{watch("location")}</AppText>
+                <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center' }}>
                   <StageBadgePreview stage={watch("stage")} />
-                  <View className="ml-2 rounded-full bg-indigo-50 px-3 py-1.5">
-                    <Text className="text-xs font-medium text-brand">{categories.find((c) => c.value === watch("industry"))?.label}</Text>
+                  <View style={{ marginLeft: 8, borderRadius: 999, backgroundColor: 'rgba(91, 77, 255, 0.1)', paddingHorizontal: 12, paddingVertical: 6 }}>
+                    <AppText style={{ fontSize: 12, fontFamily: 'Outfit_600SemiBold', color: '#5B4DFF' }}>{categories.find((c) => c.value === watch("industry"))?.label}</AppText>
                   </View>
                 </View>
               </View>
-              {watch("bio") ? <Text className="mt-4 text-sm leading-6 text-muted">{watch("bio")}</Text> : null}
-              <Text className="mt-5 text-sm font-bold text-ink">{watch("businessName")}</Text>
-              <Text className="mt-1 text-sm text-muted">{watch("description")}</Text>
+              {watch("bio") ? <AppText style={{ marginTop: 24, fontSize: 14, lineHeight: 22, color: '#64748B', textAlign: 'center' }}>{watch("bio")}</AppText> : null}
+              
+              <View style={{ marginTop: 32, height: 1, backgroundColor: '#F1F5F9' }} />
+              
+              <AppText variant="h3" style={{ marginTop: 24 }}>{watch("businessName")}</AppText>
+              <AppText style={{ marginTop: 4, fontSize: 14, lineHeight: 22, color: '#64748B' }}>{watch("description")}</AppText>
+              
               {offeredSkills.length > 0 && (
                 <>
-                  <Text className="mt-5 mb-2 text-sm font-bold text-ink">Offers ({offeredSkills.length})</Text>
-                  <View className="flex-row flex-wrap">
+                  <AppText variant="label" style={{ marginTop: 24, marginBottom: 12 }}>Offers ({offeredSkills.length})</AppText>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                     {offeredSkills.map((s, i) => (
-                      <View key={i} className="mr-2 mb-2 rounded-full bg-indigo-50 px-3 py-1.5">
-                        <Text className="text-xs font-medium text-brand">{s.title}</Text>
+                      <View key={i} style={{ marginRight: 8, marginBottom: 8, borderRadius: 999, backgroundColor: 'rgba(91, 77, 255, 0.1)', paddingHorizontal: 12, paddingVertical: 6 }}>
+                        <AppText style={{ fontSize: 12, fontFamily: 'Outfit_600SemiBold', color: '#5B4DFF' }}>{s.title}</AppText>
                       </View>
                     ))}
                   </View>
@@ -378,20 +371,20 @@ export default function OnboardingScreen() {
               )}
               {neededSkills.length > 0 && (
                 <>
-                  <Text className="mt-3 mb-2 text-sm font-bold text-ink">Needs ({neededSkills.length})</Text>
-                  <View className="flex-row flex-wrap">
+                  <AppText variant="label" style={{ marginTop: 24, marginBottom: 12 }}>Needs ({neededSkills.length})</AppText>
+                  <View style={{ flexDirection: 'row', flexWrap: 'wrap' }}>
                     {neededSkills.map((s, i) => (
-                      <View key={i} className="mr-2 mb-2 rounded-full bg-amber-50 px-3 py-1.5">
-                        <Text className="text-xs font-medium text-amber-700">{s.title}</Text>
+                      <View key={i} style={{ marginRight: 8, marginBottom: 8, borderRadius: 999, backgroundColor: 'rgba(217, 119, 6, 0.1)', paddingHorizontal: 12, paddingVertical: 6 }}>
+                        <AppText style={{ fontSize: 12, fontFamily: 'Outfit_600SemiBold', color: '#D97706' }}>{s.title}</AppText>
                       </View>
                     ))}
                   </View>
                 </>
               )}
             </View>
-            <View className="mt-6 flex-row">
-              <AppButton label="Back" variant="secondary" onPress={() => setStep(3)} className="mr-2 flex-1" />
-              <AppButton label="Looks Good" onPress={handleSubmit(submit)} className="flex-1" />
+            <View style={{ marginTop: 32, flexDirection: 'row' }}>
+              <AppButton label="Back" variant="secondary" onPress={() => setStep(3)} style={{ marginRight: 12, flex: 1 }} />
+              <AppButton label="Looks Good" onPress={handleSubmit(submit)} style={{ flex: 1 }} />
             </View>
           </>
         );

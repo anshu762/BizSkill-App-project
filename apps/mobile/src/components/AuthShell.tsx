@@ -16,18 +16,18 @@ export function AuthShell({ title, subtitle, children }: AuthShellProps) {
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="flex-grow px-6 pb-8">
-          <View className="mt-8 flex-row items-center">
-            <View className="h-11 w-11 items-center justify-center rounded-2xl" style={{ backgroundColor: Colors.brand }}>
-              <AppText variant="h2" style={{ color: '#FFFFFF' }}>B</AppText>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+          <View style={{ marginTop: 40, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: Colors.brand, shadowColor: Colors.brand, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 }}>
+              <AppText variant="h2" style={{ color: '#FFFFFF', fontFamily: 'Outfit_700Bold' }}>B</AppText>
             </View>
-            <AppText variant="h2" className="ml-3">BizSkills</AppText>
+            <AppText variant="h1" style={{ marginLeft: 16, fontSize: 24 }}>BizSkills</AppText>
           </View>
-          <View className="mt-14">
-            <AppText variant="h1">{title}</AppText>
-            <AppText variant="body" style={{ color: theme.textSecondary, marginTop: 12 }}>{subtitle}</AppText>
+          <View style={{ marginTop: 48, marginBottom: 32 }}>
+            <AppText variant="h1" style={{ fontSize: 32, lineHeight: 40 }}>{title}</AppText>
+            <AppText variant="body" style={{ color: theme.textSecondary, marginTop: 12, fontSize: 16, lineHeight: 24 }}>{subtitle}</AppText>
           </View>
-          <View className="mt-9">{children}</View>
+          <View>{children}</View>
         </ScrollView>
       </SafeAreaView>
     </KeyboardAvoidingView>

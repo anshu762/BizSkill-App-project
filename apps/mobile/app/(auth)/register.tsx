@@ -1,7 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { TouchableOpacity } from "react-native";
+import { TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
 import { AppButton } from "../../src/components/ui/AppButton";
@@ -56,12 +56,14 @@ export default function RegisterScreen() {
       <Controller control={control} name="confirmPassword" render={({ field, fieldState }) => (
         <FormField label="Confirm password" placeholder="Repeat password" secureTextEntry value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
       )} />
-      <AppButton label="Create Account" loading={isLoading} onPress={handleSubmit(submit)} className="mt-2" />
-      <TouchableOpacity onPress={() => router.push("/(auth)/login")} className="mt-6">
-        <AppText variant="body" style={{ textAlign: 'center' }}>
-          Already registered? <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: '#5B4DFF' }}>Sign in</AppText>
-        </AppText>
-      </TouchableOpacity>
+      <View style={{ marginTop: 32 }}>
+        <AppButton label="Create Account" loading={isLoading} onPress={handleSubmit(submit)} size="lg" />
+        <TouchableOpacity onPress={() => router.push("/(auth)/login")} style={{ marginTop: 32, alignItems: 'center' }}>
+          <AppText variant="body" style={{ color: '#64748B' }}>
+            Already registered? <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: '#5B4DFF' }}>Sign in</AppText>
+          </AppText>
+        </TouchableOpacity>
+      </View>
     </AuthShell>
   );
 }
