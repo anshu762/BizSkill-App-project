@@ -3,8 +3,11 @@ import Constants from "expo-constants";
 import { Platform } from "react-native";
 
 export function getBaseUrl(): string {
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+  const isLocalhost = apiUrl && (apiUrl.includes("localhost") || apiUrl.includes("127.0.0.1"));
+
+  if (apiUrl && !(Platform.OS !== "web" && isLocalhost)) {
+    return apiUrl;
   }
 
   if (Platform.OS === "web") return "http://localhost:3000";
