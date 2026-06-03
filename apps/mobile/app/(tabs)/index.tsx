@@ -1,20 +1,27 @@
+import React, { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator, FlatList, TouchableOpacity, View } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useQuery } from "@tanstack/react-query";
-import { useCallback, useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+
+import { AppText } from "../../src/components/ui/AppText";
+import { AppCard } from "../../src/components/ui/AppCard";
+import { AppButton } from "../../src/components/ui/AppButton";
+import { SkeletonPostCard } from "../../src/components/ui/ShimmerLoader";
+import { EmptyFeed } from "../../src/components/ui/EmptyState";
+import { Avatar } from "../../src/components/ui/Avatar";
 import { PostCard } from "../../src/components/PostCard";
-import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { CreatePostModal } from "../../src/components/CreatePostModal";
 import { ErrorBoundary } from "../../src/components/ErrorBoundary";
-import { PostCardSkeleton } from "../../src/components/Skeletons";
 import { useFeed, useProfileCompletion, useUnreadCount, useUpdatePost, useDeletePost, useUnreadMessageCount } from "../../src/lib/apiHooks";
 import { api } from "../../src/lib/axios";
 import { storage } from "../../src/lib/storage";
 import { useAuthStore } from "../../src/store/useAuthStore";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import { Colors } from "../../src/constants/theme";
 
-const filterIcons: Record<string, string> = {
+const filterIcons: Record<string, keyof typeof Ionicons.glyphMap> = {
   all: "apps-outline",
   following: "people-outline",
   launches: "rocket-outline",
@@ -31,10 +38,10 @@ const filters = [
 ];
 
 function DashboardCard() {
-  const router = useRouter();
   const user = useAuthStore((s) => s.user);
   const [visible, setVisible] = useState(false);
   const completion = useProfileCompletion();
+  const theme = useThemeColors();
 
   const { data: wallet } = useQuery({ queryKey: ["wallet"], queryFn: async () => { const r = await api.get("/wallet"); return r.data.data; } });
   const { data: exchanges } = useQuery({ queryKey: ["exchanges"], queryFn: async () => { const r = await api.get("/exchanges?status=PENDING"); return r.data; } });
@@ -57,37 +64,37 @@ function DashboardCard() {
   const unreadMessages = messages ?? 0;
 
   return (
-    <View className="mb-5 rounded-3xl bg-ink p-5">
+    <AppCard elevated style={{ marginBottom: 20, backgroundColor: theme.isDark ? '#231F35' : Colors.ink }}>
       <View className="flex-row items-center justify-between">
-        <Text className="text-sm font-semibold text-white">Your BizSkills Today</Text>
+        <AppText variant="h3" style={{ color: '#FFFFFF' }}>Your BizSkills Today</AppText>
         <TouchableOpacity onPress={dismiss}>
-          <Ionicons name="close" size={18} color="#9CA3AF" />
+          <Ionicons name="close" size={20} color="#9CA3AF" />
         </TouchableOpacity>
       </View>
-      <View className="mt-4 flex-row justify-between">
+      <View className="mt-6 flex-row justify-between">
         <StatItem icon="wallet-outline" value={wallet?.balance ?? user?.bizCoins ?? 0} label="Coins" />
         <StatItem icon="swap-horizontal-outline" value={pendingExchanges} label="Pending" />
         <StatItem icon="chatbubble-ellipses-outline" value={unreadMessages} label="Messages" />
       </View>
-      <View className="mt-4">
+      <View className="mt-6">
         <View className="flex-row items-center justify-between">
-          <Text className="text-xs text-indigo-200">Profile completion</Text>
-          <Text className="text-xs font-semibold text-white">{completion}%</Text>
+          <AppText variant="caption" style={{ color: '#A5B4FC' }}>Profile completion</AppText>
+          <AppText variant="label" style={{ color: '#FFFFFF' }}>{completion}%</AppText>
         </View>
-        <View className="mt-1.5 h-2 overflow-hidden rounded-full bg-indigo-900/50">
+        <View className="mt-2 h-2 overflow-hidden rounded-full bg-indigo-900/50">
           <View className="h-full rounded-full bg-brand" style={{ width: `${completion}%` }} />
         </View>
       </View>
-    </View>
+    </AppCard>
   );
 }
 
-function StatItem({ icon, value, label }: { icon: string; value: number; label: string }) {
+function StatItem({ icon, value, label }: { icon: keyof typeof Ionicons.glyphMap; value: number; label: string }) {
   return (
     <View className="items-center">
-      <Ionicons name={icon as any} size={18} color="#A5B4FC" />
-      <Text className="mt-1 text-lg font-bold text-white">{value}</Text>
-      <Text className="text-xs text-indigo-200">{label}</Text>
+      <Ionicons name={icon} size={20} color="#A5B4FC" />
+      <AppText variant="h2" style={{ color: '#FFFFFF', marginTop: 8 }}>{value}</AppText>
+      <AppText variant="caption" style={{ color: '#A5B4FC', marginTop: 2 }}>{label}</AppText>
     </View>
   );
 }
@@ -95,6 +102,7 @@ function StatItem({ icon, value, label }: { icon: string; value: number; label: 
 export default function FeedScreen() {
   const router = useRouter();
   const user = useAuthStore((state) => state.user);
+  const theme = useThemeColors();
   const [filter, setFilter] = useState("all");
   const [createOpen, setCreateOpen] = useState(false);
   const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isLoading } = useFeed(filter);
@@ -106,15 +114,15 @@ export default function FeedScreen() {
 
   return (
     <ErrorBoundary>
-      <SafeAreaView className="flex-1 bg-surface">
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
         <View className="px-6">
           <View className="mt-4 mb-5 flex-row items-center justify-between">
-            <Text className="text-2xl font-bold text-ink">BizSkills</Text>
+            <AppText variant="h1">BizSkills</AppText>
             <TouchableOpacity onPress={() => router.push("/notifications" as any)} className="relative">
-              <Ionicons name="notifications-outline" size={24} color="#101828" />
+              <Ionicons name="notifications-outline" size={26} color={theme.textPrimary} />
               {(unreadCount ?? 0) > 0 && (
                 <View className="absolute -right-1.5 -top-1.5 h-5 w-5 items-center justify-center rounded-full bg-red-500">
-                  <Text className="text-[10px] font-bold text-white">{unreadCount! > 9 ? "9+" : unreadCount}</Text>
+                  <AppText style={{ fontSize: 10, color: '#FFFFFF', fontFamily: 'Outfit_700Bold' }}>{unreadCount! > 9 ? "9+" : unreadCount}</AppText>
                 </View>
               )}
             </TouchableOpacity>
@@ -122,10 +130,13 @@ export default function FeedScreen() {
 
           <TouchableOpacity
             onPress={() => setCreateOpen(true)}
-            className="mb-4 flex-row items-center rounded-3xl bg-white p-4"
+            activeOpacity={0.8}
+            style={{ marginBottom: 16 }}
           >
-            <AvatarWithFallback uri={user?.avatar} name={user?.name ?? "B"} size={40} />
-            <Text className="ml-3 text-sm text-muted">What's happening with your business?</Text>
+            <AppCard style={{ flexDirection: 'row', alignItems: 'center', padding: 16 }}>
+              <Avatar uri={user?.avatar} name={user?.name ?? "B"} size={40} />
+              <AppText variant="body" style={{ color: theme.textTertiary, marginLeft: 12 }}>What's happening with your business?</AppText>
+            </AppCard>
           </TouchableOpacity>
 
           <FlatList
@@ -134,66 +145,57 @@ export default function FeedScreen() {
             data={filters}
             keyExtractor={(f) => f.key}
             className="mb-4"
-            renderItem={({ item }) => (
-              <TouchableOpacity
-                onPress={() => setFilter(item.key)}
-                activeOpacity={0.88}
-                className={`mr-2 flex-row items-center rounded-xl border px-4 py-2.5 ${
-                  filter === item.key
-                    ? "border-brand bg-brand"
-                    : "border-slate-200 bg-white"
-                }`}
-                style={filter === item.key ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
-              >
-                <Ionicons
-                  name={filterIcons[item.key] as any}
-                  size={14}
-                  color={filter === item.key ? "#FFFFFF" : "#667085"}
-                />
-                <Text
-                  className={`ml-1.5 text-sm font-medium ${
-                    filter === item.key ? "text-white" : "text-muted"
-                  }`}
-                  style={filter === item.key ? { color: "#FFFFFF" } : undefined}
-                >{item.label}</Text>
-              </TouchableOpacity>
-            )}
+            renderItem={({ item }) => {
+              const isSelected = filter === item.key;
+              return (
+                <TouchableOpacity
+                  onPress={() => setFilter(item.key)}
+                  activeOpacity={0.88}
+                  className="mr-2 flex-row items-center rounded-xl border px-4 py-2.5"
+                  style={{
+                    backgroundColor: isSelected ? Colors.brand : theme.elevated,
+                    borderColor: isSelected ? Colors.brand : theme.border,
+                  }}
+                >
+                  <Ionicons
+                    name={filterIcons[item.key]}
+                    size={16}
+                    color={isSelected ? "#FFFFFF" : theme.textSecondary}
+                  />
+                  <AppText
+                    variant="label"
+                    style={{
+                      marginLeft: 6,
+                      color: isSelected ? "#FFFFFF" : theme.textSecondary,
+                    }}
+                  >{item.label}</AppText>
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
 
         <FlatList
           data={isLoading ? Array(3).fill(null) : allPosts}
           keyExtractor={(item, i) => item?.id ?? String(i)}
-          contentContainerClassName="px-6 pb-8"
+          contentContainerClassName="px-6 pb-24"
           onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
           onEndReachedThreshold={0.5}
           ListHeaderComponent={<DashboardCard />}
-          ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}
+          ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color={Colors.brand} /> : null}
           ListEmptyComponent={
             isLoading ? (
               <>
-                <PostCardSkeleton />
-                <PostCardSkeleton />
-                <PostCardSkeleton />
+                <SkeletonPostCard />
+                <SkeletonPostCard />
+                <SkeletonPostCard />
               </>
             ) : (
-              <View className="mt-16 items-center px-4">
-                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
-                  <Ionicons name="newspaper-outline" size={36} color="#5B4DFF" />
-                </View>
-                <Text className="mt-5 text-xl font-bold text-ink">No posts yet</Text>
-                <Text className="mt-2 text-center text-sm leading-5 text-muted">The feed is empty. Share your first update, milestone, or launch with the community!</Text>
-                <TouchableOpacity
-                  onPress={() => setCreateOpen(true)}
-                  className="mt-6 rounded-full bg-brand px-8 py-3.5"
-                >
-                  <Text className="font-semibold text-white">Create Your First Post</Text>
-                </TouchableOpacity>
-              </View>
+              <EmptyFeed onAction={() => setCreateOpen(true)} />
             )
           }
           renderItem={({ item }) =>
-            isLoading ? <PostCardSkeleton /> : (
+            isLoading ? <SkeletonPostCard /> : (
               <PostCard
                 post={item}
                 onCommentPress={(postId) => router.push(`/post/${postId}` as any)}

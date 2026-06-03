@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { AppText } from './AppText';
 import { Colors } from '../../constants/theme';
 
-type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+type AvatarSize = 'xs' | 'sm' | 'md' | 'lg' | 'xl' | number;
 
 interface AvatarProps {
   uri?: string | null;
@@ -23,7 +23,7 @@ const sizeMap = {
 };
 
 export function Avatar({ uri, name, size = 'md', showBorder = false, style }: AvatarProps) {
-  const containerSize = sizeMap[size];
+  const containerSize = typeof size === 'number' ? size : (sizeMap[size as keyof typeof sizeMap] || 40);
 
   const getInitials = (fullName: string) => {
     const parts = fullName.trim().split(' ');

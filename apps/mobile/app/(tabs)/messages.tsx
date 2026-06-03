@@ -1,11 +1,16 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
+import React from "react";
+import { ActivityIndicator, FlatList, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
+import { useRouter } from "expo-router";
+
+import { AppText } from "../../src/components/ui/AppText";
+import { AppCard } from "../../src/components/ui/AppCard";
+import { Avatar } from "../../src/components/ui/Avatar";
+import { EmptyMessages } from "../../src/components/ui/EmptyState";
 import { ErrorBoundary } from "../../src/components/ErrorBoundary";
-import { PageHeader } from "../../src/components/PageHeader";
 import { useConversations } from "../../src/lib/apiHooks";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import { Colors } from "../../src/constants/theme";
 
 function timeAgo(dateStr: string): string {
   const diff = Date.now() - new Date(dateStr).getTime();
@@ -21,60 +26,59 @@ function timeAgo(dateStr: string): string {
 
 export default function MessagesScreen() {
   const router = useRouter();
+  const theme = useThemeColors();
   const { data: conversations, isLoading } = useConversations();
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
-        <ActivityIndicator color="#5B4DFF" size="large" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color={Colors.brand} size="large" />
       </SafeAreaView>
     );
   }
 
   return (
     <ErrorBoundary>
-      <SafeAreaView className="flex-1 bg-surface">
-        <View className="flex-1 px-6">
-          <PageHeader eyebrow="Inbox" title="Messages" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+        <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}>
+          <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', tracking: 2 }}>Inbox</AppText>
+          <AppText variant="h1" style={{ marginTop: 4, marginBottom: 24 }}>Messages</AppText>
+          
           {conversations?.length > 0 ? (
             <FlatList
               data={conversations}
               keyExtractor={(item: any) => item.user.id}
+              contentContainerStyle={{ paddingBottom: 100 }}
               renderItem={({ item }: any) => (
                 <TouchableOpacity
                   onPress={() => router.push(`/messages/${item.user.id}` as any)}
-                  activeOpacity={0.86}
-                  className="mb-3 flex-row items-center rounded-3xl bg-white p-4"
+                  activeOpacity={0.8}
+                  style={{ marginBottom: 12 }}
                 >
-                  <AvatarWithFallback uri={item.user?.avatar} name={item.user?.name?.[0] ?? "?"} size={50} />
-                  <View className="ml-4 flex-1">
-                    <View className="flex-row items-center justify-between">
-                      <Text className="font-semibold text-ink">{item.user.name}</Text>
-                      <Text className="text-xs text-muted">{item.lastMessage ? timeAgo(item.lastMessage.createdAt) : ""}</Text>
+                  <AppCard style={{ flexDirection: 'row', alignItems: 'center', padding: 16 }}>
+                    <Avatar uri={item.user?.avatar} name={item.user?.name?.[0] ?? "?"} size={52} />
+                    <View style={{ marginLeft: 16, flex: 1 }}>
+                      <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{item.user.name}</AppText>
+                        <AppText variant="caption" style={{ color: theme.textTertiary }}>{item.lastMessage ? timeAgo(item.lastMessage.createdAt) : ""}</AppText>
+                      </View>
+                      <View style={{ marginTop: 4, flexDirection: 'row', alignItems: 'center' }}>
+                        <AppText numberOfLines={1} style={{ flex: 1, fontSize: 14, color: item.unreadCount > 0 ? theme.textPrimary : theme.textSecondary, fontFamily: item.unreadCount > 0 ? 'Outfit_600SemiBold' : 'Outfit_400Regular' }}>
+                          {item.lastMessage?.content ?? "No messages yet"}
+                        </AppText>
+                        {item.unreadCount > 0 && (
+                          <View style={{ marginLeft: 8, height: 24, minWidth: 24, alignItems: 'center', justifyContent: 'center', borderRadius: 12, backgroundColor: Colors.danger, paddingHorizontal: 8 }}>
+                            <AppText style={{ fontSize: 12, fontFamily: 'Outfit_700Bold', color: '#FFFFFF' }}>{item.unreadCount}</AppText>
+                          </View>
+                        )}
+                      </View>
                     </View>
-                    <View className="mt-1 flex-row items-center">
-                      <Text numberOfLines={1} className="flex-1 text-sm text-muted">
-                        {item.lastMessage?.content ?? "No messages yet"}
-                      </Text>
-                      {item.unreadCount > 0 && (
-                        <View className="ml-2 h-6 min-w-[24px] items-center justify-center rounded-full bg-brand px-2">
-                          <Text className="text-xs font-bold text-white">{item.unreadCount}</Text>
-                        </View>
-                      )}
-                    </View>
-                  </View>
+                  </AppCard>
                 </TouchableOpacity>
               )}
-              contentContainerClassName="pb-8"
             />
           ) : (
-            <View className="mt-24 items-center px-4">
-              <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
-                <Ionicons name="chatbubble-ellipses-outline" size={36} color="#5B4DFF" />
-              </View>
-              <Text className="mt-5 text-xl font-bold text-ink">No conversations yet</Text>
-              <Text className="mt-2 text-center text-sm leading-5 text-muted">When you connect with other founders, your messages will appear here.</Text>
-            </View>
+            <EmptyMessages />
           )}
         </View>
       </SafeAreaView>

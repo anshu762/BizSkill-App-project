@@ -1,14 +1,22 @@
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, KeyboardAvoidingView, Modal, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, KeyboardAvoidingView, Modal, Platform, ScrollView, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppButton } from "../../src/components/AppButton";
-import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
-import { BizCoinBadge } from "../../src/components/BizCoinBadge";
+import { useQuery } from "@tanstack/react-query";
+
+import { AppText } from "../../src/components/ui/AppText";
+import { AppCard } from "../../src/components/ui/AppCard";
+import { AppButton } from "../../src/components/ui/AppButton";
+import { Avatar } from "../../src/components/ui/Avatar";
+import { BizCoinBadge } from "../../src/components/ui/BizCoinBadge";
+import { SkillChip as BaseSkillChip } from "../../src/components/ui/SkillChip";
+import { ShimmerLoader } from "../../src/components/ui/ShimmerLoader";
+import { EmptyMarketplace } from "../../src/components/ui/EmptyState";
 import { ExchangeModal } from "../../src/components/ExchangeModal";
-import { PageHeader } from "../../src/components/PageHeader";
 import { useDiscover, useMarketplace } from "../../src/lib/apiHooks";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import { Colors } from "../../src/constants/theme";
 
 const categories = [
   { value: "", label: "All" },
@@ -32,6 +40,7 @@ const sortOptions = [
 
 export default function MarketplaceScreen() {
   const router = useRouter();
+  const theme = useThemeColors();
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [category, setCategory] = useState("");
@@ -67,154 +76,155 @@ export default function MarketplaceScreen() {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-      <SafeAreaView className="flex-1 bg-surface">
-        <View className="px-6">
-          <PageHeader eyebrow="Marketplace" title="Find skills" />
-          <View className="mb-4 flex-row items-center">
-            <View className="flex-1 h-14 flex-row items-center rounded-2xl bg-white px-4">
-              <Ionicons name="search-outline" size={20} color="#98A2B3" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+        <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
+          <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', tracking: 2 }}>Marketplace</AppText>
+          <AppText variant="h1" style={{ marginTop: 4 }}>Find skills</AppText>
+          
+          <View style={{ marginTop: 24, marginBottom: 16, flexDirection: 'row', alignItems: 'center' }}>
+            <View style={{ flex: 1, height: 56, flexDirection: 'row', alignItems: 'center', borderRadius: 16, backgroundColor: theme.elevated, paddingHorizontal: 16, borderWidth: 1, borderColor: theme.border }}>
+              <Ionicons name="search-outline" size={20} color={theme.textTertiary} />
               <TextInput
                 placeholder="Search skills or people"
-                placeholderTextColor="#98A2B3"
-                className="ml-3 flex-1 text-base text-ink bg-white"
+                placeholderTextColor={theme.textTertiary}
+                style={{ marginLeft: 12, flex: 1, fontSize: 16, color: theme.textPrimary, fontFamily: 'Outfit_500Medium' }}
                 value={search}
                 onChangeText={handleSearch}
               />
             </View>
-            <TouchableOpacity onPress={() => setFilterOpen(true)} className="ml-3 h-14 w-14 items-center justify-center rounded-2xl bg-white">
-              <Ionicons name="options-outline" size={22} color="#5B4DFF" />
+            <TouchableOpacity onPress={() => setFilterOpen(true)} style={{ marginLeft: 12, height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.border }}>
+              <Ionicons name="options-outline" size={24} color={Colors.brand} />
             </TouchableOpacity>
           </View>
         </View>
 
         {isLoading ? (
-          <View className="px-6">
+          <View style={{ paddingHorizontal: 24 }}>
             {Array.from({ length: 3 }).map((_, i) => (
-              <View key={i} className="mb-4 rounded-3xl bg-white p-5">
-                <View className="flex-row items-center">
-                  <View className="h-10 w-10 rounded-full bg-gray-200" />
-                  <View className="ml-3 flex-1">
-                    <View className="mb-2 h-4 w-32 rounded bg-gray-200" />
-                    <View className="h-3 w-20 rounded bg-gray-200" />
+              <AppCard key={i} style={{ marginBottom: 16 }}>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <ShimmerLoader width={40} height={40} borderRadius={20} />
+                  <View style={{ marginLeft: 12, flex: 1 }}>
+                    <ShimmerLoader width="50%" height={16} style={{ marginBottom: 8 }} />
+                    <ShimmerLoader width="30%" height={12} />
                   </View>
+                  <ShimmerLoader width={70} height={28} borderRadius={14} />
                 </View>
-                <View className="mt-3 h-6 w-24 rounded-full bg-gray-200" />
-                <View className="mt-3 mb-3 h-5 w-48 rounded bg-gray-200" />
-                <View className="h-14 w-full rounded-2xl bg-gray-200" />
-              </View>
+                <ShimmerLoader width="40%" height={24} borderRadius={12} style={{ marginTop: 16 }} />
+                <ShimmerLoader width="80%" height={20} style={{ marginTop: 12, marginBottom: 16 }} />
+                <ShimmerLoader width="100%" height={48} borderRadius={12} />
+              </AppCard>
             ))}
           </View>
         ) : (
           <FlatList
             data={allSkills}
             keyExtractor={(item) => item.id}
-            contentContainerClassName="px-6 pb-4"
+            contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
             ListHeaderComponent={discoverUsers.length > 0 ? () => (
-              <View className="mb-6">
-                <Text className="mb-3 text-lg font-bold text-ink">People who match your skills</Text>
+              <View style={{ marginBottom: 24 }}>
+                <AppText variant="h3" style={{ marginBottom: 16 }}>People who match your skills</AppText>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                   {discoverUsers.map((user: any) => (
                     <TouchableOpacity
                       key={user.id}
                       onPress={() => router.push(`/profile/${user.id}`)}
-                      className="mr-3 items-center rounded-3xl bg-white p-4"
-                      style={{ width: 140 }}
+                      activeOpacity={0.8}
+                      style={{ marginRight: 12, width: 140 }}
                     >
-                      <View className="relative">
-                        <AvatarWithFallback uri={user.avatar} name={user.name?.[0] ?? "?"} size={52} />
-                        <View className="absolute -top-1 -right-1 rounded-full bg-green-500 px-1.5 py-0.5">
-                          <Text className="text-xs font-bold text-white">{user.matchScore}</Text>
+                      <AppCard style={{ alignItems: 'center', padding: 16 }}>
+                        <View style={{ position: 'relative' }}>
+                          <Avatar uri={user.avatar} name={user.name?.[0] ?? "?"} size={52} />
+                          <View style={{ position: 'absolute', top: -4, right: -4, borderRadius: 10, backgroundColor: Colors.success, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 2, borderColor: theme.elevated }}>
+                            <AppText style={{ fontSize: 10, fontFamily: 'Outfit_700Bold', color: '#FFFFFF' }}>{user.matchScore}</AppText>
+                          </View>
                         </View>
-                      </View>
-                      <Text numberOfLines={1} className="mt-2 text-sm font-semibold text-ink">{user.name}</Text>
-                      <Text numberOfLines={1} className="text-xs text-muted">{user.businessProfile?.businessName ?? "Founder"}</Text>
-                      <View className="mt-2 rounded-full bg-green-50 px-3 py-0.5">
-                        <Text className="text-xs font-medium text-green-700">{user.matchScore * 10}% match</Text>
-                      </View>
+                        <AppText numberOfLines={1} style={{ marginTop: 12, fontSize: 14, fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{user.name}</AppText>
+                        <AppText numberOfLines={1} variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>{user.businessProfile?.businessName ?? "Founder"}</AppText>
+                        <View style={{ marginTop: 12, borderRadius: 12, backgroundColor: Colors.successTint, paddingHorizontal: 12, paddingVertical: 4 }}>
+                          <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: Colors.success }}>{user.matchScore * 10}% match</AppText>
+                        </View>
+                      </AppCard>
                     </TouchableOpacity>
                   ))}
                 </ScrollView>
               </View>
             ) : undefined}
+            ListEmptyComponent={() => <EmptyMarketplace onAction={() => { setCategory(""); setLevel(""); setSearch(""); setDebouncedSearch(""); }} />}
             onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
             onEndReachedThreshold={0.5}
-            ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}
+            ListFooterComponent={isFetchingNextPage ? <ActivityIndicator style={{ paddingVertical: 16 }} color={Colors.brand} /> : null}
             renderItem={({ item }) => (
-              <View className="mb-4 rounded-3xl bg-white p-5">
-                <TouchableOpacity onPress={() => router.push(`/profile/${item.userId}`)} className="flex-row items-center">
-                  <AvatarWithFallback uri={item.user?.avatar} name={item.user?.name ?? "?"} size={40} />
-                  <View className="ml-3 flex-1">
-                    <Text className="font-semibold text-ink">{item.user?.name}</Text>
-                    <Text className="text-xs text-muted">{item.user?.businessProfile?.businessName ?? "Founder"}</Text>
+              <AppCard style={{ marginBottom: 16 }}>
+                <TouchableOpacity onPress={() => router.push(`/profile/${item.userId}`)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                  <Avatar uri={item.user?.avatar} name={item.user?.name ?? "?"} size={40} />
+                  <View style={{ marginLeft: 12, flex: 1 }}>
+                    <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{item.user?.name}</AppText>
+                    <AppText variant="caption" style={{ color: theme.textTertiary }}>{item.user?.businessProfile?.businessName ?? "Founder"}</AppText>
                   </View>
                   <BizCoinBadge amount={item.coinValue} />
                 </TouchableOpacity>
-                <View className="mt-3 flex-row items-center">
-                  <View className="rounded-full bg-indigo-50 px-3 py-1">
-                    <Text className="text-xs font-medium text-brand">{item.category}</Text>
-                  </View>
-                  <View className="ml-2 rounded-full bg-gray-100 px-3 py-1">
-                    <Text className="text-xs font-medium capitalize text-gray-600">{item.level.toLowerCase()}</Text>
-                  </View>
+                <View style={{ marginTop: 16 }}>
+                  <BaseSkillChip category={item.category} label={item.title} level={item.level} showLevel />
                 </View>
-                <Text className="mt-3 text-lg font-semibold text-ink">{item.title}</Text>
                 <AppButton
-                  label="Request"
+                  title="Request Exchange"
+                  variant="primary"
                   onPress={() => setExchangeTarget({ userId: item.userId, skillId: item.id })}
-                  className="mt-3"
+                  style={{ marginTop: 20 }}
                 />
-              </View>
+              </AppCard>
             )}
           />
         )}
 
       <Modal visible={filterOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setFilterOpen(false)}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <SafeAreaView className="flex-1 bg-surface">
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
-              <View className="mt-4 mb-6 flex-row items-center justify-between">
-                <Text className="text-xl font-bold text-ink">Filters</Text>
+          <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+              <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <AppText variant="h2">Filters</AppText>
                 <TouchableOpacity onPress={() => setFilterOpen(false)}>
-                  <Ionicons name="close" size={24} color="#101828" />
+                  <Ionicons name="close" size={24} color={theme.textPrimary} />
                 </TouchableOpacity>
               </View>
 
-              <Text className="mb-3 text-sm font-semibold text-ink">Category</Text>
-              <View className="mb-6 flex-row flex-wrap">
+              <AppText variant="label" style={{ marginBottom: 12, color: theme.textPrimary }}>Category</AppText>
+              <View style={{ marginBottom: 24, flexDirection: 'row', flexWrap: 'wrap' }}>
                 {categories.map((c) => (
-                  <TouchableOpacity key={c.value} onPress={() => setCategory(c.value)} className={`mb-2 mr-2 rounded-full px-4 py-3 ${category === c.value ? "bg-brand" : "bg-white"}`}>
-                    <Text className={`text-sm font-medium ${category === c.value ? "text-white" : "text-muted"}`}>{c.label}</Text>
+                  <TouchableOpacity key={c.value} onPress={() => setCategory(c.value)} style={{ marginBottom: 8, marginRight: 8, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: category === c.value ? Colors.brand : theme.elevated, borderWidth: 1, borderColor: category === c.value ? Colors.brand : theme.border }}>
+                    <AppText style={{ fontSize: 14, fontFamily: 'Outfit_500Medium', color: category === c.value ? '#FFFFFF' : theme.textSecondary }}>{c.label}</AppText>
                   </TouchableOpacity>
                 ))}
               </View>
 
-              <Text className="mb-3 text-sm font-semibold text-ink">Level</Text>
-              <View className="mb-6 flex-row flex-wrap">
+              <AppText variant="label" style={{ marginBottom: 12, color: theme.textPrimary }}>Level</AppText>
+              <View style={{ marginBottom: 24, flexDirection: 'row', flexWrap: 'wrap' }}>
                 {levels.map((l) => (
-                  <TouchableOpacity key={l} onPress={() => setLevel(level === l ? "" : l)} className={`mb-2 mr-2 rounded-full px-5 py-3 ${level === l ? "bg-brand" : "bg-white"}`}>
-                    <Text className={`text-sm font-medium capitalize ${level === l ? "text-white" : "text-muted"}`}>{l.toLowerCase()}</Text>
+                  <TouchableOpacity key={l} onPress={() => setLevel(level === l ? "" : l)} style={{ marginBottom: 8, marginRight: 8, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: level === l ? Colors.brand : theme.elevated, borderWidth: 1, borderColor: level === l ? Colors.brand : theme.border }}>
+                    <AppText style={{ fontSize: 14, fontFamily: 'Outfit_500Medium', textTransform: 'capitalize', color: level === l ? '#FFFFFF' : theme.textSecondary }}>{l.toLowerCase()}</AppText>
                   </TouchableOpacity>
                 ))}
               </View>
 
-              <Text className="mb-3 text-sm font-semibold text-ink">BizCoin Range</Text>
-              <View className="mb-6 flex-row">
-                <TextInput placeholder="Min" placeholderTextColor="#98A2B3" keyboardType="number-pad" className="mr-2 flex-1 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink" value={minCoins} onChangeText={setMinCoins} />
-                <TextInput placeholder="Max" placeholderTextColor="#98A2B3" keyboardType="number-pad" className="flex-1 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink" value={maxCoins} onChangeText={setMaxCoins} />
+              <AppText variant="label" style={{ marginBottom: 12, color: theme.textPrimary }}>BizCoin Range</AppText>
+              <View style={{ marginBottom: 24, flexDirection: 'row' }}>
+                <TextInput placeholder="Min" placeholderTextColor={theme.textTertiary} keyboardType="number-pad" style={{ marginRight: 8, flex: 1, height: 56, borderRadius: 16, borderWidth: 1, borderColor: theme.border, backgroundColor: theme.elevated, paddingHorizontal: 16, fontSize: 16, color: theme.textPrimary }} value={minCoins} onChangeText={setMinCoins} />
+                <TextInput placeholder="Max" placeholderTextColor={theme.textTertiary} keyboardType="number-pad" style={{ flex: 1, height: 56, borderRadius: 16, borderWidth: 1, borderColor: theme.border, backgroundColor: theme.elevated, paddingHorizontal: 16, fontSize: 16, color: theme.textPrimary }} value={maxCoins} onChangeText={setMaxCoins} />
               </View>
 
-              <Text className="mb-3 text-sm font-semibold text-ink">Sort By</Text>
-              <View className="mb-8 flex-row flex-wrap">
+              <AppText variant="label" style={{ marginBottom: 12, color: theme.textPrimary }}>Sort By</AppText>
+              <View style={{ marginBottom: 32, flexDirection: 'row', flexWrap: 'wrap' }}>
                 {sortOptions.map((s) => (
-                  <TouchableOpacity key={s.value} onPress={() => setSort(s.value)} className={`mb-2 mr-2 rounded-full px-5 py-3 ${sort === s.value ? "bg-brand" : "bg-white"}`}>
-                    <Text className={`text-sm font-medium ${sort === s.value ? "text-white" : "text-muted"}`}>{s.label}</Text>
+                  <TouchableOpacity key={s.value} onPress={() => setSort(s.value)} style={{ marginBottom: 8, marginRight: 8, borderRadius: 20, paddingHorizontal: 16, paddingVertical: 8, backgroundColor: sort === s.value ? Colors.brand : theme.elevated, borderWidth: 1, borderColor: sort === s.value ? Colors.brand : theme.border }}>
+                    <AppText style={{ fontSize: 14, fontFamily: 'Outfit_500Medium', color: sort === s.value ? '#FFFFFF' : theme.textSecondary }}>{s.label}</AppText>
                   </TouchableOpacity>
                 ))}
               </View>
 
-              <View className="flex-row">
-                <AppButton label="Reset" variant="secondary" onPress={() => { setCategory(""); setLevel(""); setMinCoins(""); setMaxCoins(""); setSort("newest"); }} className="mr-3 flex-1" />
-                <AppButton label="Apply" onPress={() => setFilterOpen(false)} className="flex-1" />
+              <View style={{ flexDirection: 'row' }}>
+                <AppButton title="Reset" variant="secondary" onPress={() => { setCategory(""); setLevel(""); setMinCoins(""); setMaxCoins(""); setSort("newest"); }} style={{ marginRight: 12, flex: 1 }} />
+                <AppButton title="Apply" onPress={() => setFilterOpen(false)} style={{ flex: 1 }} />
               </View>
             </ScrollView>
           </SafeAreaView>

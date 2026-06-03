@@ -1,6 +1,9 @@
 import { type PropsWithChildren } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppText } from "./ui/AppText";
+import { Colors } from "../constants/theme";
+import { useThemeColors } from "../hooks/useThemeColors";
 
 interface AuthShellProps extends PropsWithChildren {
   title: string;
@@ -8,19 +11,21 @@ interface AuthShellProps extends PropsWithChildren {
 }
 
 export function AuthShell({ title, subtitle, children }: AuthShellProps) {
+  const theme = useThemeColors();
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-      <SafeAreaView className="flex-1 bg-surface">
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="flex-grow px-6 pb-8">
           <View className="mt-8 flex-row items-center">
-            <View className="h-11 w-11 items-center justify-center rounded-2xl bg-brand">
-              <Text className="text-xl font-bold text-white">B</Text>
+            <View className="h-11 w-11 items-center justify-center rounded-2xl" style={{ backgroundColor: Colors.brand }}>
+              <AppText variant="h2" style={{ color: '#FFFFFF' }}>B</AppText>
             </View>
-            <Text className="ml-3 text-xl font-bold text-ink">BizSkills</Text>
+            <AppText variant="h2" className="ml-3">BizSkills</AppText>
           </View>
           <View className="mt-14">
-            <Text className="text-3xl font-bold tracking-tight text-ink">{title}</Text>
-            <Text className="mt-3 text-base leading-6 text-muted">{subtitle}</Text>
+            <AppText variant="h1">{title}</AppText>
+            <AppText variant="body" style={{ color: theme.textSecondary, marginTop: 12 }}>{subtitle}</AppText>
           </View>
           <View className="mt-9">{children}</View>
         </ScrollView>
@@ -28,4 +33,3 @@ export function AuthShell({ title, subtitle, children }: AuthShellProps) {
     </KeyboardAvoidingView>
   );
 }
-

@@ -1,21 +1,26 @@
+import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { useState, useCallback } from "react";
-import { Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { Alert, Modal, ScrollView, TextInput, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
+
+import { AppText } from "../../src/components/ui/AppText";
+import { AppCard } from "../../src/components/ui/AppCard";
+import { Avatar } from "../../src/components/ui/Avatar";
+import { AppButton } from "../../src/components/ui/AppButton";
 import { StageBadge } from "../../src/components/StageBadge";
-import { SkillChip } from "../../src/components/SkillChip";
-import { AppButton } from "../../src/components/AppButton";
+import { SkillChip } from "../../src/components/ui/SkillChip";
 import { FormField } from "../../src/components/FormField";
 import { SelectableChip } from "../../src/components/SelectableChip";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import { useProfile, useUpdateProfile, useUpdateSkill, useDeleteSkill } from "../../src/lib/apiHooks";
 import { readApiError } from "../../src/lib/axios";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import { Colors } from "../../src/constants/theme";
 import type { SkillCategory, SkillLevel } from "@bizskills/types";
 
 const editSchema = z.object({
@@ -49,6 +54,7 @@ const levels = [
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const theme = useThemeColors();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
   const myId = user?.id;
@@ -56,6 +62,7 @@ export default function ProfileScreen() {
   const updateMutation = useUpdateProfile();
   const updateSkillMutation = useUpdateSkill();
   const deleteSkillMutation = useDeleteSkill();
+  
   const [editOpen, setEditOpen] = useState(false);
   const [editSkill, setEditSkill] = useState<any>(null);
   const [editSkillTitle, setEditSkillTitle] = useState("");
@@ -127,8 +134,8 @@ export default function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-surface">
-        <ActivityIndicator color="#5B4DFF" size="large" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center' }}>
+        <ActivityIndicator color={Colors.brand} size="large" />
       </SafeAreaView>
     );
   }
@@ -139,174 +146,182 @@ export default function ProfileScreen() {
   const neededSkills = p?.skills?.filter((s: any) => !s.isOffering) ?? [];
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
-      <ScrollView contentContainerClassName="px-6 pb-8">
-        <View className="mt-4 flex-row items-center justify-between">
-          <TouchableOpacity onPress={() => setEditOpen(true)} className="h-12 w-12 items-center justify-center rounded-2xl bg-white">
-            <Ionicons name="settings-outline" size={22} color="#101828" />
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}>
+        <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <TouchableOpacity onPress={() => setEditOpen(true)} style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.border }}>
+            <Ionicons name="settings-outline" size={24} color={theme.textPrimary} />
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => void logout()} className="h-12 w-12 items-center justify-center rounded-2xl bg-white">
-            <Ionicons name="log-out-outline" size={22} color="#EF4444" />
+          <TouchableOpacity onPress={() => void logout()} style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.border }}>
+            <Ionicons name="log-out-outline" size={24} color={Colors.danger} />
           </TouchableOpacity>
         </View>
 
-        <View className="mt-2 items-center">
-          <AvatarWithFallback uri={p?.avatar} name={p?.name ?? "B"} size={96} />
-          <Text className="mt-4 text-2xl font-bold text-ink">{p?.name}</Text>
+        <View style={{ marginTop: 8, alignItems: 'center' }}>
+          <Avatar uri={p?.avatar} name={p?.name ?? "B"} size={96} />
+          <AppText variant="h1" style={{ marginTop: 16 }}>{p?.name}</AppText>
           {bp && (
-            <Text className="mt-1 text-sm text-muted">{bp.businessName}</Text>
+            <AppText variant="body" style={{ marginTop: 4, color: theme.textSecondary }}>{bp.businessName}</AppText>
           )}
-          <View className="mt-3 flex-row items-center">
+          <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center' }}>
             {bp && <StageBadge stage={bp.stage as any} />}
             {bp && (
-              <View className="ml-2 rounded-full bg-indigo-50 px-3 py-1.5">
-                <Text className="text-xs font-medium text-brand">{bp.industry}</Text>
+              <View style={{ marginLeft: 8, borderRadius: 999, backgroundColor: Colors.brandTint, paddingHorizontal: 12, paddingVertical: 6 }}>
+                <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: Colors.brand }}>{bp.industry}</AppText>
               </View>
             )}
             {p?.location && (
-              <View className="ml-2 flex-row items-center">
-                <Ionicons name="location-outline" size={14} color="#667085" />
-                <Text className="ml-1 text-xs text-muted">{p.location}</Text>
+              <View style={{ marginLeft: 8, flexDirection: 'row', alignItems: 'center' }}>
+                <Ionicons name="location-outline" size={16} color={theme.textTertiary} />
+                <AppText style={{ marginLeft: 4, fontSize: 12, fontFamily: 'Outfit_400Regular', color: theme.textSecondary }}>{p.location}</AppText>
               </View>
             )}
           </View>
         </View>
 
-        <View className="my-6 flex-row justify-between rounded-3xl bg-white p-5">
-          <View className="items-center" style={{ width: "25%" }}>
-            <Text className="text-xl font-bold text-ink">{p?.exchangeCount ?? 0}</Text>
-            <Text className="mt-1 text-xs text-muted">Exchanges</Text>
+        <AppCard style={{ marginTop: 32, marginBottom: 24, flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
+          <View style={{ alignItems: 'center', width: '25%' }}>
+            <AppText variant="h2">{p?.exchangeCount ?? 0}</AppText>
+            <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary }}>Exchanges</AppText>
           </View>
-          <View className="items-center" style={{ width: "25%" }}>
-            <Text className="text-xl font-bold text-ink">{(p?.avgRating ?? 0) > 0 ? p?.avgRating : "-"}</Text>
-            <Text className="mt-1 text-xs text-muted">Rating</Text>
+          <View style={{ alignItems: 'center', width: '25%' }}>
+            <AppText variant="h2">{(p?.avgRating ?? 0) > 0 ? p?.avgRating : "-"}</AppText>
+            <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary }}>Rating</AppText>
           </View>
-          <View className="items-center" style={{ width: "25%" }}>
-            <Text className="text-xl font-bold text-ink">{p?.bizCoins}</Text>
-            <Text className="mt-1 text-xs text-muted">BizCoins</Text>
+          <View style={{ alignItems: 'center', width: '25%' }}>
+            <AppText variant="h2">{p?.bizCoins}</AppText>
+            <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary }}>BizCoins</AppText>
           </View>
-          <View className="items-center" style={{ width: "25%" }}>
-            <Text className="text-xl font-bold text-ink">{p?.followerCount ?? 0}</Text>
-            <Text className="mt-1 text-xs text-muted">Followers</Text>
+          <View style={{ alignItems: 'center', width: '25%' }}>
+            <AppText variant="h2">{p?.followerCount ?? 0}</AppText>
+            <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary }}>Followers</AppText>
           </View>
-        </View>
+        </AppCard>
 
         {p?.bio && (
-          <View className="mb-6 rounded-3xl bg-white p-5">
-            <Text className="text-sm font-semibold uppercase tracking-wider text-brand">About</Text>
-            <Text className="mt-3 text-sm leading-6 text-muted">{p.bio}</Text>
-          </View>
+          <AppCard style={{ marginBottom: 24 }}>
+            <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', tracking: 1, marginBottom: 12 }}>About</AppText>
+            <AppText style={{ fontSize: 14, lineHeight: 24, color: theme.textSecondary }}>{p.bio}</AppText>
+          </AppCard>
         )}
 
-        <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-lg font-bold text-ink">Skills I Offer</Text>
-          <Text className="text-xs text-muted">{offeredSkills.length}</Text>
+        <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <AppText variant="h3">Skills I Offer</AppText>
+          <AppText variant="caption" style={{ color: theme.textTertiary }}>{offeredSkills.length}</AppText>
         </View>
         {offeredSkills.length > 0 ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 24 }}>
             {offeredSkills.map((skill: any) => (
-              <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)}>
-                <SkillChip title={skill.title} category={skill.category as SkillCategory} level={skill.level as SkillLevel} coinValue={skill.coinValue} />
+              <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)} style={{ marginRight: 8 }}>
+                <SkillChip label={skill.title} category={skill.category as SkillCategory} level={skill.level as SkillLevel} showLevel />
               </TouchableOpacity>
             ))}
           </ScrollView>
         ) : (
-          <Text className="mb-6 text-sm text-muted">No skills added yet.</Text>
+          <AppText variant="body" style={{ marginBottom: 24, color: theme.textTertiary }}>No skills added yet.</AppText>
         )}
 
-        <View className="mb-4 flex-row items-center justify-between">
-          <Text className="text-lg font-bold text-ink">Skills I Need</Text>
-          <Text className="text-xs text-muted">{neededSkills.length}</Text>
+        <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <AppText variant="h3">Skills I Need</AppText>
+          <AppText variant="caption" style={{ color: theme.textTertiary }}>{neededSkills.length}</AppText>
         </View>
         {neededSkills.length > 0 ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 24 }}>
             {neededSkills.map((skill: any) => (
-              <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)}>
-                <SkillChip title={skill.title} category={skill.category as SkillCategory} level={skill.level as SkillLevel} coinValue={skill.coinValue} />
+              <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)} style={{ marginRight: 8 }}>
+                <SkillChip label={skill.title} category={skill.category as SkillCategory} level={skill.level as SkillLevel} showLevel />
               </TouchableOpacity>
             ))}
           </ScrollView>
         ) : (
-          <Text className="mb-6 text-sm text-muted">No skills needed yet.</Text>
+          <AppText variant="body" style={{ marginBottom: 24, color: theme.textTertiary }}>No skills needed yet.</AppText>
         )}
 
-        <AppButton label="Edit Profile" onPress={() => setEditOpen(true)} className="mb-4" />
+        <AppButton title="Edit Profile" onPress={() => setEditOpen(true)} style={{ marginBottom: 24 }} />
 
-        <TouchableOpacity onPress={() => router.push("/exchanges" as any)} className="mb-3 flex-row items-center rounded-3xl bg-white p-5">
-          <Ionicons name="swap-horizontal-outline" size={22} color="#5B4DFF" />
-          <View className="ml-4 flex-1">
-            <Text className="font-semibold text-ink">My Exchanges</Text>
-            <Text className="text-xs text-muted">View incoming, outgoing, and completed swaps</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={18} color="#98A2B3" />
+        <TouchableOpacity onPress={() => router.push("/exchanges" as any)} activeOpacity={0.8} style={{ marginBottom: 12 }}>
+          <AppCard style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="swap-horizontal-outline" size={24} color={Colors.brand} />
+            <View style={{ marginLeft: 16, flex: 1 }}>
+              <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold' }}>My Exchanges</AppText>
+              <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>View incoming, outgoing, and completed swaps</AppText>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={theme.textTertiary} />
+          </AppCard>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => router.push("/wallet" as any)} className="mb-6 flex-row items-center rounded-3xl bg-white p-5">
-          <Ionicons name="wallet-outline" size={22} color="#F59E0B" />
-          <View className="ml-4 flex-1">
-            <Text className="font-semibold text-ink">Wallet</Text>
-            <Text className="text-xs text-muted">View balance and transaction history</Text>
-          </View>
-          <Ionicons name="chevron-forward" size={18} color="#98A2B3" />
+        <TouchableOpacity onPress={() => router.push("/wallet" as any)} activeOpacity={0.8} style={{ marginBottom: 24 }}>
+          <AppCard style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Ionicons name="wallet-outline" size={24} color="#F59E0B" />
+            <View style={{ marginLeft: 16, flex: 1 }}>
+              <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold' }}>Wallet</AppText>
+              <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>View balance and transaction history</AppText>
+            </View>
+            <Ionicons name="chevron-forward" size={20} color={theme.textTertiary} />
+          </AppCard>
         </TouchableOpacity>
       </ScrollView>
 
-      <Modal visible={editOpen} animationType="slide" presentationStyle="pageSheet">
+      {/* Edit Profile Modal */}
+      <Modal visible={editOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditOpen(false)}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <SafeAreaView className="flex-1 bg-surface">
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
-              <View className="mt-4 mb-6 flex-row items-center justify-between">
-                <Text className="text-xl font-bold text-ink">Edit Profile</Text>
+          <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+              <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <AppText variant="h2">Edit Profile</AppText>
                 <TouchableOpacity onPress={() => setEditOpen(false)}>
-                  <Ionicons name="close" size={24} color="#101828" />
+                  <Ionicons name="close" size={24} color={theme.textPrimary} />
                 </TouchableOpacity>
               </View>
 
-              <Text className="mb-1 text-sm font-bold text-ink">Personal</Text>
+              <AppText variant="h3" style={{ marginBottom: 16 }}>Personal</AppText>
               <Controller control={control} name="name" render={({ field, fieldState }) => (
                 <FormField label="Name" placeholder="Your name" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
               <Controller control={control} name="bio" render={({ field, fieldState }) => (
-                <FormField label="Bio" placeholder="Tell your story" multiline className="h-24 pt-4" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
+                <FormField label="Bio" placeholder="Tell your story" multiline value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
               <Controller control={control} name="location" render={({ field, fieldState }) => (
                 <FormField label="Location" placeholder="City, Country" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
 
-              <Text className="mb-1 mt-4 text-sm font-bold text-ink">Business</Text>
+              <AppText variant="h3" style={{ marginTop: 16, marginBottom: 16 }}>Business</AppText>
               <Controller control={control} name="businessName" render={({ field, fieldState }) => (
                 <FormField label="Business name" placeholder="Your venture" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
               <Controller control={control} name="description" render={({ field, fieldState }) => (
-                <FormField label="Description" placeholder="What you do" multiline className="h-24 pt-4" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
+                <FormField label="Description" placeholder="What you do" multiline value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
 
-              <AppButton label="Save" onPress={handleSubmit(onSubmit)} className="mt-6" />
+              <AppButton title="Save Changes" onPress={handleSubmit(onSubmit)} style={{ marginTop: 24 }} />
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
       </Modal>
 
+      {/* Edit Skill Modal */}
       <Modal visible={!!editSkill} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditSkill(null)}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <SafeAreaView className="flex-1 bg-surface">
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
-              <View className="mt-4 mb-6 flex-row items-center justify-between">
-                <Text className="text-xl font-bold text-ink">Edit Skill</Text>
+          <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+              <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <AppText variant="h2">Edit Skill</AppText>
                 <TouchableOpacity onPress={() => setEditSkill(null)}>
-                  <Ionicons name="close" size={24} color="#101828" />
+                  <Ionicons name="close" size={24} color={theme.textPrimary} />
                 </TouchableOpacity>
               </View>
-              <Text className="mb-2 text-sm font-medium text-ink">Title</Text>
+              
+              <AppText variant="label" style={{ marginBottom: 8, color: theme.textPrimary }}>Title</AppText>
               <TextInput
                 placeholder="e.g. Logo Design"
-                placeholderTextColor="#98A2B3"
-                className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
+                placeholderTextColor={theme.textTertiary}
+                style={{ marginBottom: 16, height: 56, borderRadius: 16, borderWidth: 1, borderColor: theme.border, backgroundColor: theme.elevated, paddingHorizontal: 16, fontSize: 16, color: theme.textPrimary }}
                 value={editSkillTitle}
                 onChangeText={setEditSkillTitle}
               />
-              <Text className="mb-2 text-sm font-medium text-ink">Category</Text>
-              <View className="mb-4 flex-row flex-wrap">
+              
+              <AppText variant="label" style={{ marginBottom: 12, color: theme.textPrimary }}>Category</AppText>
+              <View style={{ marginBottom: 24, flexDirection: 'row', flexWrap: 'wrap' }}>
                 {categories.map((c) => (
                   <SelectableChip
                     key={c.value}
@@ -316,8 +331,9 @@ export default function ProfileScreen() {
                   />
                 ))}
               </View>
-              <Text className="mb-2 text-sm font-medium text-ink">Level</Text>
-              <View className="mb-4 flex-row flex-wrap">
+              
+              <AppText variant="label" style={{ marginBottom: 12, color: theme.textPrimary }}>Level</AppText>
+              <View style={{ marginBottom: 24, flexDirection: 'row', flexWrap: 'wrap' }}>
                 {levels.map((l) => (
                   <SelectableChip
                     key={l.value}
@@ -328,8 +344,9 @@ export default function ProfileScreen() {
                   />
                 ))}
               </View>
-              <Text className="mb-1 text-sm font-medium text-ink">BizCoin Value: {Math.round(editSkillCoins / 10) * 10} BC</Text>
-              <View className="mb-4 flex-row flex-wrap">
+              
+              <AppText variant="label" style={{ marginBottom: 12, color: theme.textPrimary }}>BizCoin Value: {Math.round(editSkillCoins / 10) * 10} BC</AppText>
+              <View style={{ marginBottom: 32, flexDirection: 'row', flexWrap: 'wrap' }}>
                 {[10, 20, 30, 50, 100, 150, 200].map((v) => (
                   <SelectableChip
                     key={v}
@@ -339,12 +356,14 @@ export default function ProfileScreen() {
                   />
                 ))}
               </View>
-              <View className="flex-row">
-                <AppButton label="Cancel" variant="secondary" onPress={() => setEditSkill(null)} className="mr-2 flex-1" />
-                <AppButton label="Save" onPress={handleSaveSkill} className="flex-1" />
+              
+              <View style={{ flexDirection: 'row' }}>
+                <AppButton title="Cancel" variant="secondary" onPress={() => setEditSkill(null)} style={{ marginRight: 12, flex: 1 }} />
+                <AppButton title="Save Changes" onPress={handleSaveSkill} style={{ flex: 1 }} />
               </View>
-              <TouchableOpacity onPress={() => handleDeleteSkill(editSkill?.id, editSkill?.title)} className="mt-6 items-center">
-                <Text className="text-sm font-medium text-red-500">Delete Skill</Text>
+              
+              <TouchableOpacity onPress={() => handleDeleteSkill(editSkill?.id, editSkill?.title)} style={{ marginTop: 24, alignItems: 'center' }}>
+                <AppText style={{ fontSize: 14, fontFamily: 'Outfit_600SemiBold', color: Colors.danger }}>Delete Skill</AppText>
               </TouchableOpacity>
             </ScrollView>
           </SafeAreaView>

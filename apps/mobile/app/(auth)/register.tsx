@@ -1,10 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
-import { Text, TouchableOpacity } from "react-native";
+import { TouchableOpacity } from "react-native";
 import Toast from "react-native-toast-message";
 import { z } from "zod";
-import { AppButton } from "../../src/components/AppButton";
+import { AppButton } from "../../src/components/ui/AppButton";
+import { AppText } from "../../src/components/ui/AppText";
 import { AuthShell } from "../../src/components/AuthShell";
 import { FormField } from "../../src/components/FormField";
 import { readApiError } from "../../src/lib/axios";
@@ -57,9 +58,9 @@ export default function RegisterScreen() {
       )} />
       <AppButton label="Create Account" loading={isLoading} onPress={handleSubmit(submit)} className="mt-2" />
       <TouchableOpacity onPress={() => router.push("/(auth)/login")} className="mt-6">
-        <Text className="text-center text-sm text-muted">
-          Already registered? <Text className="font-semibold text-brand">Sign in</Text>
-        </Text>
+        <AppText variant="body" style={{ textAlign: 'center' }}>
+          Already registered? <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: '#5B4DFF' }}>Sign in</AppText>
+        </AppText>
       </TouchableOpacity>
     </AuthShell>
   );

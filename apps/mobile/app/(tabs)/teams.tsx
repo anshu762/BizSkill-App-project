@@ -1,14 +1,18 @@
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { useCallback, useMemo, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
+import { ActivityIndicator, FlatList, Modal, ScrollView, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppButton } from "../../src/components/AppButton";
-import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
+import { AppButton } from "../../src/components/ui/AppButton";
+import { AppText } from "../../src/components/ui/AppText";
+import { AppCard } from "../../src/components/ui/AppCard";
+import { Avatar } from "../../src/components/ui/Avatar";
 import { SelectableChip } from "../../src/components/SelectableChip";
-import { PageHeader } from "../../src/components/PageHeader";
+import { SkeletonTeamCard } from "../../src/components/ui/ShimmerLoader";
+import { EmptyTeams } from "../../src/components/ui/EmptyState";
 import { useCreateTeam, useMyTeams, useTeams } from "../../src/lib/apiHooks";
-import { TeamCardSkeleton } from "../../src/components/Skeletons";
+import { useThemeColors } from "../../src/hooks/useThemeColors";
+import { Colors } from "../../src/constants/theme";
 
 const categories = [
   { value: "ALL", label: "All" },
@@ -25,10 +29,10 @@ const stages = [
   { value: "COMPLETED", label: "Completed" },
 ];
 
-const stageColors: Record<string, string> = {
-  FORMING: "bg-amber-100 text-amber-700",
-  ACTIVE: "bg-green-100 text-green-700",
-  COMPLETED: "bg-gray-100 text-gray-600",
+const stageColors: Record<string, { bg: string; text: string }> = {
+  FORMING: { bg: 'rgba(217, 119, 6, 0.1)', text: '#D97706' },
+  ACTIVE: { bg: 'rgba(5, 150, 105, 0.1)', text: '#059669' },
+  COMPLETED: { bg: 'rgba(107, 114, 128, 0.1)', text: '#6B7280' },
 };
 
 const categoryLabels: Record<string, string> = {
@@ -40,6 +44,7 @@ const categoryLabels: Record<string, string> = {
 
 export default function TeamsScreen() {
   const router = useRouter();
+  const theme = useThemeColors();
   const [tab, setTab] = useState<"discover" | "my" | "applications">("discover");
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -79,7 +84,7 @@ export default function TeamsScreen() {
     setCreateDesc("");
   };
 
-  const tabIcons: Record<string, string> = {
+  const tabIcons: Record<string, keyof typeof Ionicons.glyphMap> = {
     discover: "compass-outline",
     my: "people-outline",
     applications: "documents-outline",
@@ -87,75 +92,81 @@ export default function TeamsScreen() {
 
   const TabButton = ({ label, value }: { label: string; value: typeof tab }) => (
     <TouchableOpacity
-      activeOpacity={0.88}
+      activeOpacity={0.8}
       onPress={() => setTab(value)}
-      className={`mr-3 flex-1 flex-row items-center justify-center rounded-2xl py-3 border ${
-        tab === value ? "bg-brand border-brand" : "bg-white border-slate-200"
-      }`}
-      style={tab === value ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
+      style={{
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginRight: value === "applications" ? 0 : 12,
+        borderRadius: 16,
+        paddingVertical: 12,
+        borderWidth: 1,
+        backgroundColor: tab === value ? Colors.brand : theme.elevated,
+        borderColor: tab === value ? Colors.brand : theme.border,
+      }}
     >
       <Ionicons
-        name={tabIcons[value] as any}
+        name={tabIcons[value]}
         size={16}
-        color={tab === value ? "#FFFFFF" : "#667085"}
+        color={tab === value ? "#FFFFFF" : theme.textSecondary}
       />
-      <Text className={`ml-1.5 text-sm font-semibold ${tab === value ? "text-white" : "text-muted"}`} style={tab === value ? { color: "#FFFFFF" } : undefined}>{label}</Text>
+      <AppText variant="label" style={{ marginLeft: 6, color: tab === value ? "#FFFFFF" : theme.textSecondary }}>{label}</AppText>
     </TouchableOpacity>
   );
 
   const renderTeamCard = ({ item }: any) => (
-    <TouchableOpacity
-      onPress={() => router.push(`/team/${item.id}`)}
-      activeOpacity={0.86}
-      className="mb-4 rounded-3xl bg-white p-5"
-    >
-      <View className="flex-row items-center">
-        <View className="h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50">
-          <Text className="text-xl font-bold text-brand">{item.name[0]}</Text>
+    <TouchableOpacity onPress={() => router.push(`/team/${item.id}`)} activeOpacity={0.8} style={{ marginBottom: 16 }}>
+      <AppCard style={{ padding: 20 }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: Colors.brandTint }}>
+            <AppText style={{ fontSize: 24, fontFamily: 'Outfit_700Bold', color: Colors.brand }}>{item.name[0]}</AppText>
+          </View>
+          <View style={{ marginLeft: 16, flex: 1 }}>
+            <AppText variant="h3">{item.name}</AppText>
+            {item.owner && (
+              <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>by {item.owner.name}</AppText>
+            )}
+          </View>
         </View>
-        <View className="ml-4 flex-1">
-          <Text className="text-lg font-semibold text-ink">{item.name}</Text>
-          {item.owner && (
-            <View className="mt-1 flex-row items-center">
-              <Text className="text-xs text-muted">by {item.owner.name}</Text>
-            </View>
-          )}
+        <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center' }}>
+          <View style={{ borderRadius: 999, backgroundColor: Colors.brandTint, paddingHorizontal: 12, paddingVertical: 4 }}>
+            <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: Colors.brand }}>{categoryLabels[item.category] || item.category}</AppText>
+          </View>
+          <View style={{ marginLeft: 8, borderRadius: 999, backgroundColor: stageColors[item.stage]?.bg || theme.elevated, paddingHorizontal: 12, paddingVertical: 4 }}>
+            <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', textTransform: 'capitalize', color: stageColors[item.stage]?.text || theme.textSecondary }}>{item.stage?.toLowerCase()}</AppText>
+          </View>
         </View>
-      </View>
-      <View className="mt-4 flex-row items-center">
-        <View className="rounded-full bg-indigo-50 px-3 py-1">
-          <Text className="text-xs font-medium text-brand">{categoryLabels[item.category] || item.category}</Text>
+        {!!item.description && (
+          <AppText numberOfLines={2} style={{ marginTop: 12, fontSize: 14, lineHeight: 20, color: theme.textSecondary }}>{item.description}</AppText>
+        )}
+        <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            {item.members?.slice(0, 4).map((m: any, i: number) => (
+              <View key={m.id} style={{ marginLeft: i > 0 ? -8 : 0, borderWidth: 2, borderColor: theme.background, borderRadius: 999 }}>
+                <Avatar uri={m.user?.avatar} name={m.user?.name?.[0] ?? "?"} size={28} />
+              </View>
+            ))}
+            <AppText style={{ marginLeft: 8, fontSize: 12, fontFamily: 'Outfit_500Medium', color: theme.textTertiary }}>
+              {item._count?.members ?? 0} member{(item._count?.members ?? 0) !== 1 ? "s" : ""}
+            </AppText>
+          </View>
+          <AppText style={{ fontSize: 12, fontFamily: 'Outfit_600SemiBold', color: Colors.brand }}>
+            {item.openRolesCount ?? item._count?.roles ?? 0} open role{(item.openRolesCount ?? item._count?.roles ?? 0) !== 1 ? "s" : ""}
+          </AppText>
         </View>
-        <View className={`ml-2 rounded-full px-3 py-1 ${stageColors[item.stage] || "bg-gray-100"}`}>
-          <Text className="text-xs font-medium capitalize">{item.stage?.toLowerCase()}</Text>
-        </View>
-      </View>
-      {!!item.description && (
-        <Text numberOfLines={2} className="mt-3 text-sm leading-5 text-muted">{item.description}</Text>
-      )}
-      <View className="mt-4 flex-row items-center justify-between">
-        <View className="flex-row items-center">
-          {item.members?.slice(0, 4).map((m: any, i: number) => (
-            <View key={m.id} style={{ marginLeft: i > 0 ? -8 : 0 }}>
-              <AvatarWithFallback uri={m.user?.avatar} name={m.user?.name?.[0] ?? "?"} size={26} />
-            </View>
-          ))}
-          <Text className="ml-2 text-xs font-medium text-muted">
-            {item._count?.members ?? 0} member{(item._count?.members ?? 0) !== 1 ? "s" : ""}
-          </Text>
-        </View>
-        <Text className="text-xs font-semibold text-brand">
-          {item.openRolesCount ?? item._count?.roles ?? 0} open role{(item.openRolesCount ?? item._count?.roles ?? 0) !== 1 ? "s" : ""}
-        </Text>
-      </View>
+      </AppCard>
     </TouchableOpacity>
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-surface">
-      <View className="flex-1 px-6">
-        <PageHeader eyebrow="Collaborate" title="Teams" />
-        <View className="mb-5 flex-row">
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}>
+        <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', tracking: 2 }}>Collaborate</AppText>
+        <AppText variant="h1" style={{ marginTop: 4, marginBottom: 20 }}>Teams</AppText>
+
+        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
           <TabButton label="Discover" value="discover" />
           <TabButton label="My Teams" value="my" />
           <TabButton label="Applications" value="applications" />
@@ -163,19 +174,19 @@ export default function TeamsScreen() {
 
         {tab === "discover" && (
           <>
-            <View className="mb-4 h-14 flex-row items-center rounded-2xl bg-white px-4">
-              <Ionicons name="search-outline" size={20} color="#98A2B3" />
+            <View style={{ marginBottom: 16, height: 56, flexDirection: 'row', alignItems: 'center', borderRadius: 16, backgroundColor: theme.elevated, paddingHorizontal: 16, borderWidth: 1, borderColor: theme.border }}>
+              <Ionicons name="search-outline" size={20} color={theme.textTertiary} />
               <TextInput
                 placeholder="Search teams..."
-                placeholderTextColor="#98A2B3"
-                className="ml-3 flex-1 text-base text-ink bg-white"
+                placeholderTextColor={theme.textTertiary}
+                style={{ marginLeft: 12, flex: 1, fontSize: 16, color: theme.textPrimary, fontFamily: 'Outfit_500Medium' }}
                 value={search}
                 onChangeText={handleSearch}
               />
             </View>
-            <View className="mb-1">
-              <Text className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted">Category</Text>
-              <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+            <View style={{ marginBottom: 4 }}>
+              <AppText variant="label" style={{ marginBottom: 10, color: theme.textSecondary, textTransform: 'uppercase' }}>Category</AppText>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 16 }}>
                 {categories.map((c) => (
                   <SelectableChip
                     key={c.value}
@@ -186,8 +197,8 @@ export default function TeamsScreen() {
                 ))}
               </ScrollView>
             </View>
-            <View className="mb-4 mt-4">
-              <Text className="mb-2.5 text-xs font-semibold uppercase tracking-wider text-muted">Status</Text>
+            <View style={{ marginBottom: 16 }}>
+              <AppText variant="label" style={{ marginBottom: 10, color: theme.textSecondary, textTransform: 'uppercase' }}>Status</AppText>
               <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {stages.map((s) => (
                   <SelectableChip
@@ -200,10 +211,10 @@ export default function TeamsScreen() {
               </ScrollView>
             </View>
             {isLoading ? (
-              <View className="pb-20">
-                <TeamCardSkeleton />
-                <TeamCardSkeleton />
-                <TeamCardSkeleton />
+              <View style={{ paddingBottom: 80 }}>
+                <SkeletonTeamCard />
+                <SkeletonTeamCard />
+                <SkeletonTeamCard />
               </View>
             ) : (
             <FlatList
@@ -212,13 +223,14 @@ export default function TeamsScreen() {
               renderItem={renderTeamCard}
               onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
               onEndReachedThreshold={0.5}
-              ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color="#5B4DFF" /> : null}
-              contentContainerClassName="pb-20"
+              ListFooterComponent={isFetchingNextPage ? <ActivityIndicator style={{ paddingVertical: 16 }} color={Colors.brand} /> : null}
+              contentContainerStyle={{ paddingBottom: 100 }}
+              ListEmptyComponent={() => <EmptyTeams onAction={() => setCreateOpen(true)} />}
             />
             )}
             <TouchableOpacity
               onPress={() => setCreateOpen(true)}
-              className="absolute bottom-6 right-0 h-14 w-14 items-center justify-center rounded-full bg-brand"
+              style={{ position: 'absolute', bottom: 24, right: 24, height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 28, backgroundColor: Colors.brand, shadowColor: Colors.brand, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 }}
             >
               <Ionicons name="add" size={28} color="white" />
             </TouchableOpacity>
@@ -226,93 +238,91 @@ export default function TeamsScreen() {
         )}
 
         {tab === "my" && (
-          <ScrollView contentContainerClassName="pb-8">
+          <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
             {myTeamsData?.owned?.length > 0 && (
               <>
-                <Text className="mb-3 text-sm font-semibold text-ink">Teams I Lead</Text>
+                <AppText variant="h3" style={{ marginBottom: 12 }}>Teams I Lead</AppText>
                 {myTeamsData.owned.map((team: any) => (
                   <TouchableOpacity
                     key={team.id}
                     onPress={() => router.push(`/team/${team.id}`)}
-                    className="mb-3 rounded-3xl bg-white p-5"
+                    style={{ marginBottom: 12 }}
                   >
-                    <View className="flex-row items-center">
-                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50">
-                        <Text className="text-lg font-bold text-brand">{team.name[0]}</Text>
+                    <AppCard>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: Colors.brandTint }}>
+                          <AppText style={{ fontSize: 20, fontFamily: 'Outfit_700Bold', color: Colors.brand }}>{team.name[0]}</AppText>
+                        </View>
+                        <View style={{ marginLeft: 12, flex: 1 }}>
+                          <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{team.name}</AppText>
+                          <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>{team._count?.members ?? 0} members · {team.openRolesCount ?? 0} open roles</AppText>
+                        </View>
                       </View>
-                      <View className="ml-3 flex-1">
-                        <Text className="font-semibold text-ink">{team.name}</Text>
-                        <Text className="text-xs text-muted">{team._count?.members ?? 0} members · {team.openRolesCount ?? 0} open roles</Text>
+                      <View style={{ marginTop: 12, flexDirection: 'row' }}>
+                        <AppButton title="Applications" variant="secondary" style={{ marginRight: 8, flex: 1 }} onPress={() => router.push(`/team/${team.id}?tab=apps`)} />
+                        <AppButton title="Edit" variant="secondary" style={{ flex: 1 }} onPress={() => router.push(`/team/${team.id}`)} />
                       </View>
-                    </View>
-                    <View className="mt-3 flex-row">
-                      <AppButton label="View Applications" variant="secondary" className="mr-2 flex-1" onPress={() => router.push(`/team/${team.id}?tab=apps`)} />
-                      <AppButton label="Edit" variant="secondary" className="flex-1" onPress={() => router.push(`/team/${team.id}`)} />
-                    </View>
+                    </AppCard>
                   </TouchableOpacity>
                 ))}
               </>
             )}
 
             {myTeamsData?.member?.length > 0 && (
-              <View className="mt-4">
-                <Text className="mb-3 text-sm font-semibold text-ink">Teams I'm In</Text>
+              <View style={{ marginTop: 16 }}>
+                <AppText variant="h3" style={{ marginBottom: 12 }}>Teams I'm In</AppText>
                 {myTeamsData.member.map((team: any) => (
                   <TouchableOpacity
                     key={team.id}
                     onPress={() => router.push(`/team/${team.id}`)}
-                    className="mb-3 rounded-3xl bg-white p-5"
+                    style={{ marginBottom: 12 }}
                   >
-                    <View className="flex-row items-center">
-                      <View className="h-12 w-12 items-center justify-center rounded-2xl bg-indigo-50">
-                        <Text className="text-lg font-bold text-brand">{team.name[0]}</Text>
+                    <AppCard>
+                      <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: Colors.brandTint }}>
+                          <AppText style={{ fontSize: 20, fontFamily: 'Outfit_700Bold', color: Colors.brand }}>{team.name[0]}</AppText>
+                        </View>
+                        <View style={{ marginLeft: 12, flex: 1 }}>
+                          <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{team.name}</AppText>
+                          <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>by {team.owner?.name}</AppText>
+                        </View>
+                        <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: theme.textTertiary }}>{team._count?.members ?? 0} members</AppText>
                       </View>
-                      <View className="ml-3 flex-1">
-                        <Text className="font-semibold text-ink">{team.name}</Text>
-                        <Text className="text-xs text-muted">by {team.owner?.name}</Text>
-                      </View>
-                      <Text className="text-xs font-medium text-muted">{team._count?.members ?? 0} members</Text>
-                    </View>
+                    </AppCard>
                   </TouchableOpacity>
                 ))}
               </View>
             )}
 
-            {(!myTeamsData?.owned?.length && !myTeamsData?.member?.length) && (
-              <View className="mt-16 items-center px-4">
-                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
-                  <Ionicons name="people-outline" size={36} color="#5B4DFF" />
-                </View>
-                <Text className="mt-5 text-xl font-bold text-ink">No teams yet</Text>
-                <Text className="mt-2 text-center text-sm leading-5 text-muted">Start or join a team to collaborate with other founders on projects, competitions, and business ideas.</Text>
-              </View>
+            {(!myTeamsData?.owned?.length && !myTeamsData?.member?.length && !myLoading) && (
+              <EmptyTeams onAction={() => setCreateOpen(true)} />
             )}
 
-            <AppButton label="Create a Team" onPress={() => setCreateOpen(true)} className="mt-6" />
+            <AppButton title="Create a Team" onPress={() => setCreateOpen(true)} style={{ marginTop: 24 }} />
           </ScrollView>
         )}
 
         {tab === "applications" && (
-          <ScrollView contentContainerClassName="pb-8">
+          <ScrollView contentContainerStyle={{ paddingBottom: 100 }}>
             {myTeamsData?.applications?.length > 0 ? (
               myTeamsData.applications.map((app: any) => (
-                <View key={app.id} className="mb-3 rounded-3xl bg-white p-5">
-                  <Text className="font-semibold text-ink">{app.teamRole?.title}</Text>
-                  <Text className="text-xs text-muted">for {app.teamRole?.team?.name}</Text>
-                  <View className={`mt-2 self-start rounded-full px-3 py-1 ${app.status === "PENDING" ? "bg-amber-100" : app.status === "ACCEPTED" ? "bg-green-100" : "bg-red-100"}`}>
-                    <Text className={`text-xs font-medium ${app.status === "PENDING" ? "text-amber-700" : app.status === "ACCEPTED" ? "text-green-700" : "text-red-600"}`}>
+                <AppCard key={app.id} style={{ marginBottom: 12 }}>
+                  <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{app.teamRole?.title}</AppText>
+                  <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>for {app.teamRole?.team?.name}</AppText>
+                  <View style={{ marginTop: 8, alignSelf: 'flex-start', borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4, backgroundColor: app.status === "PENDING" ? 'rgba(217, 119, 6, 0.1)' : app.status === "ACCEPTED" ? 'rgba(5, 150, 105, 0.1)' : 'rgba(220, 38, 38, 0.1)' }}>
+                    <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: app.status === "PENDING" ? '#D97706' : app.status === "ACCEPTED" ? '#059669' : '#DC2626' }}>
                       {app.status}
-                    </Text>
+                    </AppText>
                   </View>
-                </View>
+                </AppCard>
               ))
             ) : (
-              <View className="mt-16 items-center px-4">
-                <View className="h-20 w-20 items-center justify-center rounded-[28px] bg-indigo-50">
-                  <Ionicons name="documents-outline" size={36} color="#5B4DFF" />
+              <View style={{ marginTop: 64, alignItems: 'center', paddingHorizontal: 16 }}>
+                <View style={{ height: 80, width: 80, alignItems: 'center', justifyContent: 'center', borderRadius: 28, backgroundColor: Colors.brandTint }}>
+                  <Ionicons name="documents-outline" size={36} color={Colors.brand} />
                 </View>
-                <Text className="mt-5 text-xl font-bold text-ink">No applications yet</Text>
-                <Text className="mt-2 text-center text-sm leading-5 text-muted">Apply to open team roles to see your applications here.</Text>
+                <AppText variant="h2" style={{ marginTop: 20 }}>No applications yet</AppText>
+                <AppText variant="body" style={{ marginTop: 8, textAlign: 'center', color: theme.textSecondary }}>Apply to open team roles to see your applications here.</AppText>
               </View>
             )}
           </ScrollView>
@@ -321,33 +331,33 @@ export default function TeamsScreen() {
 
       <Modal visible={createOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setCreateOpen(false)}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <SafeAreaView className="flex-1 bg-surface">
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
-              <View className="mt-4 mb-6 flex-row items-center justify-between">
-                <Text className="text-xl font-bold text-ink">Create Team</Text>
+          <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+              <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+                <AppText variant="h2">Create Team</AppText>
                 <TouchableOpacity onPress={() => setCreateOpen(false)}>
-                  <Ionicons name="close" size={24} color="#101828" />
+                  <Ionicons name="close" size={24} color={theme.textPrimary} />
                 </TouchableOpacity>
               </View>
-              <Text className="mb-2 text-sm font-semibold text-ink">Team Name</Text>
+              <AppText variant="label" style={{ marginBottom: 8, color: theme.textPrimary }}>Team Name</AppText>
               <TextInput
                 placeholder="e.g. Launch Lab"
-                placeholderTextColor="#98A2B3"
-                className="mb-4 h-14 rounded-2xl border border-slate-200 bg-white px-4 text-base text-ink"
+                placeholderTextColor={theme.textTertiary}
+                style={{ marginBottom: 16, height: 56, borderRadius: 16, borderWidth: 1, borderColor: theme.border, backgroundColor: theme.elevated, paddingHorizontal: 16, fontSize: 16, color: theme.textPrimary }}
                 value={createName}
                 onChangeText={setCreateName}
               />
-              <Text className="mb-2 text-sm font-semibold text-ink">Description (optional)</Text>
+              <AppText variant="label" style={{ marginBottom: 8, color: theme.textPrimary }}>Description (optional)</AppText>
               <TextInput
                 placeholder="What's your team about?"
-                placeholderTextColor="#98A2B3"
+                placeholderTextColor={theme.textTertiary}
                 multiline
-                className="mb-4 min-h-[100px] rounded-2xl border border-slate-200 bg-white px-4 py-3 text-base text-ink"
+                style={{ marginBottom: 16, minHeight: 100, borderRadius: 16, borderWidth: 1, borderColor: theme.border, backgroundColor: theme.elevated, paddingHorizontal: 16, paddingTop: 16, fontSize: 16, color: theme.textPrimary }}
                 value={createDesc}
                 onChangeText={setCreateDesc}
               />
-              <Text className="mb-3 text-sm font-semibold text-ink">Category</Text>
-              <View className="mb-6 flex-row flex-wrap">
+              <AppText variant="label" style={{ marginBottom: 12, color: theme.textPrimary }}>Category</AppText>
+              <View style={{ marginBottom: 24, flexDirection: 'row', flexWrap: 'wrap' }}>
                 {categories.filter((c) => c.value !== "ALL").map((c) => (
                   <SelectableChip
                     key={c.value}
@@ -358,7 +368,7 @@ export default function TeamsScreen() {
                   />
                 ))}
               </View>
-              <AppButton label="Create Team" onPress={handleCreate} />
+              <AppButton title="Create Team" onPress={handleCreate} disabled={!createName.trim()} />
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
