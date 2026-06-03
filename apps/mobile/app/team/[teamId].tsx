@@ -112,7 +112,7 @@ export default function TeamDetailScreen() {
             </View>
             <Text className="ml-auto text-sm font-medium text-white">{team._count?.members ?? team.members?.length ?? 0} members</Text>
           </View>
-          {team.description && (
+          {!!team.description && (
             <Text className="mt-4 leading-6 text-slate-300">{team.description}</Text>
           )}
           {team.owner && (
@@ -148,7 +148,7 @@ export default function TeamDetailScreen() {
                       <Text className="text-xs font-medium text-brand">{role._count?.applications ?? 0} applicants</Text>
                     </View>
                   </View>
-                  {role.description && (
+                  {!!role.description && (
                     <Text className="mt-2 text-sm leading-5 text-muted">{role.description}</Text>
                   )}
                   {role.skillsNeeded?.length > 0 && (
@@ -206,7 +206,7 @@ export default function TeamDetailScreen() {
         )}
       </ScrollView>
 
-// Apply Modal
+      {/* Apply Modal */}
       <Modal visible={!!applyRoleId} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setApplyRoleId(null)}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
           <SafeAreaView className="flex-1 bg-surface">
@@ -318,7 +318,7 @@ function ApplicationsSection({ teamId }: { teamId: string }) {
                   <AvatarWithFallback uri={app.applicant?.avatar} name={app.applicant?.name?.[0] ?? "?"} size={36} />
                   <Text className="ml-3 font-semibold text-ink">{app.applicant?.name}</Text>
                 </TouchableOpacity>
-                {app.message && <Text className="mt-2 text-sm text-muted">{app.message}</Text>}
+                {!!app.message && <Text className="mt-2 text-sm text-muted">{app.message}</Text>}
                 <View className="mt-3">
                   {app.status === "PENDING" ? (
                     <View className="flex-row">

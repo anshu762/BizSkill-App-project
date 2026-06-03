@@ -130,7 +130,7 @@ export default function TeamsScreen() {
           <Text className="text-xs font-medium capitalize">{item.stage?.toLowerCase()}</Text>
         </View>
       </View>
-      {item.description && (
+      {!!item.description && (
         <Text numberOfLines={2} className="mt-3 text-sm leading-5 text-muted">{item.description}</Text>
       )}
       <View className="mt-4 flex-row items-center justify-between">

@@ -52,10 +52,13 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
   const scaleAnim = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    setLocalLiked(post.isLikedByMe);
-    setLocalLikeCount(post.likeCount);
+    // Don't override local state while the like mutation is in-flight
+    if (!toggleLike.isPending) {
+      setLocalLiked(post.isLikedByMe);
+      setLocalLikeCount(post.likeCount);
+    }
     setLocalCommentCount(post.commentCount);
-  }, [post.isLikedByMe, post.likeCount, post.commentCount]);
+  }, [post.isLikedByMe, post.likeCount, post.commentCount, toggleLike.isPending]);
 
   const handleLike = () => {
     const nextLiked = !localLiked;
@@ -126,11 +129,18 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
 
       <View className="flex-row items-center justify-between border-t border-slate-100 px-5 py-3">
         <View className="flex-row items-center">
-          <TouchableOpacity onPress={handleLike} className="flex-row items-center mr-6">
+          <TouchableOpacity
+            onPress={handleLike}
+            activeOpacity={1}
+            className="flex-row items-center mr-6"
+          >
             <Animated.View style={{ transform: [{ scale: scaleAnim }] }}>
               <Ionicons name={localLiked ? "heart" : "heart-outline"} size={20} color={localLiked ? "#EF4444" : "#98A2B3"} />
             </Animated.View>
-            <Text className={`ml-1.5 text-sm font-medium ${localLiked ? "text-red-500" : "text-muted"}`}>{localLikeCount}</Text>
+            <Text
+              className={`ml-1.5 text-sm font-medium ${localLiked ? "text-red-500" : "text-muted"}`}
+              style={{ color: localLiked ? "#EF4444" : "#98A2B3" }}
+            >{localLikeCount}</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => { setLocalCommentCount((c) => c + 1); onCommentPress?.(post.id); }} className="flex-row items-center mr-6">
             <Ionicons name="chatbubble-outline" size={19} color="#98A2B3" />
