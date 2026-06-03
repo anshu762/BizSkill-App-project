@@ -1,6 +1,5 @@
 import React from 'react';
-import { View, Pressable, ViewProps, StyleSheet, ViewStyle } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring, withTiming } from 'react-native-reanimated';
+import { View, Pressable, ViewProps, StyleSheet, ViewStyle, Animated } from 'react-native';
 import { useThemeColors } from '../../hooks/useThemeColors';
 import { Radius, Shadow } from '../../constants/theme';
 
@@ -14,13 +13,8 @@ const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export function AppCard({ children, style, elevated = false, onPress, ...props }: AppCardProps) {
   const theme = useThemeColors();
-  const scale = useSharedValue(1);
-  const opacity = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-    opacity: opacity.value,
-  }));
+  const scale = React.useRef(new Animated.Value(1)).current;
+  const opacity = React.useRef(new Animated.Value(1)).current;
 
   const baseStyle: ViewStyle = {
     backgroundColor: elevated ? theme.elevated : theme.card,
@@ -35,15 +29,15 @@ export function AppCard({ children, style, elevated = false, onPress, ...props }
     return (
       <AnimatedPressable
         onPressIn={() => {
-          scale.value = withSpring(0.99, { damping: 15, stiffness: 300 });
-          opacity.value = withTiming(0.85, { duration: 80 });
+          Animated.spring(scale, { toValue: 0.99, friction: 5, tension: 150, useNativeDriver: true }).start();
+          Animated.timing(opacity, { toValue: 0.85, duration: 80, useNativeDriver: true }).start();
         }}
         onPressOut={() => {
-          scale.value = withSpring(1, { damping: 10, stiffness: 200 });
-          opacity.value = withTiming(1, { duration: 150 });
+          Animated.spring(scale, { toValue: 1, friction: 5, tension: 150, useNativeDriver: true }).start();
+          Animated.timing(opacity, { toValue: 1, duration: 150, useNativeDriver: true }).start();
         }}
         onPress={onPress}
-        style={[baseStyle, animatedStyle, style as any]}
+        style={[baseStyle, { transform: [{ scale }], opacity }, style as any]}
         {...(props as any)}
       >
         {children}

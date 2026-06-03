@@ -134,7 +134,7 @@ export default function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color={Colors.brand} size="large" />
       </SafeAreaView>
     );
@@ -146,7 +146,7 @@ export default function ProfileScreen() {
   const neededSkills = p?.skills?.filter((s: any) => !s.isOffering) ?? [];
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
       <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}>
         <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <TouchableOpacity onPress={() => setEditOpen(true)} style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: theme.elevated, borderWidth: 1, borderColor: theme.border }}>
@@ -200,7 +200,7 @@ export default function ProfileScreen() {
 
         {p?.bio && (
           <AppCard style={{ marginBottom: 24 }}>
-            <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', tracking: 1, marginBottom: 12 }}>About</AppText>
+            <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', letterSpacing: 1, marginBottom: 12 }}>About</AppText>
             <AppText style={{ fontSize: 14, lineHeight: 24, color: theme.textSecondary }}>{p.bio}</AppText>
           </AppCard>
         )}
@@ -265,7 +265,7 @@ export default function ProfileScreen() {
       {/* Edit Profile Modal */}
       <Modal visible={editOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditOpen(false)}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
             <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
               <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <AppText variant="h2">Edit Profile</AppText>
@@ -302,7 +302,7 @@ export default function ProfileScreen() {
       {/* Edit Skill Modal */}
       <Modal visible={!!editSkill} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditSkill(null)}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
             <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
               <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <AppText variant="h2">Edit Skill</AppText>

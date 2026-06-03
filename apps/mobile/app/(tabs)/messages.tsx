@@ -31,7 +31,7 @@ export default function MessagesScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background, alignItems: 'center', justifyContent: 'center' }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg, alignItems: 'center', justifyContent: 'center' }}>
         <ActivityIndicator color={Colors.brand} size="large" />
       </SafeAreaView>
     );
@@ -39,9 +39,9 @@ export default function MessagesScreen() {
 
   return (
     <ErrorBoundary>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
         <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}>
-          <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', tracking: 2 }}>Inbox</AppText>
+          <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', letterSpacing: 2 }}>Inbox</AppText>
           <AppText variant="h1" style={{ marginTop: 4, marginBottom: 24 }}>Messages</AppText>
           
           {conversations?.length > 0 ? (

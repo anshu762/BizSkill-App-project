@@ -144,7 +144,7 @@ export default function TeamsScreen() {
         <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
             {item.members?.slice(0, 4).map((m: any, i: number) => (
-              <View key={m.id} style={{ marginLeft: i > 0 ? -8 : 0, borderWidth: 2, borderColor: theme.background, borderRadius: 999 }}>
+              <View key={m.id} style={{ marginLeft: i > 0 ? -8 : 0, borderWidth: 2, borderColor: theme.bg, borderRadius: 999 }}>
                 <Avatar uri={m.user?.avatar} name={m.user?.name?.[0] ?? "?"} size={28} />
               </View>
             ))}
@@ -161,9 +161,9 @@ export default function TeamsScreen() {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
       <View style={{ flex: 1, paddingHorizontal: 24, paddingTop: 16 }}>
-        <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', tracking: 2 }}>Collaborate</AppText>
+        <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', letterSpacing: 2 }}>Collaborate</AppText>
         <AppText variant="h1" style={{ marginTop: 4, marginBottom: 20 }}>Teams</AppText>
 
         <View style={{ flexDirection: 'row', marginBottom: 20 }}>
@@ -331,7 +331,7 @@ export default function TeamsScreen() {
 
       <Modal visible={createOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setCreateOpen(false)}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
             <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
               <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <AppText variant="h2">Create Team</AppText>

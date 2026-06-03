@@ -1,12 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withRepeat,
-  withTiming,
-  interpolate,
-} from 'react-native-reanimated';
+import { View, StyleSheet, ViewStyle, Animated } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useThemeColors } from '../../hooks/useThemeColors';
 import { Radius } from '../../constants/theme';
@@ -25,20 +18,21 @@ export function ShimmerLoader({
   style,
 }: ShimmerLoaderProps) {
   const theme = useThemeColors();
-  const progress = useSharedValue(0);
+  const progress = React.useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
-    progress.value = withRepeat(withTiming(1, { duration: 1200 }), -1, false);
+    Animated.loop(
+      Animated.timing(progress, {
+        toValue: 1,
+        duration: 1200,
+        useNativeDriver: true,
+      })
+    ).start();
   }, []);
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: interpolate(progress.value, [0, 1], [-400, 400]),
-        },
-      ],
-    };
+  const translateX = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [-400, 400],
   });
 
   return (
@@ -54,7 +48,7 @@ export function ShimmerLoader({
         style,
       ]}
     >
-      <Animated.View style={[StyleSheet.absoluteFill, animatedStyle as any]}>
+      <Animated.View style={[StyleSheet.absoluteFill, { transform: [{ translateX }] }]}>
         <LinearGradient
           colors={
             theme.isDark

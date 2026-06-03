@@ -1,7 +1,6 @@
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Dimensions, Platform } from 'react-native';
+import { View, TouchableOpacity, StyleSheet, Dimensions, Platform, Animated } from 'react-native';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
-import Animated, { useAnimatedStyle, withSpring, interpolateColor, useSharedValue, withTiming } from 'react-native-reanimated';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Colors, Radius, Shadow } from '../../constants/theme';
@@ -83,43 +82,38 @@ interface TabItemProps {
 
 function TabItem({ isFocused, iconName, onPress, onLongPress, badgeCount }: TabItemProps) {
   const theme = useThemeColors();
-  const progress = useSharedValue(isFocused ? 1 : 0);
-  const scale = useSharedValue(1);
+  const progress = React.useRef(new Animated.Value(isFocused ? 1 : 0)).current;
+  const scale = React.useRef(new Animated.Value(1)).current;
 
   React.useEffect(() => {
-    progress.value = withTiming(isFocused ? 1 : 0, { duration: 250 });
+    Animated.timing(progress, {
+      toValue: isFocused ? 1 : 0,
+      duration: 250,
+      useNativeDriver: true,
+    }).start();
   }, [isFocused]);
 
-  const animatedIconStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        { translateY: withSpring(isFocused ? -4 : 0, { damping: 12, stiffness: 200 }) },
-        { scale: scale.value }
-      ],
-    };
-  });
-
-  const animatedDotStyle = useAnimatedStyle(() => {
-    return {
-      opacity: progress.value,
-      transform: [
-        { scale: progress.value }
-      ]
-    };
+  const translateY = progress.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, -4],
   });
 
   return (
     <TouchableOpacity
       accessibilityRole="button"
       accessibilityState={isFocused ? { selected: true } : {}}
-      onPressIn={() => { scale.value = withSpring(0.85); }}
-      onPressOut={() => { scale.value = withSpring(1); }}
+      onPressIn={() => {
+        Animated.spring(scale, { toValue: 0.85, friction: 5, tension: 150, useNativeDriver: true }).start();
+      }}
+      onPressOut={() => {
+        Animated.spring(scale, { toValue: 1, friction: 5, tension: 150, useNativeDriver: true }).start();
+      }}
       onPress={onPress}
       onLongPress={onLongPress}
       style={styles.tabItem}
       activeOpacity={1}
     >
-      <Animated.View style={[styles.iconContainer, animatedIconStyle]}>
+      <Animated.View style={[styles.iconContainer, { transform: [{ translateY }, { scale }] }]}>
         <Ionicons
           name={iconName}
           size={24}
@@ -131,7 +125,7 @@ function TabItem({ isFocused, iconName, onPress, onLongPress, badgeCount }: TabI
           </View>
         )}
       </Animated.View>
-      <Animated.View style={[styles.dot, animatedDotStyle, { backgroundColor: Colors.brand }]} />
+      <Animated.View style={[styles.dot, { opacity: progress, transform: [{ scale: progress }], backgroundColor: Colors.brand }]} />
     </TouchableOpacity>
   );
 }

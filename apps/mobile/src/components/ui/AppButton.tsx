@@ -1,6 +1,5 @@
-import React from 'react';
-import { ActivityIndicator, Pressable, PressableProps, StyleSheet, View } from 'react-native';
-import Animated, { useSharedValue, useAnimatedStyle, withSpring } from 'react-native-reanimated';
+import React, { useRef } from 'react';
+import { ActivityIndicator, Pressable, PressableProps, StyleSheet, View, Animated } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { AppText } from './AppText';
 import { Colors, Radius } from '../../constants/theme';
@@ -36,15 +35,16 @@ export function AppButton({
   style,
   ...props
 }: AppButtonProps) {
-  const scale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
+  const scale = useRef(new Animated.Value(1)).current;
 
   const handlePressIn = () => {
     if (disabled || loading) return;
-    scale.value = withSpring(0.96, { damping: 15, stiffness: 400 });
+    Animated.spring(scale, {
+      toValue: 0.96,
+      friction: 5,
+      tension: 100,
+      useNativeDriver: true,
+    }).start();
     try {
       Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
     } catch {}
@@ -52,7 +52,12 @@ export function AppButton({
 
   const handlePressOut = () => {
     if (disabled || loading) return;
-    scale.value = withSpring(1, { damping: 10, stiffness: 200 });
+    Animated.spring(scale, {
+      toValue: 1,
+      friction: 5,
+      tension: 100,
+      useNativeDriver: true,
+    }).start();
   };
 
   const handlePress = async (e: any) => {
@@ -124,7 +129,7 @@ export function AppButton({
       onPressOut={handlePressOut}
       onPress={handlePress}
       disabled={disabled || loading}
-      style={[getContainerStyle(), animatedStyle, style as any]}
+      style={[getContainerStyle(), { transform: [{ scale }] }, style as any]}
       {...props}
     >
       {loading ? (

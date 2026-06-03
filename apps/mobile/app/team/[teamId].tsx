@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppButton } from "../../src/components/AppButton";
+import { AppButton } from "../../src/components/ui/AppButton";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { useAcceptApplication, useAddRole, useApplyToRole, useRejectApplication, useTeamDetail } from "../../src/lib/apiHooks";
 import { api } from "../../src/lib/axios";

@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { StageBadge } from "../../src/components/StageBadge";
 import { SkillChip } from "../../src/components/SkillChip";
-import { AppButton } from "../../src/components/AppButton";
+import { AppButton } from "../../src/components/ui/AppButton";
 import { useProfile, useFollow, useFollowStats, useCreateExchange } from "../../src/lib/apiHooks";
 import { useState, useEffect } from "react";
 import Toast from "react-native-toast-message";
@@ -41,7 +41,7 @@ export default function PublicProfileScreen() {
   const handleFollowToggle = () => {
     const nextFollowed = !localFollowed;
     setLocalFollowed(nextFollowed);
-    setLocalFollowerCount((prev) => prev + (nextFollowed ? 1 : -1));
+    setLocalFollowerCount((prev: number) => prev + (nextFollowed ? 1 : -1));
 
     followMutation.mutate({
       targetUserId: userId!,
@@ -72,8 +72,8 @@ export default function PublicProfileScreen() {
     }
   };
 
-  const myOfferedSkills = myProfile?.skills?.filter((s) => s.isOffering) ?? [];
-  const targetOfferedSkills = profile?.skills?.filter((s) => s.isOffering) ?? [];
+  const myOfferedSkills = myProfile?.skills?.filter((s: any) => s.isOffering) ?? [];
+  const targetOfferedSkills = profile?.skills?.filter((s: any) => s.isOffering) ?? [];
 
   if (isLoading) {
     return (
@@ -85,7 +85,7 @@ export default function PublicProfileScreen() {
 
   const p = profile;
   const bp = p?.businessProfile;
-  const offeredSkills = p?.skills?.filter((s) => s.isOffering) ?? [];
+  const offeredSkills = p?.skills?.filter((s: any) => s.isOffering) ?? [];
 
   if (!p) {
     return (
@@ -166,7 +166,7 @@ export default function PublicProfileScreen() {
         <Text className="mb-4 text-lg font-bold text-ink">Skills Offered</Text>
         {offeredSkills.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-6">
-            {offeredSkills.map((skill) => (
+            {offeredSkills.map((skill: any) => (
               <SkillChip key={skill.id} title={skill.title} category={skill.category as SkillCategory} level={skill.level as SkillLevel} coinValue={skill.coinValue} />
             ))}
           </ScrollView>
@@ -210,7 +210,7 @@ export default function PublicProfileScreen() {
                 <>
                   <Text className="mb-2 text-sm font-semibold text-ink">Choose a skill you will offer *</Text>
                   <View className="mb-5 flex-row flex-wrap">
-                    {myOfferedSkills.map((s) => (
+                    {myOfferedSkills.map((s: any) => (
                       <TouchableOpacity
                         key={s.id}
                         activeOpacity={0.88}
@@ -228,7 +228,7 @@ export default function PublicProfileScreen() {
 
                   <Text className="mb-2 text-sm font-semibold text-ink">Choose a skill you want to request *</Text>
                   <View className="mb-5 flex-row flex-wrap">
-                    {targetOfferedSkills.map((s) => (
+                    {targetOfferedSkills.map((s: any) => (
                       <TouchableOpacity
                         key={s.id}
                         activeOpacity={0.88}
