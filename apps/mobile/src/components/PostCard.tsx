@@ -13,6 +13,7 @@ import { readApiError } from "../lib/axios";
 import type { FeedPost } from "@bizskills/types";
 import { useThemeColors } from "../hooks/useThemeColors";
 import { Colors } from "../constants/theme";
+import { useAuthStore } from "../store/useAuthStore";
 
 const typeConfig: Record<string, { label: string; color: string; bg: string }> = {
   UPDATE: { label: "Update", color: "#5B4DFF", bg: "rgba(91, 77, 255, 0.1)" },
@@ -43,6 +44,8 @@ interface PostCardProps {
 }
 
 export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }: PostCardProps) {
+  const currentUserId = useAuthStore((state) => state.user?.id);
+  const isOwnPost = post.isOwnPost || post.userId === currentUserId;
   const toggleLike = useToggleLike();
   const theme = useThemeColors();
   const [expanded, setExpanded] = useState(false);
@@ -118,10 +121,10 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
             </View>
           </TouchableOpacity>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-            <View style={{ borderRadius: 999, backgroundColor: config.bg, paddingHorizontal: 12, paddingVertical: 6, marginRight: post.isOwnPost ? 8 : 0 }}>
+            <View style={{ borderRadius: 999, backgroundColor: config.bg, paddingHorizontal: 12, paddingVertical: 6, marginRight: isOwnPost ? 8 : 0 }}>
               <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: config.color }}>{config.label}</AppText>
             </View>
-            {post.isOwnPost && (
+            {isOwnPost && (
               <TouchableOpacity onPress={() => setShowMenu(true)} style={{ padding: 4 }}>
                 <Ionicons name="ellipsis-horizontal" size={20} color={theme.textSecondary} />
               </TouchableOpacity>

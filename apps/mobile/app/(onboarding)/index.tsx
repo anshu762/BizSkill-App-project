@@ -71,6 +71,7 @@ export default function OnboardingScreen() {
   const [offeredSkills, setOfferedSkills] = useState<Array<{ title: string; category: string; description?: string; level: string; coinValue: number }>>([]);
   const [neededSkills, setNeededSkills] = useState<Array<{ title: string; category: string; description?: string; level: string; coinValue: number }>>([]);
   const [showSkillForm, setShowSkillForm] = useState<"offered" | "needed" | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const updateUser = useAuthStore((state) => state.updateUser);
 
   const { control, handleSubmit, trigger, watch, setValue, formState: { errors } } = useForm<Values>({
@@ -111,12 +112,14 @@ export default function OnboardingScreen() {
   };
 
   const submit = async (values: Values) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     try {
       const response = await api.post<ApiResponse<{ id: string; hasOnboarded: boolean }>>("/profile/onboarding", {
         name: values.name,
         age: values.age ? parseInt(values.age) : undefined,
         location: values.location,
-        bio: values.bio,
+        bio: values.bio || undefined,
         businessName: values.businessName,
         industry: values.industry,
         description: values.description,
@@ -131,6 +134,8 @@ export default function OnboardingScreen() {
       router.replace("/(tabs)");
     } catch (error) {
       Toast.show({ type: "error", text1: "Could not finish onboarding", text2: readApiError(error) });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -383,8 +388,8 @@ export default function OnboardingScreen() {
               )}
             </View>
             <View style={{ marginTop: 32, flexDirection: 'row' }}>
-              <AppButton label="Back" variant="secondary" onPress={() => setStep(3)} style={{ marginRight: 12, flex: 1 }} />
-              <AppButton label="Looks Good" onPress={handleSubmit(submit)} style={{ flex: 1 }} />
+              <AppButton label="Back" variant="secondary" onPress={() => setStep(3)} style={{ marginRight: 12, flex: 1 }} disabled={isSubmitting} />
+              <AppButton label="Looks Good" onPress={handleSubmit(submit)} loading={isSubmitting} style={{ flex: 1 }} />
             </View>
           </>
         );
