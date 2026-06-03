@@ -157,22 +157,42 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
         )}
       </View>
 
-      {showMenu && post.isOwnPost && (
-        <View style={{ flexDirection: 'row', borderTopWidth: 0.5, borderTopColor: theme.border, backgroundColor: theme.background }}>
-          <TouchableOpacity onPress={() => { setShowMenu(false); setEditModal(true); setEditContent(post.content); }} style={{ flex: 1, alignItems: 'center', paddingVertical: 12 }}>
-            <Ionicons name="pencil-outline" size={18} color={Colors.brand} />
-            <AppText style={{ marginTop: 4, fontSize: 12, fontFamily: 'Outfit_500Medium', color: Colors.brand }}>Edit</AppText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => { setShowMenu(false); promptDelete(); }} style={{ flex: 1, alignItems: 'center', paddingVertical: 12 }}>
-            <Ionicons name="trash-outline" size={18} color={Colors.danger} />
-            <AppText style={{ marginTop: 4, fontSize: 12, fontFamily: 'Outfit_500Medium', color: Colors.danger }}>Delete</AppText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setShowMenu(false)} style={{ flex: 1, alignItems: 'center', paddingVertical: 12 }}>
-            <Ionicons name="close-outline" size={18} color={theme.textTertiary} />
-            <AppText style={{ marginTop: 4, fontSize: 12, fontFamily: 'Outfit_500Medium', color: theme.textTertiary }}>Cancel</AppText>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Premium Bottom Sheet Menu (Custom implementation) */}
+      <Modal visible={showMenu} transparent animationType="fade" onRequestClose={() => setShowMenu(false)}>
+        <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }} activeOpacity={1} onPress={() => setShowMenu(false)}>
+          <View style={{ backgroundColor: theme.bg, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24 }}>
+            <View style={{ width: 40, height: 4, backgroundColor: theme.borderStrong, borderRadius: 2, alignSelf: 'center', marginBottom: 24 }} />
+            
+            <TouchableOpacity onPress={() => { setShowMenu(false); setEditModal(true); setEditContent(post.content); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.elevated, alignItems: 'center', justifyContent: 'center', marginRight: 16 }}>
+                <Ionicons name="pencil-outline" size={20} color={theme.textPrimary} />
+              </View>
+              <AppText variant="h3">Edit Post</AppText>
+            </TouchableOpacity>
+            
+            <TouchableOpacity onPress={() => { setShowMenu(false); promptDelete(); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: Colors.dangerTint, alignItems: 'center', justifyContent: 'center', marginRight: 16 }}>
+                <Ionicons name="trash-outline" size={20} color={Colors.danger} />
+              </View>
+              <AppText variant="h3" style={{ color: Colors.danger }}>Delete Post</AppText>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => { setShowMenu(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.elevated, alignItems: 'center', justifyContent: 'center', marginRight: 16 }}>
+                <Ionicons name="share-outline" size={20} color={theme.textPrimary} />
+              </View>
+              <AppText variant="h3">Share Post</AppText>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => { setShowMenu(false); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
+              <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.elevated, alignItems: 'center', justifyContent: 'center', marginRight: 16 }}>
+                <Ionicons name="link-outline" size={20} color={theme.textPrimary} />
+              </View>
+              <AppText variant="h3">Copy Link</AppText>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       {post.type === "COLLAB_REQUEST" && (
         <View style={{ paddingHorizontal: 20, paddingBottom: 16 }}>
@@ -208,17 +228,20 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
                   <Ionicons name="close" size={24} color={theme.textPrimary} />
                 </TouchableOpacity>
               </View>
-              <TextInput
+                autoFocus
                 multiline
                 placeholder="What's happening with your business?"
                 placeholderTextColor={theme.textTertiary}
                 maxLength={500}
-                style={{ marginBottom: 8, height: 160, borderRadius: 24, borderWidth: 1, borderColor: theme.border, backgroundColor: theme.elevated, paddingHorizontal: 20, paddingTop: 20, fontSize: 16, color: theme.textPrimary }}
+                style={{ flex: 1, marginBottom: 8, fontSize: 18, color: theme.textPrimary, fontFamily: 'Outfit_400Regular' }}
                 value={editContent}
                 onChangeText={setEditContent}
+                textAlignVertical="top"
               />
-              <AppText style={{ marginBottom: 20, textAlign: 'right', fontSize: 12, color: theme.textTertiary }}>{editContent.length}/500</AppText>
-              <AppButton title="Save Changes" onPress={handleEdit} disabled={!editContent.trim()} />
+              <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 16, borderTopWidth: 1, borderTopColor: theme.border }}>
+                <AppText style={{ fontSize: 14, color: theme.textTertiary }}>{editContent.length}/500</AppText>
+                <AppButton title="Save Changes" onPress={handleEdit} disabled={!editContent.trim()} />
+              </View>
             </View>
           </KeyboardAvoidingView>
         </SafeAreaView>

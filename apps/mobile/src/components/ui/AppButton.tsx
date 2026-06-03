@@ -70,8 +70,8 @@ export function AppButton({
       flexDirection: 'row',
       alignItems: 'center',
       justifyContent: 'center',
-      borderRadius: variant === 'ghost' ? Radius.md : Radius.md, // prompt says 12 for primary, 10 for ghost, we use 12 for both or Radius.md
-      opacity: disabled || loading ? 0.6 : 1,
+      borderRadius: Radius.full,
+      opacity: disabled || loading ? 0.4 : 1,
       width: fullWidth ? '100%' : undefined,
     };
 

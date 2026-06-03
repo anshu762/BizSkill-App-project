@@ -92,27 +92,24 @@ export default function TeamsScreen() {
 
   const TabButton = ({ label, value }: { label: string; value: typeof tab }) => (
     <TouchableOpacity
-      activeOpacity={0.8}
+      activeOpacity={1}
       onPress={() => setTab(value)}
       style={{
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: value === "applications" ? 0 : 12,
-        borderRadius: 16,
-        paddingVertical: 12,
-        borderWidth: 1,
-        backgroundColor: tab === value ? Colors.brand : theme.elevated,
-        borderColor: tab === value ? Colors.brand : theme.border,
+        borderRadius: 12,
+        paddingVertical: 10,
+        backgroundColor: tab === value ? theme.isDark ? '#3C3489' : '#FFFFFF' : 'transparent',
+        shadowColor: tab === value ? '#000' : 'transparent',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: tab === value ? 0.05 : 0,
+        shadowRadius: 4,
+        elevation: tab === value ? 2 : 0,
       }}
     >
-      <Ionicons
-        name={tabIcons[value]}
-        size={16}
-        color={tab === value ? "#FFFFFF" : theme.textSecondary}
-      />
-      <AppText variant="label" style={{ marginLeft: 6, color: tab === value ? "#FFFFFF" : theme.textSecondary }}>{label}</AppText>
+      <AppText variant="label" style={{ color: tab === value ? (theme.isDark ? '#FFFFFF' : Colors.brand) : theme.textSecondary }}>{label}</AppText>
     </TouchableOpacity>
   );
 
@@ -166,7 +163,7 @@ export default function TeamsScreen() {
         <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', letterSpacing: 2 }}>Collaborate</AppText>
         <AppText variant="h1" style={{ marginTop: 4, marginBottom: 20 }}>Teams</AppText>
 
-        <View style={{ flexDirection: 'row', marginBottom: 20 }}>
+        <View style={{ flexDirection: 'row', marginBottom: 20, backgroundColor: theme.elevated, borderRadius: 16, padding: 4, borderWidth: 1, borderColor: theme.border }}>
           <TabButton label="Discover" value="discover" />
           <TabButton label="My Teams" value="my" />
           <TabButton label="Applications" value="applications" />
@@ -228,12 +225,6 @@ export default function TeamsScreen() {
               ListEmptyComponent={() => <EmptyTeams onAction={() => setCreateOpen(true)} />}
             />
             )}
-            <TouchableOpacity
-              onPress={() => setCreateOpen(true)}
-              style={{ position: 'absolute', bottom: 24, right: 24, height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 28, backgroundColor: Colors.brand, shadowColor: Colors.brand, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 }}
-            >
-              <Ionicons name="add" size={28} color="white" />
-            </TouchableOpacity>
           </>
         )}
 
@@ -297,8 +288,6 @@ export default function TeamsScreen() {
             {(!myTeamsData?.owned?.length && !myTeamsData?.member?.length && !myLoading) && (
               <EmptyTeams onAction={() => setCreateOpen(true)} />
             )}
-
-            <AppButton title="Create a Team" onPress={() => setCreateOpen(true)} style={{ marginTop: 24 }} />
           </ScrollView>
         )}
 
@@ -326,6 +315,16 @@ export default function TeamsScreen() {
               </View>
             )}
           </ScrollView>
+        )}
+
+        {/* Global Floating Action Button for Create Team */}
+        {tab !== "applications" && (
+          <TouchableOpacity
+            onPress={() => setCreateOpen(true)}
+            style={{ position: 'absolute', bottom: 24, right: 24, height: 56, width: 56, alignItems: 'center', justifyContent: 'center', borderRadius: 28, backgroundColor: Colors.brand, shadowColor: Colors.brand, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 }}
+          >
+            <Ionicons name="add" size={28} color="white" />
+          </TouchableOpacity>
         )}
       </View>
 

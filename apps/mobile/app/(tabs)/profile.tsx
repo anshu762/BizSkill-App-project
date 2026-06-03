@@ -179,22 +179,24 @@ export default function ProfileScreen() {
           </View>
         </View>
 
-        <AppCard style={{ marginTop: 32, marginBottom: 24, flexDirection: 'row', justifyContent: 'space-between', padding: 20 }}>
-          <View style={{ alignItems: 'center', width: '25%' }}>
-            <AppText variant="h2">{p?.exchangeCount ?? 0}</AppText>
-            <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary }}>Exchanges</AppText>
-          </View>
-          <View style={{ alignItems: 'center', width: '25%' }}>
-            <AppText variant="h2">{(p?.avgRating ?? 0) > 0 ? p?.avgRating : "-"}</AppText>
-            <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary }}>Rating</AppText>
-          </View>
-          <View style={{ alignItems: 'center', width: '25%' }}>
-            <AppText variant="h2">{p?.bizCoins}</AppText>
-            <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary }}>BizCoins</AppText>
-          </View>
-          <View style={{ alignItems: 'center', width: '25%' }}>
-            <AppText variant="h2">{p?.followerCount ?? 0}</AppText>
-            <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary }}>Followers</AppText>
+        <AppCard elevated style={{ marginTop: 32, marginBottom: 24, padding: 0, overflow: 'hidden' }}>
+          <View style={{ flexDirection: 'row', paddingVertical: 20 }}>
+            <View style={{ alignItems: 'center', flex: 1, borderRightWidth: 1, borderRightColor: theme.border }}>
+              <AppText variant="h2">{p?.exchangeCount ?? 0}</AppText>
+              <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary, textTransform: 'uppercase', letterSpacing: 1, fontSize: 10 }}>Exchanges</AppText>
+            </View>
+            <View style={{ alignItems: 'center', flex: 1, borderRightWidth: 1, borderRightColor: theme.border }}>
+              <AppText variant="h2">{(p?.avgRating ?? 0) > 0 ? p?.avgRating : "-"}</AppText>
+              <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary, textTransform: 'uppercase', letterSpacing: 1, fontSize: 10 }}>Rating</AppText>
+            </View>
+            <View style={{ alignItems: 'center', flex: 1, borderRightWidth: 1, borderRightColor: theme.border }}>
+              <AppText variant="h2">{p?.bizCoins}</AppText>
+              <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary, textTransform: 'uppercase', letterSpacing: 1, fontSize: 10 }}>BizCoins</AppText>
+            </View>
+            <View style={{ alignItems: 'center', flex: 1 }}>
+              <AppText variant="h2">{p?.followerCount ?? 0}</AppText>
+              <AppText variant="caption" style={{ marginTop: 4, color: theme.textTertiary, textTransform: 'uppercase', letterSpacing: 1, fontSize: 10 }}>Followers</AppText>
+            </View>
           </View>
         </AppCard>
 
@@ -207,7 +209,6 @@ export default function ProfileScreen() {
 
         <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <AppText variant="h3">Skills I Offer</AppText>
-          <AppText variant="caption" style={{ color: theme.textTertiary }}>{offeredSkills.length}</AppText>
         </View>
         {offeredSkills.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 24 }}>
@@ -223,7 +224,6 @@ export default function ProfileScreen() {
 
         <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <AppText variant="h3">Skills I Need</AppText>
-          <AppText variant="caption" style={{ color: theme.textTertiary }}>{neededSkills.length}</AppText>
         </View>
         {neededSkills.length > 0 ? (
           <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 24 }}>

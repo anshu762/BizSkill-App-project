@@ -59,8 +59,8 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
             </View>
 
             {targetSkill && (
-              <View className="mb-6 rounded-3xl bg-white p-5">
-                <Text className="mb-2 text-sm font-semibold uppercase tracking-wider text-brand">They're offering</Text>
+              <View className="mb-6 rounded-3xl p-5 border border-slate-200" style={{ backgroundColor: '#F8FAFC' }}>
+                <Text className="mb-3 text-xs font-bold uppercase tracking-wider text-brand">They're offering</Text>
                 <View className="flex-row items-center">
                   <AvatarWithFallback uri={targetProfile?.avatar} name={targetProfile?.name ?? ""} size={40} />
                   <View className="ml-3">
@@ -85,17 +85,27 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
                 <TouchableOpacity
                   key={skill.id}
                   onPress={() => setSelectedSkillId(skill.id)}
-                  className={`mb-2 rounded-2xl border-2 p-4 ${selectedSkillId === skill.id ? "border-brand bg-brand/10" : "border-slate-200 bg-white"}`}
+                  className="mb-3 rounded-2xl p-4"
+                  style={{
+                    backgroundColor: selectedSkillId === skill.id ? '#FFFFFF' : '#FFFFFF',
+                    borderWidth: 2,
+                    borderColor: selectedSkillId === skill.id ? '#5B4DFF' : '#E2E8F0',
+                    shadowColor: selectedSkillId === skill.id ? '#5B4DFF' : 'transparent',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: selectedSkillId === skill.id ? 0.1 : 0,
+                    shadowRadius: 8,
+                    elevation: selectedSkillId === skill.id ? 4 : 0,
+                  }}
                 >
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1">
                       <View className="flex-row items-center">
-                        <Text className="font-semibold text-ink">{skill.title}</Text>
+                        <Text className="font-bold text-ink" style={{ fontSize: 16 }}>{skill.title}</Text>
                         {selectedSkillId === skill.id && (
-                          <Ionicons name="checkmark-circle" size={18} color="#5B4DFF" className="ml-2" />
+                          <Ionicons name="checkmark-circle" size={20} color="#5B4DFF" style={{ marginLeft: 8 }} />
                         )}
                       </View>
-                      <Text className="text-xs text-muted">{skill.level}</Text>
+                      <Text className="text-sm text-muted mt-1">{skill.level}</Text>
                     </View>
                     <View className="rounded-full bg-amber-50 px-3 py-1">
                       <Text className="text-xs font-bold text-amber-700">{skill.coinValue} BC</Text>

@@ -95,7 +95,7 @@ function TabItem({ isFocused, iconName, onPress, onLongPress, badgeCount }: TabI
 
   const translateY = progress.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, -4],
+    outputRange: [0, -2],
   });
 
   return (
@@ -125,7 +125,6 @@ function TabItem({ isFocused, iconName, onPress, onLongPress, badgeCount }: TabI
           </View>
         )}
       </Animated.View>
-      <Animated.View style={[styles.dot, { opacity: progress, transform: [{ scale: progress }], backgroundColor: Colors.brand }]} />
     </TouchableOpacity>
   );
 }

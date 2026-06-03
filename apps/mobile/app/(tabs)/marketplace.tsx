@@ -135,14 +135,11 @@ export default function MarketplaceScreen() {
                       <AppCard style={{ alignItems: 'center', padding: 16 }}>
                         <View style={{ position: 'relative' }}>
                           <Avatar uri={user.avatar} name={user.name?.[0] ?? "?"} size={52} />
-                          <View style={{ position: 'absolute', top: -4, right: -4, borderRadius: 10, backgroundColor: Colors.success, paddingHorizontal: 6, paddingVertical: 2, borderWidth: 2, borderColor: theme.elevated }}>
-                            <AppText style={{ fontSize: 10, fontFamily: 'Outfit_700Bold', color: '#FFFFFF' }}>{user.matchScore}</AppText>
-                          </View>
                         </View>
                         <AppText numberOfLines={1} style={{ marginTop: 12, fontSize: 14, fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{user.name}</AppText>
                         <AppText numberOfLines={1} variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>{user.businessProfile?.businessName ?? "Founder"}</AppText>
-                        <View style={{ marginTop: 12, borderRadius: 12, backgroundColor: Colors.successTint, paddingHorizontal: 12, paddingVertical: 4 }}>
-                          <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: Colors.success }}>{user.matchScore * 10}% match</AppText>
+                        <View style={{ marginTop: 12, borderRadius: 8, backgroundColor: 'rgba(16, 185, 129, 0.1)', paddingHorizontal: 10, paddingVertical: 4 }}>
+                          <AppText style={{ fontSize: 11, fontFamily: 'Outfit_600SemiBold', color: Colors.success }}>{user.matchScore * 10}% match</AppText>
                         </View>
                       </AppCard>
                     </TouchableOpacity>

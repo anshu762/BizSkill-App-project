@@ -17,9 +17,9 @@ const categoryIcons: Record<string, keyof typeof Ionicons.glyphMap> = {
 };
 
 const levelColors: Record<SkillLevel, string> = {
-  BEGINNER: "bg-green-100",
-  INTERMEDIATE: "bg-yellow-100",
-  EXPERT: "bg-red-100",
+  BEGINNER: "bg-emerald-50 text-emerald-700",
+  INTERMEDIATE: "bg-amber-50 text-amber-700",
+  EXPERT: "bg-brand/10 text-brand",
 };
 
 interface SkillChipProps {
@@ -39,8 +39,8 @@ export function SkillChip({ title, category, level, coinValue }: SkillChipProps)
         <BizCoinBadge amount={coinValue} size="sm" />
       </View>
       <Text className="mt-3 text-base font-semibold text-ink" numberOfLines={1}>{title}</Text>
-      <View className={`mt-2 self-start rounded-full ${levelColors[level]} px-2.5 py-0.5`}>
-        <Text className="text-xs font-medium capitalize text-gray-700">{level.toLowerCase()}</Text>
+      <View className={`mt-2 self-start rounded-full px-2.5 py-0.5 ${levelColors[level].split(' ')[0]}`}>
+        <Text className={`text-[10px] font-bold uppercase tracking-wider ${levelColors[level].split(' ')[1]}`}>{level}</Text>
       </View>
     </View>
   );

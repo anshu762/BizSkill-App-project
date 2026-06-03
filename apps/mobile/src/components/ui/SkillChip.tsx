@@ -33,17 +33,9 @@ export function SkillChip({ category, label, level, showLevel = false, style }: 
 
   return (
     <View style={[styles.container, { backgroundColor: theme.elevated, borderColor: theme.border }, style]}>
-      <Ionicons name={iconName} size={14} color={theme.textSecondary} style={{ marginRight: 6 }} />
       <AppText variant="caption" style={{ color: theme.textPrimary, fontFamily: 'Outfit_500Medium' }}>
         {label}
       </AppText>
-      {showLevel && level && (
-        <View style={styles.levelBadge}>
-          <AppText style={{ fontSize: 10, color: Colors.brand, fontFamily: 'Outfit_600SemiBold' }}>
-            {level.charAt(0)}
-          </AppText>
-        </View>
-      )}
     </View>
   );
 }

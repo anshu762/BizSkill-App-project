@@ -141,18 +141,18 @@ export default function PublicProfileScreen() {
           )}
         </View>
 
-        <View className="my-6 flex-row justify-between rounded-3xl bg-white p-5">
-          <View className="items-center" style={{ width: "33%" }}>
+        <View className="my-6 flex-row rounded-3xl bg-white shadow-sm overflow-hidden border border-slate-100">
+          <View className="flex-1 items-center justify-center border-r border-slate-100 py-5">
             <Text className="text-xl font-bold text-ink">{localFollowerCount}</Text>
-            <Text className="mt-1 text-xs text-muted">Followers</Text>
+            <Text className="mt-1 text-[10px] uppercase tracking-widest text-muted">Followers</Text>
           </View>
-          <View className="items-center" style={{ width: "33%" }}>
+          <View className="flex-1 items-center justify-center border-r border-slate-100 py-5">
             <Text className="text-xl font-bold text-ink">{followStats?.followingCount ?? 0}</Text>
-            <Text className="mt-1 text-xs text-muted">Following</Text>
+            <Text className="mt-1 text-[10px] uppercase tracking-widest text-muted">Following</Text>
           </View>
-          <View className="items-center" style={{ width: "33%" }}>
+          <View className="flex-1 items-center justify-center py-5">
             <Text className="text-xl font-bold text-ink">{p.exchangeCount ?? 0}</Text>
-            <Text className="mt-1 text-xs text-muted">Exchanges</Text>
+            <Text className="mt-1 text-[10px] uppercase tracking-widest text-muted">Exchanges</Text>
           </View>
         </View>
 

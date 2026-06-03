@@ -21,13 +21,7 @@ import { useAuthStore } from "../../src/store/useAuthStore";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
 import { Colors } from "../../src/constants/theme";
 
-const filterIcons: Record<string, keyof typeof Ionicons.glyphMap> = {
-  all: "apps-outline",
-  following: "people-outline",
-  launches: "rocket-outline",
-  milestones: "trophy-outline",
-  collab: "hand-left-outline",
-};
+// Icons removed for cleaner UI
 
 const filters = [
   { key: "all", label: "All" },
@@ -64,9 +58,9 @@ function DashboardCard() {
   const unreadMessages = messages ?? 0;
 
   return (
-    <AppCard elevated style={{ marginBottom: 20, backgroundColor: theme.isDark ? '#231F35' : Colors.ink }}>
+    <AppCard elevated style={{ marginBottom: 20, backgroundColor: theme.isDark ? '#231F35' : Colors.inkPrimary }}>
       <View className="flex-row items-center justify-between">
-        <AppText variant="h3" style={{ color: '#FFFFFF' }}>Your BizSkills Today</AppText>
+        <AppText variant="h3" style={{ color: '#FFFFFF', fontSize: 18 }}>Your BizSkills Today</AppText>
         <TouchableOpacity onPress={dismiss}>
           <Ionicons name="close" size={20} color="#9CA3AF" />
         </TouchableOpacity>
@@ -157,15 +151,9 @@ export default function FeedScreen() {
                     borderColor: isSelected ? Colors.brand : theme.border,
                   }}
                 >
-                  <Ionicons
-                    name={filterIcons[item.key]}
-                    size={16}
-                    color={isSelected ? "#FFFFFF" : theme.textSecondary}
-                  />
                   <AppText
                     variant="label"
                     style={{
-                      marginLeft: 6,
                       color: isSelected ? "#FFFFFF" : theme.textSecondary,
                     }}
                   >{item.label}</AppText>
