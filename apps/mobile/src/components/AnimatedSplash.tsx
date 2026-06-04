@@ -7,7 +7,6 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
-import * as SplashScreen from 'expo-splash-screen';
 import { BizSkillsIcon, BizSkillsWordmark } from './brand/BizSkillsLogo';
 import { Colors } from '../constants/theme';
 
@@ -33,8 +32,6 @@ export function AnimatedSplash({ onAnimationComplete }: Props) {
   const containerScale   = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    SplashScreen.hideAsync().catch(() => {});
-
     // Reset values for hot-reload (Fast Refresh)
     iconScale.setValue(0.5);
     iconOpacity.setValue(0);

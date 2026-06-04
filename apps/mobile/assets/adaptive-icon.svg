@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="1024" height="1024">
+  <!-- No background rectangle — adaptiveIcon.backgroundColor in app.json provides the purple bg layer -->
+  <!-- Vertical spine of B -->
+  <rect x="10" y="9" width="5" height="30" rx="2.5" fill="white"/>
+  <!-- Top bump of B -->
+  <path d="M15 13 H23 A6.5 6.5 0 0 1 23 24 H15" stroke="white" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <!-- Bottom bump of B -->
+  <path d="M15 24 H25 A6.5 6.5 0 0 1 25 35 H15" stroke="white" stroke-width="5" stroke-linecap="round" fill="none"/>
+  <!-- BizCoin gold dot -->
+  <circle cx="37" cy="11" r="5" fill="#F5B731"/>
+</svg>

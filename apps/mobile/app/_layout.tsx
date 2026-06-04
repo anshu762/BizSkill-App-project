@@ -40,6 +40,13 @@ export default function RootLayout() {
     void hydrate();
   }, [hydrate]);
 
+  // Hide native splash once fonts are ready, then show our JS AnimatedSplash
+  useEffect(() => {
+    if (fontsLoaded) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded]);
+
   useEffect(() => {
     // Only route once hydrated AND fonts are loaded AND splash animation completes
     if (!isHydrated || !fontsLoaded || showSplashOverlay) return;
