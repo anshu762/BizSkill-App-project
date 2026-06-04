@@ -14,7 +14,7 @@ export function FormField({ label, error, style, ...props }: FormFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View style={[{ marginBottom: 16 }, style]}>
+    <View style={[{ marginBottom: 16 }, style as any]}>
       <AppText variant="label" style={{ marginBottom: 8, color: theme.textPrimary }}>
         {label}
       </AppText>

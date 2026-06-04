@@ -169,7 +169,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
       <Modal visible={showMenu} transparent animationType="fade" onRequestClose={() => setShowMenu(false)}>
         <TouchableOpacity style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.4)', justifyContent: 'flex-end' }} activeOpacity={1} onPress={() => setShowMenu(false)}>
           <View style={{ backgroundColor: theme.bg, borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 24, paddingBottom: Platform.OS === 'ios' ? 40 : 24 }}>
-            <View style={{ width: 40, height: 4, backgroundColor: theme.borderStrong, borderRadius: 2, alignSelf: 'center', marginBottom: 24 }} />
+            <View style={{ width: 40, height: 4, backgroundColor: Colors.borderStrong, borderRadius: 2, alignSelf: 'center', marginBottom: 24 }} />
             
             <TouchableOpacity onPress={() => { setShowMenu(false); setEditModal(true); setEditContent(post.content); }} style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16 }}>
               <View style={{ width: 40, height: 40, borderRadius: 20, backgroundColor: theme.elevated, alignItems: 'center', justifyContent: 'center', marginRight: 16 }}>
@@ -213,7 +213,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
 
       {/* Edit Modal */}
       <Modal visible={editModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditModal(false)}>
-        <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
             <View style={{ flex: 1, paddingHorizontal: 24 }}>
               <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>

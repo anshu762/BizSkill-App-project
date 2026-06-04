@@ -76,9 +76,9 @@ export default function MarketplaceScreen() {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
         <View style={{ paddingHorizontal: 24, paddingTop: 16 }}>
-          <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', tracking: 2 }}>Marketplace</AppText>
+          <AppText variant="caption" style={{ color: Colors.brand, textTransform: 'uppercase', letterSpacing: 2 }}>Marketplace</AppText>
           <AppText variant="h1" style={{ marginTop: 4 }}>Find skills</AppText>
           
           <View style={{ marginTop: 24, marginBottom: 16, flexDirection: 'row', alignItems: 'center' }}>
@@ -177,7 +177,7 @@ export default function MarketplaceScreen() {
 
       <Modal visible={filterOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setFilterOpen(false)}>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+          <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
             <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
               <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <AppText variant="h2">Filters</AppText>

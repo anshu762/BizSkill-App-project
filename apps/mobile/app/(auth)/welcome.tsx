@@ -20,7 +20,7 @@ export default function WelcomeScreen() {
   const theme = useThemeColors();
 
   return (
-    <SafeAreaView className="flex-1 px-6" style={{ backgroundColor: theme.background }}>
+    <SafeAreaView className="flex-1 px-6" style={{ backgroundColor: theme.bg }}>
       <View style={{ marginTop: 24, flexDirection: 'row', alignItems: 'center' }}>
         <BizSkillsLogo size="lg" variant={theme.isDark ? 'white' : 'color'} />
       </View>

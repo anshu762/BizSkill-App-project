@@ -16,7 +16,7 @@ export function AuthShell({ title, subtitle, children }: AuthShellProps) {
 
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
           <View style={{ marginTop: 40, flexDirection: 'row', alignItems: 'center' }}>
             <BizSkillsLogo size="lg" variant={theme.isDark ? 'white' : 'color'} />
