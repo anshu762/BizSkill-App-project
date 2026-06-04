@@ -117,6 +117,35 @@ export const SkeletonTeamCard = () => (
   </View>
 );
 
+export const SkeletonProfile = () => {
+  return (
+    <View style={{ paddingHorizontal: 24, paddingTop: 24 }}>
+      <View style={{ alignItems: 'center', marginBottom: 32 }}>
+        <ShimmerLoader width={96} height={96} borderRadius={48} />
+        <ShimmerLoader width={160} height={32} style={{ marginTop: 16 }} />
+        <ShimmerLoader width={120} height={20} style={{ marginTop: 8 }} />
+      </View>
+      
+      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginBottom: 32 }}>
+        <ShimmerLoader width="22%" height={70} borderRadius={16} />
+        <ShimmerLoader width="22%" height={70} borderRadius={16} />
+        <ShimmerLoader width="22%" height={70} borderRadius={16} />
+        <ShimmerLoader width="22%" height={70} borderRadius={16} />
+      </View>
+
+      <ShimmerLoader width={100} height={16} style={{ marginBottom: 12 }} />
+      <ShimmerLoader width="100%" height={60} borderRadius={12} style={{ marginBottom: 32 }} />
+
+      <ShimmerLoader width={140} height={24} style={{ marginBottom: 16 }} />
+      <View style={{ flexDirection: 'row', marginBottom: 32 }}>
+        <ShimmerLoader width={110} height={36} borderRadius={18} style={{ marginRight: 8 }} />
+        <ShimmerLoader width={90} height={36} borderRadius={18} style={{ marginRight: 8 }} />
+        <ShimmerLoader width={100} height={36} borderRadius={18} />
+      </View>
+    </View>
+  );
+};
+
 const styles = StyleSheet.create({
   card: {
     backgroundColor: '#FFFFFF',

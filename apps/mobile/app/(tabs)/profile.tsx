@@ -14,6 +14,7 @@ import { Avatar } from "../../src/components/ui/Avatar";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { StageBadge } from "../../src/components/StageBadge";
 import { SkillChip } from "../../src/components/ui/SkillChip";
+import { SkeletonProfile } from "../../src/components/ui/ShimmerLoader";
 import { FormField } from "../../src/components/FormField";
 import { SelectableChip } from "../../src/components/SelectableChip";
 import { useAuthStore } from "../../src/store/useAuthStore";
@@ -138,8 +139,8 @@ export default function ProfileScreen() {
 
   if (isLoading) {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg, alignItems: 'center', justifyContent: 'center' }}>
-        <ActivityIndicator color={Colors.brand} size="large" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
+        <SkeletonProfile />
       </SafeAreaView>
     );
   }

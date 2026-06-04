@@ -108,7 +108,7 @@ export default function FeedScreen() {
 
   return (
     <ErrorBoundary>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.background }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
         <View className="px-6">
           <View className="mt-4 mb-5 flex-row items-center justify-between">
             <AppText variant="h1">BizSkills</AppText>

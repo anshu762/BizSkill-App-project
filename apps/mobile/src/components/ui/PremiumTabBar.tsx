@@ -3,6 +3,8 @@ import { View, TouchableOpacity, StyleSheet, Dimensions, Platform, Animated } fr
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { BlurView } from 'expo-blur';
+import * as Haptics from 'expo-haptics';
 import { Colors, Radius, Shadow } from '../../constants/theme';
 import { useThemeColors } from '../../hooks/useThemeColors';
 import { AppText } from './AppText';
@@ -22,51 +24,62 @@ export function PremiumTabBar({ state, descriptors, navigation }: BottomTabBarPr
   return (
     <View style={[styles.container, { paddingBottom: bottomPadding }]}>
       <View style={[
-        styles.tabBar,
-        { backgroundColor: theme.isDark ? '#231F35' : '#FFFFFF', borderColor: theme.border },
+        styles.tabBarWrapper,
         theme.isDark ? Shadow.md : Shadow.lg,
       ]}>
-        {state.routes.map((route, index) => {
-          const { options } = descriptors[route.key];
-          const isFocused = state.index === index;
+        <BlurView
+          intensity={theme.isDark ? 50 : 80}
+          tint={theme.isDark ? 'dark' : 'light'}
+          style={[
+            styles.tabBar,
+            { 
+              backgroundColor: theme.isDark ? 'rgba(35, 31, 53, 0.6)' : 'rgba(255, 255, 255, 0.8)', 
+              borderColor: theme.border 
+            },
+          ]}
+        >
+          {state.routes.map((route, index) => {
+            const { options } = descriptors[route.key];
+            const isFocused = state.index === index;
 
-          const onPress = () => {
-            const event = navigation.emit({
-              type: 'tabPress',
-              target: route.key,
-              canPreventDefault: true,
-            });
+            const onPress = () => {
+              const event = navigation.emit({
+                type: 'tabPress',
+                target: route.key,
+                canPreventDefault: true,
+              });
 
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name, route.params);
-            }
-          };
+              if (!isFocused && !event.defaultPrevented) {
+                navigation.navigate(route.name, route.params);
+              }
+            };
 
-          const onLongPress = () => {
-            navigation.emit({
-              type: 'tabLongPress',
-              target: route.key,
-            });
-          };
+            const onLongPress = () => {
+              navigation.emit({
+                type: 'tabLongPress',
+                target: route.key,
+              });
+            };
 
-          let iconName: keyof typeof Ionicons.glyphMap = 'home-outline';
-          if (route.name === 'index') iconName = isFocused ? 'home' : 'home-outline';
-          if (route.name === 'marketplace') iconName = isFocused ? 'compass' : 'compass-outline';
-          if (route.name === 'teams') iconName = isFocused ? 'people' : 'people-outline';
-          if (route.name === 'messages') iconName = isFocused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline';
-          if (route.name === 'profile') iconName = isFocused ? 'person' : 'person-outline';
+            let iconName: keyof typeof Ionicons.glyphMap = 'home-outline';
+            if (route.name === 'index') iconName = isFocused ? 'home' : 'home-outline';
+            if (route.name === 'marketplace') iconName = isFocused ? 'compass' : 'compass-outline';
+            if (route.name === 'teams') iconName = isFocused ? 'people' : 'people-outline';
+            if (route.name === 'messages') iconName = isFocused ? 'chatbubble-ellipses' : 'chatbubble-ellipses-outline';
+            if (route.name === 'profile') iconName = isFocused ? 'person' : 'person-outline';
 
-          return (
-            <TabItem
-              key={route.key}
-              isFocused={isFocused}
-              iconName={iconName}
-              onPress={onPress}
-              onLongPress={onLongPress}
-              badgeCount={route.name === 'messages' ? unread : undefined}
-            />
-          );
-        })}
+            return (
+              <TabItem
+                key={route.key}
+                isFocused={isFocused}
+                iconName={iconName}
+                onPress={onPress}
+                onLongPress={onLongPress}
+                badgeCount={route.name === 'messages' ? unread : undefined}
+              />
+            );
+          })}
+        </BlurView>
       </View>
     </View>
   );
@@ -103,6 +116,7 @@ function TabItem({ isFocused, iconName, onPress, onLongPress, badgeCount }: TabI
       accessibilityRole="button"
       accessibilityState={isFocused ? { selected: true } : {}}
       onPressIn={() => {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light).catch(() => {});
         Animated.spring(scale, { toValue: 0.85, friction: 5, tension: 150, useNativeDriver: true }).start();
       }}
       onPressOut={() => {
@@ -137,16 +151,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: 'transparent', // Make container transparent so it floats
   },
+  tabBarWrapper: {
+    marginBottom: 8,
+    borderRadius: Radius.full,
+  },
   tabBar: {
     flexDirection: 'row',
     width: TAB_BAR_WIDTH,
     height: 64,
     borderRadius: Radius.full,
     borderWidth: 0.5,
-    marginBottom: 8,
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 8,
+    overflow: 'hidden', // Ensure blur effect is bounded by radius
   },
   tabItem: {
     width: TAB_ITEM_WIDTH - 4,
