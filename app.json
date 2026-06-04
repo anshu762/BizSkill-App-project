@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "extra": {
+      "eas": {
+        "projectId": "b55e1708-3917-4410-ae62-635c07cb82c8"
+      }
+    },
+    "android": {
+      "package": "com.anubhavxsingh.bizskills"
+    }
+  }
+}
