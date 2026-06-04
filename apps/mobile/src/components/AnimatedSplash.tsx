@@ -129,13 +129,18 @@ export function AnimatedSplash({ onAnimationComplete }: Props) {
       ]),
     ]);
 
-    pulseLoop.start();
-    main.start(() => {
-      pulseLoop.stop();
-      onAnimationComplete();
-    });
+    // Delay the start slightly to ensure the view is natively mounted.
+    // This fixes issues where useNativeDriver skips the animation on subsequent fast cold starts.
+    const timer = setTimeout(() => {
+      pulseLoop.start();
+      main.start(() => {
+        pulseLoop.stop();
+        onAnimationComplete();
+      });
+    }, 100);
 
     return () => {
+      clearTimeout(timer);
       pulseLoop.stop();
       main.stop();
     };
