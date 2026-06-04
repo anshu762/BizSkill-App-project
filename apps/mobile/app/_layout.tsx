@@ -17,19 +17,19 @@ import { toastConfig } from "../src/components/ui/ToastConfig";
 
 LogBox.ignoreLogs([
   "SafeAreaView has been deprecated",
-  "Unable to activate keep awake", // expo-keep-awake is a dev-only feature; safe to ignore in production
+  "Unable to activate keep awake",
 ]);
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
   const router = useRouter();
   const segments = useSegments();
-  
+
   const user = useAuthStore((state) => state.user);
   const accessToken = useAuthStore((state) => state.accessToken);
   const isHydrated = useAuthStore((state) => state.isHydrated);
   const hydrate = useAuthStore((state) => state.hydrate);
-  
+
   const [showSplashOverlay, setShowSplashOverlay] = useState(true);
 
   const [fontsLoaded] = useFonts({
@@ -39,19 +39,16 @@ export default function RootLayout() {
     Outfit_700Bold,
   });
 
+  // Immediately hide the native OS splash on first mount so our JS
+  // AnimatedSplash overlay takes over with no gap or white flash.
   useEffect(() => {
+    SplashScreen.hideAsync().catch(() => {});
     void hydrate();
-  }, [hydrate]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
-  // Hide native splash once fonts are ready, then show our JS AnimatedSplash
+  // Route only after: auth hydrated + fonts loaded + splash animation done
   useEffect(() => {
-    if (fontsLoaded) {
-      SplashScreen.hideAsync().catch(() => {});
-    }
-  }, [fontsLoaded]);
-
-  useEffect(() => {
-    // Only route once hydrated AND fonts are loaded AND splash animation completes
     if (!isHydrated || !fontsLoaded || showSplashOverlay) return;
     const area = segments[0];
 
@@ -66,17 +63,25 @@ export default function RootLayout() {
     }, 10);
   }, [accessToken, isHydrated, router, segments, user?.hasOnboarded, fontsLoaded, showSplashOverlay]);
 
-  if (!fontsLoaded) return null;
-
+  // Always render — AnimatedSplash is the first thing the user sees.
+  // Main app (Stack) only mounts after fonts are ready so text never flickers.
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
         <StatusBar style="dark" />
-        <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#F7F8FC" } }} />
+
+        {/* Main app — only mount after fonts are ready */}
+        {fontsLoaded && (
+          <>
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
+            <Toast config={toastConfig} />
+          </>
+        )}
+
+        {/* JS Splash overlay — renders immediately, independent of font loading */}
         {showSplashOverlay && (
           <AnimatedSplash onAnimationComplete={() => setShowSplashOverlay(false)} />
         )}
-        <Toast config={toastConfig} />
       </QueryClientProvider>
     </SafeAreaProvider>
   );
