@@ -157,7 +157,7 @@ export function AnimatedSplash({ onAnimationComplete }: Props) {
       ]}
       pointerEvents="none"
     >
-      <StatusBar barStyle="dark-content" backgroundColor={Colors.surface} />
+      <StatusBar barStyle="light-content" backgroundColor={Colors.brand} />
       <View style={styles.lockup}>
         <View style={styles.logoRow}>
           <Animated.View
@@ -166,7 +166,7 @@ export function AnimatedSplash({ onAnimationComplete }: Props) {
               transform: [{ scale: iconScale }],
             }}
           >
-            <BizSkillsIcon size="lg" variant="color" />
+            <BizSkillsIcon size="lg" variant="white" />
           </Animated.View>
           <Animated.View
             style={[
@@ -177,7 +177,7 @@ export function AnimatedSplash({ onAnimationComplete }: Props) {
               },
             ]}
           >
-            <BizSkillsWordmark size="lg" variant="color" />
+            <BizSkillsWordmark size="lg" variant="white" />
           </Animated.View>
         </View>
         <Animated.Text
@@ -202,7 +202,7 @@ export function AnimatedSplash({ onAnimationComplete }: Props) {
 const styles = StyleSheet.create({
   container: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: Colors.surface,
+    backgroundColor: Colors.brand,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 9999,
@@ -222,7 +222,7 @@ const styles = StyleSheet.create({
   tagline: {
     fontFamily: 'Outfit_400Regular',
     fontSize: 15,
-    color: Colors.inkTertiary,
+    color: 'rgba(255, 255, 255, 0.8)',
     letterSpacing: 0.1,
     textAlign: 'center',
   },
@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
     bottom: 40,
     fontFamily: 'Outfit_400Regular',
     fontSize: 12,
-    color: Colors.inkDisabled,
+    color: 'rgba(255, 255, 255, 0.5)',
     letterSpacing: 0.5,
   },
 });

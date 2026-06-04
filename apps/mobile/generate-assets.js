@@ -92,15 +92,15 @@ function splashSVG(size) {
   const textY = iconY + iconSize + fontSize * 0.9;
 
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-  <rect width="${size}" height="${size}" fill="${WHITE}"/>
+  <rect width="${size}" height="${size}" fill="${BRAND}"/>
   <!-- Icon mark -->
-  <rect x="${iconX.toFixed(2)}" y="${iconY.toFixed(2)}" width="${iconSize.toFixed(2)}" height="${iconSize.toFixed(2)}" rx="${rx.toFixed(2)}" fill="${BRAND}"/>
+  <rect x="${iconX.toFixed(2)}" y="${iconY.toFixed(2)}" width="${iconSize.toFixed(2)}" height="${iconSize.toFixed(2)}" rx="${rx.toFixed(2)}" fill="rgba(255,255,255,0.18)"/>
   <rect x="${tx(10)}" y="${ty(9)}" width="${ts(5)}" height="${ts(30)}" rx="${ts(2.5)}" fill="${WHITE}"/>
   <path d="M${tx(15)} ${ty(13)} H${tx(23)} A${ts(6.5)} ${ts(6.5)} 0 0 1 ${tx(23)} ${ty(26)} H${tx(15)}"
         stroke="${WHITE}" stroke-width="${ts(5)}" stroke-linecap="round" fill="none"/>
   <path d="M${tx(15)} ${ty(24)} H${tx(25)} A${ts(6.5)} ${ts(6.5)} 0 0 1 ${tx(25)} ${ty(37)} H${tx(15)}"
         stroke="${WHITE}" stroke-width="${ts(5)}" stroke-linecap="round" fill="none"/>
-  <circle cx="${tx(37)}" cy="${ty(11)}" r="${ts(5)}" fill="${COIN}"/>
+  <circle cx="${tx(37)}" cy="${ty(11)}" r="${ts(5)}" fill="rgba(255,255,255,0.7)"/>
 </svg>`;
 }
 
