@@ -3,6 +3,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import { View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { BizSkillsLogo } from "../../src/components/brand/BizSkillsLogo";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { AppText } from "../../src/components/ui/AppText";
 import { useThemeColors } from "../../src/hooks/useThemeColors";
@@ -21,10 +22,7 @@ export default function WelcomeScreen() {
   return (
     <SafeAreaView className="flex-1 px-6" style={{ backgroundColor: theme.background }}>
       <View style={{ marginTop: 24, flexDirection: 'row', alignItems: 'center' }}>
-        <View style={{ height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 16, backgroundColor: Colors.brand, shadowColor: Colors.brand, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 8 }}>
-          <AppText variant="h2" style={{ color: '#FFFFFF', fontFamily: 'Outfit_700Bold' }}>B</AppText>
-        </View>
-        <AppText variant="h1" style={{ marginLeft: 16, fontSize: 28 }}>BizSkills</AppText>
+        <BizSkillsLogo size="lg" variant={theme.isDark ? 'white' : 'color'} />
       </View>
 
       <View style={{ marginTop: 48, padding: 32, borderRadius: 32, backgroundColor: Colors.inkPrimary, shadowColor: '#000', shadowOffset: { width: 0, height: 12 }, shadowOpacity: 0.15, shadowRadius: 24, elevation: 12 }}>
