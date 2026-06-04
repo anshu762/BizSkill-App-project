@@ -39,10 +39,15 @@ export default function RootLayout() {
     Outfit_700Bold,
   });
 
-  // Immediately hide the native OS splash on first mount so our JS
-  // AnimatedSplash overlay takes over with no gap or white flash.
+  // Hide the native OS splash ONLY when fonts are ready.
+  // This prevents the JS AnimatedSplash from rendering text without fonts.
   useEffect(() => {
-    SplashScreen.hideAsync().catch(() => {});
+    if (fontsLoaded) {
+      SplashScreen.hideAsync().catch(() => {});
+    }
+  }, [fontsLoaded]);
+
+  useEffect(() => {
     void hydrate();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -63,8 +68,6 @@ export default function RootLayout() {
     }, 10);
   }, [accessToken, isHydrated, router, segments, user?.hasOnboarded, fontsLoaded, showSplashOverlay]);
 
-  // Always render — AnimatedSplash is the first thing the user sees.
-  // Main app (Stack) only mounts after fonts are ready so text never flickers.
   return (
     <SafeAreaProvider>
       <QueryClientProvider client={queryClient}>
@@ -78,8 +81,8 @@ export default function RootLayout() {
           </>
         )}
 
-        {/* JS Splash overlay — renders immediately, independent of font loading */}
-        {showSplashOverlay && (
+        {/* JS Splash overlay — starts seamlessly after native splash hides */}
+        {showSplashOverlay && fontsLoaded && (
           <AnimatedSplash onAnimationComplete={() => setShowSplashOverlay(false)} />
         )}
       </QueryClientProvider>
