@@ -15,7 +15,10 @@ import { useAuthStore } from "../src/store/useAuthStore";
 import { AnimatedSplash } from "../src/components/AnimatedSplash";
 import { toastConfig } from "../src/components/ui/ToastConfig";
 
-LogBox.ignoreLogs(["SafeAreaView has been deprecated"]);
+LogBox.ignoreLogs([
+  "SafeAreaView has been deprecated",
+  "Unable to activate keep awake", // expo-keep-awake is a dev-only feature; safe to ignore in production
+]);
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
