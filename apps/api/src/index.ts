@@ -26,6 +26,9 @@ import { env } from "./utils/env";
 
 const app = express();
 
+// Trust proxy is required for express-rate-limit when deployed behind a reverse proxy (like Railway)
+app.set("trust proxy", 1);
+
 app.use(helmet());
 app.use(compression());
 app.use(cors({ origin: "*" }));
