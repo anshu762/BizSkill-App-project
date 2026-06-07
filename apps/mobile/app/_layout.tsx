@@ -12,7 +12,7 @@ import * as SplashScreen from "expo-splash-screen";
 import { queryClient } from "../src/lib/queryClient";
 import { useAuthStore } from "../src/store/useAuthStore";
 import { AnimatedSplash } from "../src/components/AnimatedSplash";
-import { GlobalToast } from "../src/components/ui/GlobalToast";
+import { ToastContainer } from "../src/components/ui/AppToast";
 import { ResponsiveLayout } from "../src/components/ui/ResponsiveLayout";
 
 LogBox.ignoreLogs([
@@ -75,9 +75,12 @@ export default function RootLayout() {
 
         {/* Main app — only mount after fonts are ready */}
         {fontsLoaded && (
-          <ResponsiveLayout>
-            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
-          </ResponsiveLayout>
+          <>
+            <ResponsiveLayout>
+              <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
+            </ResponsiveLayout>
+            <ToastContainer />
+          </>
         )}
 
         {/* JS Splash overlay — starts seamlessly after native splash hides */}
@@ -85,10 +88,6 @@ export default function RootLayout() {
           <AnimatedSplash onAnimationComplete={() => setShowSplashOverlay(false)} />
         )}
       </QueryClientProvider>
-
-      {/* GlobalToast renders via Modal — completely outside navigation tree.
-          This guarantees auto-hide timers fire on Expo Go / Android native. */}
-      <GlobalToast />
     </SafeAreaProvider>
   );
 }

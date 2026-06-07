@@ -1,8 +1,8 @@
-﻿import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "../lib/toast";
+import { showToast } from "./ui/AppToast";
 import { readApiError } from "../lib/axios";
 import { useCreateReview } from "../lib/apiHooks";
 import { AppButton } from "./AppButton";
@@ -23,10 +23,10 @@ export function ReviewModal({ visible, onClose, exchangeId }: ReviewModalProps) 
     if (rating === 0) return;
     try {
       await createReview.mutateAsync({ exchangeId, rating, comment: comment || undefined });
-      Toast.show({ type: "success", text1: "Review submitted!" });
       onClose();
+      setTimeout(() => showToast({ type: "success", text1: "Review submitted!" }), 400);
     } catch (error) {
-      Toast.show({ type: "error", text1: "Failed", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Failed", text2: readApiError(error) });
     }
   };
 

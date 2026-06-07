@@ -1,4 +1,4 @@
-﻿import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,7 +8,7 @@ import { SkillChip } from "../../src/components/SkillChip";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { useProfile, useFollow, useFollowStats, useCreateExchange } from "../../src/lib/apiHooks";
 import { useState, useEffect } from "react";
-import Toast from "../../src/lib/toast";
+import { showToast } from "../../src/components/ui/AppToast";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import type { SkillCategory, SkillLevel } from "@bizskills/types";
 
@@ -58,13 +58,13 @@ export default function PublicProfileScreen() {
         requestedSkillId: selectedRequestedSkillId,
         message: exchangeMessage.trim() || undefined,
       });
-      Toast.show({ type: "success", text1: "Request Sent", text2: "Exchange request submitted successfully!" });
       setExchangeModalOpen(false);
       setSelectedOfferedSkillId("");
       setSelectedRequestedSkillId("");
       setExchangeMessage("");
+      setTimeout(() => showToast({ type: "success", text1: "Request Sent", text2: "Exchange request submitted successfully!" }), 400);
     } catch (error: any) {
-      Toast.show({ 
+      showToast({ 
         type: "error", 
         text1: "Request Failed", 
         text2: error?.response?.data?.message || error.message || "Could not submit exchange request" 
