@@ -14,6 +14,7 @@ import { queryClient } from "../src/lib/queryClient";
 import { useAuthStore } from "../src/store/useAuthStore";
 import { AnimatedSplash } from "../src/components/AnimatedSplash";
 import { toastConfig } from "../src/components/ui/ToastConfig";
+import { ResponsiveLayout } from "../src/components/ui/ResponsiveLayout";
 
 LogBox.ignoreLogs([
   "SafeAreaView has been deprecated",
@@ -75,10 +76,10 @@ export default function RootLayout() {
 
         {/* Main app — only mount after fonts are ready */}
         {fontsLoaded && (
-          <>
+          <ResponsiveLayout>
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
             <Toast config={toastConfig} visibilityTime={2000} topOffset={50} />
-          </>
+          </ResponsiveLayout>
         )}
 
         {/* JS Splash overlay — starts seamlessly after native splash hides */}

@@ -4,6 +4,7 @@ import { Image, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, Plat
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { readApiError } from "../lib/axios";
+import { ResponsiveLayout } from "./ui/ResponsiveLayout";
 import { useCreatePost } from "../lib/apiHooks";
 import { AppButton } from "./AppButton";
 import { SelectableChip } from "./SelectableChip";
@@ -77,8 +78,9 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <SafeAreaView className="flex-1 bg-surface">
+      <ResponsiveLayout>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
+          <SafeAreaView className="flex-1 bg-surface">
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
             <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
@@ -157,6 +159,7 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
+      </ResponsiveLayout>
     </Modal>
   );
 }

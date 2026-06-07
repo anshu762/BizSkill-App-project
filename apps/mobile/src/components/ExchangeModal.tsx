@@ -9,6 +9,7 @@ import { useCreateExchange } from "../lib/apiHooks";
 import { useAuthStore } from "../store/useAuthStore";
 import { AppButton } from "./AppButton";
 import { AvatarWithFallback } from "./AvatarWithFallback";
+import { ResponsiveLayout } from "./ui/ResponsiveLayout";
 
 interface ExchangeModalProps {
   visible: boolean;
@@ -48,9 +49,10 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <SafeAreaView className="flex-1 bg-surface">
-          <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+      <ResponsiveLayout>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
+          <SafeAreaView className="flex-1 bg-surface">
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
             <View className="mt-4 mb-6 flex-row items-center justify-between">
               <Text className="text-xl font-bold text-ink">New Exchange</Text>
               <TouchableOpacity onPress={onClose}>
@@ -140,6 +142,7 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
+      </ResponsiveLayout>
     </Modal>
   );
 }

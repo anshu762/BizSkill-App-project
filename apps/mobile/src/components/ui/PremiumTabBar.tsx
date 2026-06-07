@@ -10,7 +10,8 @@ import { useThemeColors } from '../../hooks/useThemeColors';
 import { AppText } from './AppText';
 import { useUnreadMessageCount } from '../../lib/apiHooks';
 
-const { width } = Dimensions.get('window');
+const { width: windowWidth } = Dimensions.get('window');
+const width = Platform.OS === 'web' ? Math.min(windowWidth, 768) : windowWidth;
 
 const TAB_BAR_WIDTH = width - 48; // 24px padding on each side
 const TAB_ITEM_WIDTH = TAB_BAR_WIDTH / 5; // 5 tabs

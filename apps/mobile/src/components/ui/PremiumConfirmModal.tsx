@@ -40,7 +40,7 @@ export function PremiumConfirmModal({
   return (
     <Modal visible={visible} transparent animationType="fade" onRequestClose={onCancel}>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 24 }}>
-        <View style={{ width: '100%', borderRadius: 24, backgroundColor: theme.elevated, padding: 24 }}>
+        <View style={{ width: '100%', maxWidth: 400, borderRadius: 24, backgroundColor: theme.elevated, padding: 24 }}>
           <View style={{ marginBottom: 16, height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24, backgroundColor: iconBgColor }}>
             <Ionicons name={iconName} size={24} color={iconColor} />
           </View>

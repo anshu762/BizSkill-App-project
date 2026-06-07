@@ -6,6 +6,7 @@ import Toast from "react-native-toast-message";
 import { readApiError } from "../lib/axios";
 import { useCreateReview } from "../lib/apiHooks";
 import { AppButton } from "./AppButton";
+import { ResponsiveLayout } from "./ui/ResponsiveLayout";
 
 interface ReviewModalProps {
   visible: boolean;
@@ -31,8 +32,9 @@ export function ReviewModal({ visible, onClose, exchangeId }: ReviewModalProps) 
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-        <SafeAreaView className="flex-1 bg-surface">
+      <ResponsiveLayout>
+        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
+          <SafeAreaView className="flex-1 bg-surface">
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
             <View className="mt-4 mb-8 flex-row items-center justify-between">
               <Text className="text-xl font-bold text-ink">Leave a Review</Text>
@@ -80,8 +82,9 @@ export function ReviewModal({ visible, onClose, exchangeId }: ReviewModalProps) 
               loading={createReview.isPending}
             />
           </ScrollView>
-        </SafeAreaView>
-      </KeyboardAvoidingView>
+          </SafeAreaView>
+        </KeyboardAvoidingView>
+      </ResponsiveLayout>
     </Modal>
   );
 }
