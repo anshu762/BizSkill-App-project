@@ -397,7 +397,7 @@ export default function OnboardingScreen() {
   };
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
       <SafeAreaView className="flex-1 bg-surface">
         <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
           {renderStepIndicator()}

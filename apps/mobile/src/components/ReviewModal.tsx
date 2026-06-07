@@ -31,7 +31,7 @@ export function ReviewModal({ visible, onClose, exchangeId }: ReviewModalProps) 
 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
-      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
         <SafeAreaView className="flex-1 bg-surface">
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
             <View className="mt-4 mb-8 flex-row items-center justify-between">

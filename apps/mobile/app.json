@@ -41,7 +41,7 @@
     },
     "android": {
       "package": "com.bizskills.mobile",
-      "softwareKeyboardLayoutMode": "adjustPan",
+      "softwareKeyboardLayoutMode": "adjustResize",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon-transparent.png",
         "backgroundColor": "#5B4DFF"
