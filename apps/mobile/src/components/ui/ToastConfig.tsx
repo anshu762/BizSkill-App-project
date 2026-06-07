@@ -10,7 +10,7 @@ const SCREEN_WIDTH = Dimensions.get('window').width;
 
 function BaseToast({ type, text1, text2, iconName, color }: { type: string, text1?: string, text2?: string, iconName: keyof typeof Ionicons.glyphMap, color: string }) {
   return (
-    <View style={{ width: '100%', alignItems: 'center' }}>
+    <View style={{ width: '100%', maxWidth: 768, alignItems: 'center' }}>
       <View style={[styles.container, Shadow.md]}>
         <View style={[styles.iconContainer, { backgroundColor: color }]}>
           <Ionicons name={iconName} size={20} color="#FFFFFF" />

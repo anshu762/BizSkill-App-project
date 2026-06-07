@@ -76,10 +76,12 @@ export default function RootLayout() {
 
         {/* Main app — only mount after fonts are ready */}
         {fontsLoaded && (
-          <ResponsiveLayout>
-            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
-            <Toast config={toastConfig} visibilityTime={2000} topOffset={50} onPress={() => Toast.hide()} />
-          </ResponsiveLayout>
+          <>
+            <ResponsiveLayout>
+              <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
+            </ResponsiveLayout>
+            <Toast config={toastConfig} visibilityTime={4000} topOffset={50} onPress={() => Toast.hide()} />
+          </>
         )}
 
         {/* JS Splash overlay — starts seamlessly after native splash hides */}
