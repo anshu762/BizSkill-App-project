@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
-import { ActivityIndicator, FlatList, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Text, TouchableOpacity, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
@@ -87,7 +87,7 @@ export default function ExchangesScreen() {
       <SafeAreaView className="flex-1 bg-surface">
         <View className="px-6">
           <Text className="mb-6 mt-4 text-2xl font-bold text-ink">Exchanges</Text>
-          <View className="mb-4 flex-row flex-wrap">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4" contentContainerStyle={{ paddingRight: 24 }}>
             {tabs.map((t) => (
               <SelectableChip
                 key={t.key}
@@ -97,7 +97,7 @@ export default function ExchangesScreen() {
                 chipStyle="pill"
               />
             ))}
-          </View>
+          </ScrollView>
         </View>
 
         <FlatList

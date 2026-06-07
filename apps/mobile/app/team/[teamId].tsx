@@ -124,7 +124,7 @@ export default function TeamDetailScreen() {
           )}
         </View>
 
-        <View className="mt-6 mb-4 flex-row flex-wrap">
+        <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-6 mb-4 flex-row" contentContainerStyle={{ paddingRight: 24 }}>
           <TouchableOpacity onPress={() => setDetailTab("roles")} className={`mr-2 mb-2 rounded-full px-5 py-2.5 ${detailTab === "roles" ? "bg-brand" : "bg-white"}`}>
             <Text className={`text-sm font-semibold ${detailTab === "roles" ? "text-white" : "text-muted"}`}>Open Roles ({team.roles?.filter((r: any) => r.isOpen).length ?? 0})</Text>
           </TouchableOpacity>
@@ -132,11 +132,11 @@ export default function TeamDetailScreen() {
             <Text className={`text-sm font-semibold ${detailTab === "members" ? "text-white" : "text-muted"}`}>Members ({team._count?.members ?? team.members?.length ?? 0})</Text>
           </TouchableOpacity>
           {isOwner && (
-            <TouchableOpacity onPress={() => setDetailTab("applications")} className={`rounded-full px-5 py-2.5 ${detailTab === "applications" ? "bg-brand" : "bg-white"}`}>
+            <TouchableOpacity onPress={() => setDetailTab("applications")} className={`mr-2 mb-2 rounded-full px-5 py-2.5 ${detailTab === "applications" ? "bg-brand" : "bg-white"}`}>
               <Text className={`text-sm font-semibold ${detailTab === "applications" ? "text-white" : "text-muted"}`}>Applications</Text>
             </TouchableOpacity>
           )}
-        </View>
+        </ScrollView>
 
         {detailTab === "roles" && (
           <>
