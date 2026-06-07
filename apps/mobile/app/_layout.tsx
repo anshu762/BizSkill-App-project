@@ -78,7 +78,7 @@ export default function RootLayout() {
         {fontsLoaded && (
           <ResponsiveLayout>
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
-            <Toast config={toastConfig} visibilityTime={2000} topOffset={50} />
+            <Toast config={toastConfig} visibilityTime={2000} topOffset={50} onPress={() => Toast.hide()} />
           </ResponsiveLayout>
         )}
 
