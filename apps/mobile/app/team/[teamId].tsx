@@ -1,13 +1,14 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Alert, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
+import { ActivityIndicator, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { useAcceptApplication, useAddRole, useApplyToRole, useRejectApplication, useTeamDetail } from "../../src/lib/apiHooks";
 import { api } from "../../src/lib/axios";
 import { useAuthStore } from "../../src/store/useAuthStore";
+import Toast from "react-native-toast-message";
 
 const stageColors: Record<string, string> = {
   FORMING: "bg-amber-100 text-amber-700",
@@ -63,17 +64,17 @@ export default function TeamDetailScreen() {
     if (!applyRoleId || applyMutation.isPending) return;
     try {
       await applyMutation.mutateAsync({ roleId: applyRoleId, message: applyMessage });
-      Alert.alert("Applied!", "Your application has been submitted.");
+      Toast.show({ type: "success", text1: "Applied!", text2: "Your application has been submitted." });
       setApplyRoleId(null);
       setApplyMessage("");
     } catch (e: any) {
-      Alert.alert("Error", e?.response?.data?.message || e.message || "Something went wrong");
+      Toast.show({ type: "error", text1: "Error", text2: e?.response?.data?.message || e.message || "Something went wrong" });
     }
   };
 
   const handleAddRole = async () => {
     if (!roleTitle.trim() || addRoleMutation.isPending) { 
-      if (!roleTitle.trim()) Alert.alert("Error", "Role title is required"); 
+      if (!roleTitle.trim()) Toast.show({ type: "error", text1: "Error", text2: "Role title is required" }); 
       return; 
     }
     try {
@@ -83,13 +84,13 @@ export default function TeamDetailScreen() {
         description: roleDesc.trim() || undefined,
         skillsNeeded: roleSkills.split(",").map((s) => s.trim()).filter(Boolean),
       });
-      Alert.alert("Done", "Role added");
+      Toast.show({ type: "success", text1: "Done", text2: "Role added" });
       setAddRoleOpen(false);
       setRoleTitle("");
       setRoleDesc("");
       setRoleSkills("");
     } catch (e: any) {
-      Alert.alert("Error", e?.response?.data?.message || e.message);
+      Toast.show({ type: "error", text1: "Error", text2: e?.response?.data?.message || e.message });
     }
   };
 
@@ -282,9 +283,9 @@ function CloseRoleButton({ roleId }: { roleId: string }) {
   const handleClose = async () => {
     try {
       await api.put(`/teams/roles/${roleId}`, { isOpen: false });
-      Alert.alert("Done", "Role closed");
+      Toast.show({ type: "success", text1: "Done", text2: "Role closed" });
     } catch (e: any) {
-      Alert.alert("Error", e?.response?.data?.message || e.message);
+      Toast.show({ type: "error", text1: "Error", text2: e?.response?.data?.message || e.message });
     }
   };
   return (
@@ -350,9 +351,9 @@ function AcceptBtn({ appId }: { appId: string }) {
   const handleAccept = async () => {
     try {
       await mutateAsync(appId);
-      Alert.alert("Accepted", "Applicant has been added to the team");
+      Toast.show({ type: "success", text1: "Accepted", text2: "Applicant has been added to the team" });
     } catch (e: any) {
-      Alert.alert("Error", e?.response?.data?.message || e.message);
+      Toast.show({ type: "error", text1: "Error", text2: e?.response?.data?.message || e.message });
     }
   };
   return <AppButton label="Accept" onPress={handleAccept} loading={isPending} className="mr-2 flex-1" />;
@@ -363,9 +364,9 @@ function RejectBtn({ appId }: { appId: string }) {
   const handleReject = async () => {
     try {
       await mutateAsync(appId);
-      Alert.alert("Rejected", "Application has been rejected");
+      Toast.show({ type: "success", text1: "Rejected", text2: "Application has been rejected" });
     } catch (e: any) {
-      Alert.alert("Error", e?.response?.data?.message || e.message);
+      Toast.show({ type: "error", text1: "Error", text2: e?.response?.data?.message || e.message });
     }
   };
   return <AppButton label="Reject" variant="secondary" onPress={handleReject} loading={isPending} className="flex-1" />;

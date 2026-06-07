@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
-import { Alert, Modal, ScrollView, TextInput, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
+import { Modal, ScrollView, TextInput, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "expo-router";
@@ -12,6 +12,7 @@ import { AppText } from "../../src/components/ui/AppText";
 import { AppCard } from "../../src/components/ui/AppCard";
 import { Avatar } from "../../src/components/ui/Avatar";
 import { AppButton } from "../../src/components/ui/AppButton";
+import { PremiumConfirmModal } from "../../src/components/ui/PremiumConfirmModal";
 import { StageBadge } from "../../src/components/StageBadge";
 import { SkillChip } from "../../src/components/ui/SkillChip";
 import { SkeletonProfile } from "../../src/components/ui/ShimmerLoader";
@@ -103,9 +104,9 @@ export default function ProfileScreen() {
   };
 
   const handleSaveSkill = async () => {
-    if (!editSkillTitle.trim()) { Alert.alert("Error", "Title is required"); return; }
-    if (!editSkillCategory) { Alert.alert("Error", "Category is required"); return; }
-    if (!editSkillLevel) { Alert.alert("Error", "Level is required"); return; }
+    if (!editSkillTitle.trim()) { Toast.show({ type: "error", text1: "Title is required" }); return; }
+    if (!editSkillCategory) { Toast.show({ type: "error", text1: "Category is required" }); return; }
+    if (!editSkillLevel) { Toast.show({ type: "error", text1: "Level is required" }); return; }
     try {
       await updateSkillMutation.mutateAsync({
         skillId: editSkill.id,
@@ -368,38 +369,27 @@ export default function ProfileScreen() {
       </Modal>
 
       {/* Custom Delete Modal */}
-      <Modal visible={!!skillToDelete} transparent animationType="fade" onRequestClose={() => setSkillToDelete(null)}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 24 }}>
-          <View style={{ width: '100%', borderRadius: 24, backgroundColor: theme.elevated, padding: 24 }}>
-            <View style={{ marginBottom: 16, height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24, backgroundColor: Colors.dangerTint }}>
-              <Ionicons name="trash-outline" size={24} color={Colors.danger} />
-            </View>
-            <AppText variant="h2" style={{ marginBottom: 8 }}>Delete Skill?</AppText>
-            <AppText variant="body" style={{ color: theme.textSecondary, marginBottom: 24 }}>Are you sure you want to remove "{skillToDelete?.title}" from your profile?</AppText>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <AppButton title="Cancel" variant="secondary" style={{ flex: 1, marginRight: 12 }} onPress={() => setSkillToDelete(null)} />
-              <AppButton title="Delete" variant="danger" style={{ flex: 1 }} onPress={confirmDeleteSkill} loading={deleteSkillMutation.isPending} />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <PremiumConfirmModal
+        visible={!!skillToDelete}
+        title="Delete Skill?"
+        description={`Are you sure you want to remove "${skillToDelete?.title}" from your profile?`}
+        iconName="trash-outline"
+        confirmText="Delete"
+        onConfirm={confirmDeleteSkill}
+        onCancel={() => setSkillToDelete(null)}
+        loading={deleteSkillMutation.isPending}
+      />
 
       {/* Logout Modal */}
-      <Modal visible={showLogoutModal} transparent animationType="fade" onRequestClose={() => setShowLogoutModal(false)}>
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: 'rgba(0,0,0,0.5)', paddingHorizontal: 24 }}>
-          <View style={{ width: '100%', borderRadius: 24, backgroundColor: theme.elevated, padding: 24 }}>
-            <View style={{ marginBottom: 16, height: 48, width: 48, alignItems: 'center', justifyContent: 'center', borderRadius: 24, backgroundColor: Colors.dangerTint }}>
-              <Ionicons name="log-out-outline" size={24} color={Colors.danger} />
-            </View>
-            <AppText variant="h2" style={{ marginBottom: 8 }}>Log Out</AppText>
-            <AppText variant="body" style={{ color: theme.textSecondary, marginBottom: 24 }}>Are you sure you want to log out of your account?</AppText>
-            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-              <AppButton title="Cancel" variant="secondary" style={{ flex: 1, marginRight: 12 }} onPress={() => setShowLogoutModal(false)} />
-              <AppButton title="Log Out" variant="danger" style={{ flex: 1 }} onPress={() => { setShowLogoutModal(false); void logout(); }} />
-            </View>
-          </View>
-        </View>
-      </Modal>
+      <PremiumConfirmModal
+        visible={showLogoutModal}
+        title="Log Out"
+        description="Are you sure you want to log out of your account?"
+        iconName="log-out-outline"
+        confirmText="Log Out"
+        onConfirm={() => { setShowLogoutModal(false); void logout(); }}
+        onCancel={() => setShowLogoutModal(false)}
+      />
     </SafeAreaView>
   );
 }
