@@ -1,9 +1,9 @@
-import type { ApiResponse, SkillCategory as SkillCategoryEnum, SkillLevel } from "@bizskills/types";
+﻿import type { ApiResponse, SkillCategory as SkillCategoryEnum, SkillLevel } from "@bizskills/types";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import Toast from "../../src/lib/toast";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ionicons } from "@expo/vector-icons";

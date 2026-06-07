@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from "react";
+﻿import React, { useState, useEffect, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Modal, TextInput, TouchableOpacity, View, Platform, Animated, KeyboardAvoidingView, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import Toast from "../lib/toast";
 
 import { AppCard } from "./ui/AppCard";
 import { AppText } from "./ui/AppText";

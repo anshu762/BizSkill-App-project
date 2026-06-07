@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+﻿import React, { useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Modal, ScrollView, TextInput, TouchableOpacity, View, ActivityIndicator, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "expo-router";
-import Toast from "react-native-toast-message";
+import Toast from "../../src/lib/toast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 

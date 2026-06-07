@@ -7,13 +7,12 @@ import { StatusBar } from "expo-status-bar";
 import { useEffect, useState } from "react";
 import { LogBox } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
 import * as SplashScreen from "expo-splash-screen";
 
 import { queryClient } from "../src/lib/queryClient";
 import { useAuthStore } from "../src/store/useAuthStore";
 import { AnimatedSplash } from "../src/components/AnimatedSplash";
-import { toastConfig } from "../src/components/ui/ToastConfig";
+import { GlobalToast } from "../src/components/ui/GlobalToast";
 import { ResponsiveLayout } from "../src/components/ui/ResponsiveLayout";
 
 LogBox.ignoreLogs([
@@ -87,9 +86,9 @@ export default function RootLayout() {
         )}
       </QueryClientProvider>
 
-      {/* Toast must be the LAST element at root level, outside all providers/wrappers.
-          This is the library's official requirement for auto-hide to work on native. */}
-      <Toast config={toastConfig} visibilityTime={4000} topOffset={50} onPress={() => Toast.hide()} />
+      {/* GlobalToast renders via Modal — completely outside navigation tree.
+          This guarantees auto-hide timers fire on Expo Go / Android native. */}
+      <GlobalToast />
     </SafeAreaProvider>
   );
 }

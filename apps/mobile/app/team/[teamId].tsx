@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+﻿import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
@@ -8,7 +8,7 @@ import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { useAcceptApplication, useAddRole, useApplyToRole, useRejectApplication, useTeamDetail } from "../../src/lib/apiHooks";
 import { api } from "../../src/lib/axios";
 import { useAuthStore } from "../../src/store/useAuthStore";
-import Toast from "react-native-toast-message";
+import Toast from "../../src/lib/toast";
 
 const stageColors: Record<string, string> = {
   FORMING: "bg-amber-100 text-amber-700",

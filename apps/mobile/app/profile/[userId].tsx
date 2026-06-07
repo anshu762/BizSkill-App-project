@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+﻿import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,7 +8,7 @@ import { SkillChip } from "../../src/components/SkillChip";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { useProfile, useFollow, useFollowStats, useCreateExchange } from "../../src/lib/apiHooks";
 import { useState, useEffect } from "react";
-import Toast from "react-native-toast-message";
+import Toast from "../../src/lib/toast";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import type { SkillCategory, SkillLevel } from "@bizskills/types";
 

@@ -1,9 +1,9 @@
-import { Ionicons } from "@expo/vector-icons";
+﻿import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, FlatList, Platform, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import Toast from "../../src/lib/toast";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { PostCard } from "../../src/components/PostCard";
 import { useComments, useAddComment, useFeed, useDeletePost, useUpdatePost } from "../../src/lib/apiHooks";

@@ -1,8 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
+﻿import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { ActivityIndicator, FlatList, Text, TouchableOpacity, View, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import Toast from "../src/lib/toast";
 import { useRouter } from "expo-router";
 import { AppButton } from "../src/components/AppButton";
 import { AvatarWithFallback } from "../src/components/AvatarWithFallback";

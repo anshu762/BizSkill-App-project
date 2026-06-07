@@ -1,8 +1,8 @@
-import { Ionicons } from "@expo/vector-icons";
+﻿import { Ionicons } from "@expo/vector-icons";
 import { useState, useCallback } from "react";
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import Toast from "../lib/toast";
 import { readApiError } from "../lib/axios";
 import { useProfile } from "../lib/apiHooks";
 import { useCreateExchange } from "../lib/apiHooks";

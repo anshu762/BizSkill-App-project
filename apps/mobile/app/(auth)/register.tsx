@@ -1,8 +1,8 @@
-import { zodResolver } from "@hookform/resolvers/zod";
+﻿import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { TouchableOpacity, View } from "react-native";
-import Toast from "react-native-toast-message";
+import Toast from "../../src/lib/toast";
 import { z } from "zod";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { AppText } from "../../src/components/ui/AppText";
