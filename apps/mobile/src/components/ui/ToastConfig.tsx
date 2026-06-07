@@ -1,69 +1,61 @@
-import React, { useRef } from 'react';
-import { View, StyleSheet, TouchableOpacity, Animated, PanResponder, Dimensions } from 'react-native';
-import Toast, { ToastConfig, ToastProps, BaseToastProps } from 'react-native-toast-message';
-import { Ionicons } from '@expo/vector-icons';
-import { AppText } from './AppText';
+/**
+ * ToastConfig — uses react-native-toast-message's built-in BaseToast
+ * so the library's internal auto-hide timer and animation work 100%
+ * correctly on both web and native (Android/iOS).
+ *
+ * IMPORTANT: Never wrap the library's own component inside a custom
+ * React component tree — that breaks the internal lifecycle hooks that
+ * drive the auto-hide timer on native.
+ */
+import { BaseToast, ErrorToast, ToastConfig } from 'react-native-toast-message';
 import { Colors, Radius, Shadow } from '../../constants/theme';
-import { useThemeColors } from '../../hooks/useThemeColors';
 
-const SCREEN_WIDTH = Dimensions.get('window').width;
+const baseStyle = {
+  borderRadius: Radius.lg,
+  height: 'auto' as const,
+  paddingVertical: 12,
+  minHeight: 60,
+  ...Shadow.md,
+} as const;
 
-function BaseToast({ type, text1, text2, iconName, color }: { type: string, text1?: string, text2?: string, iconName: keyof typeof Ionicons.glyphMap, color: string }) {
-  return (
-    <View style={{ width: '100%', maxWidth: 768, alignItems: 'center' }}>
-      <View style={[styles.container, Shadow.md]}>
-        <View style={[styles.iconContainer, { backgroundColor: color }]}>
-          <Ionicons name={iconName} size={20} color="#FFFFFF" />
-        </View>
-        <View style={styles.textContainer}>
-          <AppText variant="h3" style={styles.text1}>{text1}</AppText>
-          {!!text2 && <AppText variant="body" style={styles.text2}>{text2}</AppText>}
-        </View>
-      </View>
-    </View>
-  );
-}
-
-export const toastConfig: ToastConfig = {
-  success: (props: BaseToastProps) => (
-    <BaseToast type="success" text1={props.text1} text2={props.text2} iconName="checkmark-circle" color={Colors.success} />
-  ),
-  error: (props: BaseToastProps) => (
-    <BaseToast type="error" text1={props.text1} text2={props.text2} iconName="alert-circle" color={Colors.danger} />
-  ),
-  info: (props: BaseToastProps) => (
-    <BaseToast type="info" text1={props.text1} text2={props.text2} iconName="information-circle" color={Colors.brand} />
-  ),
+const text1Style = {
+  fontSize: 15,
+  fontFamily: 'Outfit_600SemiBold',
+  color: '#0F0E1A',
 };
 
-const styles = StyleSheet.create({
-  container: {
-    width: '90%',
-    backgroundColor: '#FFFFFF', // Keep white for toasts for standard contrast
-    borderRadius: Radius.lg,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    borderWidth: 0.5,
-    borderColor: 'rgba(15, 14, 26, 0.08)',
-  },
-  iconContainer: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  textContainer: {
-    flex: 1,
-  },
-  text1: {
-    color: '#0F0E1A',
-    fontSize: 15,
-  },
-  text2: {
-    color: '#6F6D78',
-    marginTop: 2,
-  },
-});
+const text2Style = {
+  fontSize: 13,
+  fontFamily: 'Outfit_400Regular',
+  color: '#6F6D78',
+};
+
+export const toastConfig: ToastConfig = {
+  success: (props) => (
+    <BaseToast
+      {...props}
+      style={{ ...baseStyle, borderLeftColor: Colors.success }}
+      contentContainerStyle={{ paddingHorizontal: 16 }}
+      text1Style={text1Style}
+      text2Style={text2Style}
+    />
+  ),
+  error: (props) => (
+    <ErrorToast
+      {...props}
+      style={{ ...baseStyle, borderLeftColor: Colors.danger }}
+      contentContainerStyle={{ paddingHorizontal: 16 }}
+      text1Style={text1Style}
+      text2Style={text2Style}
+    />
+  ),
+  info: (props) => (
+    <BaseToast
+      {...props}
+      style={{ ...baseStyle, borderLeftColor: Colors.brand }}
+      contentContainerStyle={{ paddingHorizontal: 16 }}
+      text1Style={text1Style}
+      text2Style={text2Style}
+    />
+  ),
+};

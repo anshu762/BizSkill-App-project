@@ -76,12 +76,9 @@ export default function RootLayout() {
 
         {/* Main app — only mount after fonts are ready */}
         {fontsLoaded && (
-          <>
-            <ResponsiveLayout>
-              <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
-            </ResponsiveLayout>
-            <Toast config={toastConfig} visibilityTime={4000} topOffset={50} onPress={() => Toast.hide()} />
-          </>
+          <ResponsiveLayout>
+            <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
+          </ResponsiveLayout>
         )}
 
         {/* JS Splash overlay — starts seamlessly after native splash hides */}
@@ -89,6 +86,10 @@ export default function RootLayout() {
           <AnimatedSplash onAnimationComplete={() => setShowSplashOverlay(false)} />
         )}
       </QueryClientProvider>
+
+      {/* Toast must be the LAST element at root level, outside all providers/wrappers.
+          This is the library's official requirement for auto-hide to work on native. */}
+      <Toast config={toastConfig} visibilityTime={4000} topOffset={50} onPress={() => Toast.hide()} />
     </SafeAreaProvider>
   );
 }
