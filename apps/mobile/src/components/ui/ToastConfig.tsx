@@ -1,23 +1,65 @@
-import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import React, { useRef } from 'react';
+import { View, StyleSheet, TouchableOpacity, Animated, PanResponder, Dimensions } from 'react-native';
 import Toast, { ToastConfig, ToastProps, BaseToastProps } from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 import { AppText } from './AppText';
 import { Colors, Radius, Shadow } from '../../constants/theme';
 import { useThemeColors } from '../../hooks/useThemeColors';
 
+const SCREEN_WIDTH = Dimensions.get('window').width;
+
 function BaseToast({ type, text1, text2, iconName, color }: { type: string, text1?: string, text2?: string, iconName: keyof typeof Ionicons.glyphMap, color: string }) {
-  // Using fixed colors here to ensure contrast regardless of dark/light mode, but you can use useThemeColors if needed.
+  const pan = useRef(new Animated.ValueXY()).current;
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponderCapture: (_, gestureState) => {
+        // Capture gesture if moving horizontally
+        return Math.abs(gestureState.dx) > 20 && Math.abs(gestureState.dx) > Math.abs(gestureState.dy);
+      },
+      onPanResponderMove: Animated.event([null, { dx: pan.x }], { useNativeDriver: false }),
+      onPanResponderRelease: (_, gestureState) => {
+        if (Math.abs(gestureState.dx) > SCREEN_WIDTH * 0.25) {
+          // Swiped far enough to dismiss
+          Animated.timing(pan, {
+            toValue: { x: gestureState.dx > 0 ? SCREEN_WIDTH : -SCREEN_WIDTH, y: 0 },
+            duration: 200,
+            useNativeDriver: true,
+          }).start(() => {
+            Toast.hide();
+            // Reset position slightly after hide for next toasts
+            setTimeout(() => pan.setValue({ x: 0, y: 0 }), 300);
+          });
+        } else {
+          // Snap back
+          Animated.spring(pan, {
+            toValue: { x: 0, y: 0 },
+            useNativeDriver: true,
+          }).start();
+        }
+      },
+    })
+  ).current;
+
   return (
-    <TouchableOpacity activeOpacity={0.9} onPress={() => Toast.hide()} style={[styles.container, Shadow.md]}>
-      <View style={[styles.iconContainer, { backgroundColor: color }]}>
-        <Ionicons name={iconName} size={20} color="#FFFFFF" />
-      </View>
-      <View style={styles.textContainer}>
-        <AppText variant="h3" style={styles.text1}>{text1}</AppText>
-        {!!text2 && <AppText variant="body" style={styles.text2}>{text2}</AppText>}
-      </View>
-    </TouchableOpacity>
+    <Animated.View
+      {...panResponder.panHandlers}
+      style={{
+        width: '100%',
+        alignItems: 'center',
+        transform: [{ translateX: pan.x }],
+      }}
+    >
+      <TouchableOpacity activeOpacity={0.9} onPress={() => Toast.hide()} style={[styles.container, Shadow.md]}>
+        <View style={[styles.iconContainer, { backgroundColor: color }]}>
+          <Ionicons name={iconName} size={20} color="#FFFFFF" />
+        </View>
+        <View style={styles.textContainer}>
+          <AppText variant="h3" style={styles.text1}>{text1}</AppText>
+          {!!text2 && <AppText variant="body" style={styles.text2}>{text2}</AppText>}
+        </View>
+      </TouchableOpacity>
+    </Animated.View>
   );
 }
 
