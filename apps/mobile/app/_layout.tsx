@@ -77,7 +77,7 @@ export default function RootLayout() {
         {fontsLoaded && (
           <>
             <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: "#FFFFFF" } }} />
-            <Toast config={toastConfig} />
+            <Toast config={toastConfig} visibilityTime={2000} topOffset={50} />
           </>
         )}
 

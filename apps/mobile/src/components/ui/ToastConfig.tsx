@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
-import { ToastConfig, ToastProps, BaseToastProps } from 'react-native-toast-message';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import Toast, { ToastConfig, ToastProps, BaseToastProps } from 'react-native-toast-message';
 import { Ionicons } from '@expo/vector-icons';
 import { AppText } from './AppText';
 import { Colors, Radius, Shadow } from '../../constants/theme';
@@ -9,7 +9,7 @@ import { useThemeColors } from '../../hooks/useThemeColors';
 function BaseToast({ type, text1, text2, iconName, color }: { type: string, text1?: string, text2?: string, iconName: keyof typeof Ionicons.glyphMap, color: string }) {
   // Using fixed colors here to ensure contrast regardless of dark/light mode, but you can use useThemeColors if needed.
   return (
-    <View style={[styles.container, Shadow.md]}>
+    <TouchableOpacity activeOpacity={0.9} onPress={() => Toast.hide()} style={[styles.container, Shadow.md]}>
       <View style={[styles.iconContainer, { backgroundColor: color }]}>
         <Ionicons name={iconName} size={20} color="#FFFFFF" />
       </View>
@@ -17,7 +17,7 @@ function BaseToast({ type, text1, text2, iconName, color }: { type: string, text
         <AppText variant="h3" style={styles.text1}>{text1}</AppText>
         {!!text2 && <AppText variant="body" style={styles.text2}>{text2}</AppText>}
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
