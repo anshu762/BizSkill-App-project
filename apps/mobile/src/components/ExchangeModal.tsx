@@ -135,12 +135,6 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
               onPress={handleSend}
               disabled={!selectedSkillId}
             />
-
-            {createExchange.isError && (
-              <View className="mt-4 items-center rounded-2xl bg-red-50 p-4">
-                <Text className="text-sm font-medium text-red-600">{readApiError(createExchange.error)}</Text>
-              </View>
-            )}
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
