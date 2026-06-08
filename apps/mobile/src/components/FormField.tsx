@@ -14,20 +14,21 @@ export function FormField({ label, error, style, ...props }: FormFieldProps) {
   const [isFocused, setIsFocused] = useState(false);
 
   return (
-    <View style={[{ marginBottom: 16 }, style as any]}>
-      <AppText variant="label" style={{ marginBottom: 8, color: theme.textPrimary }}>
+    <View style={[{ marginBottom: 20 }, style as any]}>
+      <AppText variant="label" style={{ marginBottom: 8, color: '#64748B', fontSize: 13, fontFamily: 'Outfit_600SemiBold', letterSpacing: 0.3 }}>
         {label}
       </AppText>
       <TextInput
-        placeholderTextColor={theme.textTertiary}
+        placeholderTextColor="#94A3B8"
         style={[
           styles.input,
           {
-            backgroundColor: theme.elevated,
-            borderColor: error ? Colors.danger : isFocused ? Colors.brand : theme.border,
+            backgroundColor: isFocused ? '#FFFFFF' : '#F8FAFC',
+            borderColor: error ? Colors.danger : isFocused ? Colors.brand : '#E2E8F0',
+            borderWidth: isFocused ? 1.5 : 1,
             color: theme.textPrimary,
           },
-          props.multiline && { height: 100, paddingTop: 16 },
+          props.multiline && { height: 120, paddingTop: 16, textAlignVertical: 'top' },
         ]}
         onFocus={(e) => {
           setIsFocused(true);
@@ -51,10 +52,9 @@ export function FormField({ label, error, style, ...props }: FormFieldProps) {
 const styles = StyleSheet.create({
   input: {
     minHeight: 56,
-    borderRadius: Radius.lg,
-    borderWidth: 1,
+    borderRadius: 16,
     paddingHorizontal: 16,
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: 'Outfit_500Medium',
   },
 });

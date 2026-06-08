@@ -272,7 +272,7 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               </View>
 
-              <AppText variant="h3" style={{ marginBottom: 16 }}>Personal</AppText>
+              <AppText variant="caption" style={{ color: '#5B4DFF', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16, marginTop: 8 }}>Personal Details</AppText>
               <Controller control={control} name="name" render={({ field, fieldState }) => (
                 <FormField label="Name" placeholder="Your name" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
@@ -283,7 +283,7 @@ export default function ProfileScreen() {
                 <FormField label="Location" placeholder="City, Country" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
 
-              <AppText variant="h3" style={{ marginTop: 16, marginBottom: 16 }}>Business</AppText>
+              <AppText variant="caption" style={{ color: '#5B4DFF', textTransform: 'uppercase', letterSpacing: 1, marginBottom: 16, marginTop: 16 }}>Business Profile</AppText>
               <Controller control={control} name="businessName" render={({ field, fieldState }) => (
                 <FormField label="Business name" placeholder="Your venture" value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
