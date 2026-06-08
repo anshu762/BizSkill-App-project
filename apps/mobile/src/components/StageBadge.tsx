@@ -1,10 +1,11 @@
-import { Text, View } from "react-native";
+import { View } from "react-native";
+import { AppText } from "./ui/AppText";
 import type { BusinessStage } from "@bizskills/types";
 
 const stageConfig: Record<BusinessStage, { label: string; bg: string; text: string }> = {
-  IDEA: { label: "Idea", bg: "bg-gray-100", text: "text-gray-700" },
-  BUILDING: { label: "Building", bg: "bg-blue-50", text: "text-blue-700" },
-  LAUNCHED: { label: "Launched", bg: "bg-green-50", text: "text-green-700" },
+  IDEA: { label: "Idea", bg: "#F1F5F9", text: "#475569" },
+  BUILDING: { label: "Building", bg: "#EFF6FF", text: "#2563EB" },
+  LAUNCHED: { label: "Launched", bg: "#ECFDF5", text: "#059669" },
 };
 
 interface StageBadgeProps {
@@ -12,10 +13,10 @@ interface StageBadgeProps {
 }
 
 export function StageBadge({ stage }: StageBadgeProps) {
-  const config = stageConfig[stage];
+  const config = stageConfig[stage] || stageConfig.IDEA;
   return (
-    <View className={`flex-row items-center rounded-full ${config.bg} px-3 py-1.5`}>
-      <Text className={`text-xs font-semibold ${config.text}`}>{config.label}</Text>
+    <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius: 999, backgroundColor: config.bg, paddingHorizontal: 12, paddingVertical: 4 }}>
+      <AppText style={{ fontSize: 12, fontFamily: 'Outfit_600SemiBold', color: config.text, textTransform: 'uppercase', letterSpacing: 0.5 }}>{config.label}</AppText>
     </View>
   );
 }

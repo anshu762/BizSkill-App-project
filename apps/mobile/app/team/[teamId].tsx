@@ -3,6 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppText } from "../../src/components/ui/AppText";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { SelectableChip } from "../../src/components/SelectableChip";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
@@ -106,14 +107,14 @@ export default function TeamDetailScreen() {
         <View className="mt-6 rounded-[30px] p-7" style={{ backgroundColor: '#101828' }}>
           <Text className="text-xs font-semibold uppercase tracking-widest text-indigo-300">Team</Text>
           <Text className="mt-4 text-3xl font-bold text-white">{team.name}</Text>
-          <View className="mt-4 flex-row">
-            <View className="rounded-full bg-white/10 px-3 py-1">
-              <Text className="text-xs font-medium text-white">{categoryLabels[team.category] || team.category}</Text>
+          <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', gap: 8 }}>
+            <View style={{ borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 12, paddingVertical: 4 }}>
+              <AppText style={{ fontSize: 11, fontFamily: 'Outfit_700Bold', color: '#E2E8F0', textTransform: 'uppercase', letterSpacing: 0.5 }}>{categoryLabels[team.category] || team.category}</AppText>
             </View>
-            <View className={`ml-2 rounded-full px-3 py-1 ${team.stage === 'FORMING' ? 'bg-amber-500/20' : team.stage === 'ACTIVE' ? 'bg-green-500/20' : 'bg-white/10'}`}>
-              <Text className={`text-xs font-medium capitalize ${team.stage === 'FORMING' ? 'text-amber-200' : team.stage === 'ACTIVE' ? 'text-green-200' : 'text-slate-200'}`}>{team.stage?.toLowerCase() || 'Stage'}</Text>
+            <View style={{ borderRadius: 999, backgroundColor: team.stage === 'FORMING' ? 'rgba(245,158,11,0.2)' : team.stage === 'ACTIVE' ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.1)', paddingHorizontal: 12, paddingVertical: 4 }}>
+              <AppText style={{ fontSize: 11, fontFamily: 'Outfit_700Bold', color: team.stage === 'FORMING' ? '#FCD34D' : team.stage === 'ACTIVE' ? '#6EE7B7' : '#E2E8F0', textTransform: 'uppercase', letterSpacing: 0.5 }}>{team.stage?.replace('_', ' ') || 'STAGE'}</AppText>
             </View>
-            <Text className="ml-auto text-sm font-medium text-slate-300">{team._count?.members ?? team.members?.length ?? 0} members</Text>
+            <AppText style={{ marginLeft: 'auto', fontSize: 14, fontFamily: 'Outfit_500Medium', color: '#CBD5E1' }}>{team._count?.members ?? team.members?.length ?? 0} members</AppText>
           </View>
           {!!team.description && (
             <Text className="mt-4 leading-6 text-slate-300">{team.description}</Text>

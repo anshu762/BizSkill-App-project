@@ -164,16 +164,16 @@ export default function ProfileScreen() {
           )}
           <View style={{ marginTop: 20, flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
             {bp && (
-              <View style={{ borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 14, paddingVertical: 6 }}>
-                <AppText style={{ fontSize: 12, color: '#E2E8F0', fontFamily: 'Outfit_600SemiBold', textTransform: 'capitalize' }}>
-                  {bp.stage?.toLowerCase() || 'Stage'}
+              <View style={{ borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 12, paddingVertical: 4 }}>
+                <AppText style={{ fontSize: 11, color: '#E2E8F0', fontFamily: 'Outfit_700Bold', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  {bp.stage?.replace('_', ' ') || 'STAGE'}
                 </AppText>
               </View>
             )}
             {bp && (
-              <View style={{ borderRadius: 999, backgroundColor: 'rgba(91,77,255,0.2)', paddingHorizontal: 14, paddingVertical: 6 }}>
-                <AppText style={{ fontSize: 12, fontFamily: 'Outfit_600SemiBold', color: '#A5B4FC' }}>
-                  {bp.industry?.replace('_', ' ') || 'Industry'}
+              <View style={{ borderRadius: 999, backgroundColor: 'rgba(91,77,255,0.2)', paddingHorizontal: 12, paddingVertical: 4 }}>
+                <AppText style={{ fontSize: 11, fontFamily: 'Outfit_700Bold', color: '#A5B4FC', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                  {bp.industry?.replace('_', ' ') || 'INDUSTRY'}
                 </AppText>
               </View>
             )}
