@@ -224,9 +224,9 @@ export default function TeamDetailScreen() {
 
       {/* Apply Modal */}
       <Modal visible={!!applyRoleId} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setApplyRoleId(null)}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <SafeAreaView className="flex-1 bg-surface">
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+        <SafeAreaView className="flex-1 bg-surface">
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingBottom: 64 }} className="px-6">
               <View className="mt-4 mb-6 flex-row items-center justify-between">
                 <Text className="text-xl font-bold text-ink">Apply for Role</Text>
                 <TouchableOpacity onPress={() => setApplyRoleId(null)}>
@@ -245,15 +245,15 @@ export default function TeamDetailScreen() {
               />
               <AppButton label="Submit Application" onPress={handleApply} loading={applyMutation.isPending} />
             </ScrollView>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
       </Modal>
 
       {/* Add Role Modal */}
       <Modal visible={addRoleOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setAddRoleOpen(false)}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <SafeAreaView className="flex-1 bg-surface">
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+        <SafeAreaView className="flex-1 bg-surface">
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingBottom: 64 }} className="px-6">
               <View className="mt-4 mb-6 flex-row items-center justify-between">
                 <Text className="text-xl font-bold text-ink">Add Role</Text>
                 <TouchableOpacity onPress={() => setAddRoleOpen(false)}>
@@ -287,8 +287,8 @@ export default function TeamDetailScreen() {
               />
               <AppButton label="Add Role" onPress={handleAddRole} loading={addRoleMutation.isPending} />
             </ScrollView>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
       </Modal>
     </SafeAreaView>
   );

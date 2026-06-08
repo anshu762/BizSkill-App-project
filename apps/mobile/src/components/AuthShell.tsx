@@ -15,9 +15,9 @@ export function AuthShell({ title, subtitle, children }: AuthShellProps) {
   const theme = useThemeColors();
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-      <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+        <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 64 }}>
           <View style={{ marginTop: 40, flexDirection: 'row', alignItems: 'center' }}>
             <BizSkillsLogo size="lg" variant={theme.isDark ? 'white' : 'color'} />
           </View>
@@ -27,7 +27,7 @@ export function AuthShell({ title, subtitle, children }: AuthShellProps) {
           </View>
           <View>{children}</View>
         </ScrollView>
-      </SafeAreaView>
-    </KeyboardAvoidingView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }

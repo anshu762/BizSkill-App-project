@@ -80,9 +80,9 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <ResponsiveLayout>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <SafeAreaView className="flex-1 bg-surface">
-          <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+        <SafeAreaView className="flex-1 bg-surface">
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingBottom: 64 }} className="px-6">
             <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <View style={{ flex: 1, alignItems: 'flex-start' }}>
                 <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
@@ -158,9 +158,9 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
                 </View>
               </TouchableOpacity>
             )}
-          </ScrollView>
+            </ScrollView>
+          </KeyboardAvoidingView>
         </SafeAreaView>
-      </KeyboardAvoidingView>
       <ToastContainer />
       </ResponsiveLayout>
     </Modal>

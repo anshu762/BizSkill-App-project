@@ -74,6 +74,30 @@ export default function MarketplaceScreen() {
     debounceRef.current = setTimeout(() => setDebouncedSearch(text), 400);
   }, []);
 
+  const renderSkill = useCallback(({ item }: any) => (
+    <AppCard style={{ marginBottom: 16 }}>
+      <TouchableOpacity onPress={() => router.push(`/profile/${(item.user?.id || item.userId).trim()}`)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <Avatar uri={item.user?.avatar} name={item.user?.name ?? "?"} size={40} />
+        <View style={{ marginLeft: 12, flex: 1 }}>
+          <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{item.user?.name}</AppText>
+          <AppText variant="caption" style={{ color: theme.textTertiary }}>{item.user?.businessProfile?.businessName ?? "Founder"}</AppText>
+        </View>
+        <BizCoinBadge amount={item.coinValue} />
+      </TouchableOpacity>
+      <View style={{ marginTop: 16 }}>
+        <BaseSkillChip category={item.category} label={item.title} level={item.level} showLevel />
+      </View>
+      <AppButton
+        title="Request Exchange"
+        variant="primary"
+        onPress={() => setExchangeTarget({ userId: item.userId, skillId: item.id })}
+        style={{ marginTop: 20 }}
+      />
+    </AppCard>
+  ), [router, theme, setExchangeTarget]);
+
+  const keyExtractor = useCallback((item: any) => item.id, []);
+
   return (
     <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
@@ -119,8 +143,12 @@ export default function MarketplaceScreen() {
         ) : (
           <FlatList
             data={allSkills}
-            keyExtractor={(item) => item.id}
+            keyExtractor={keyExtractor}
             contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+            initialNumToRender={5}
+            maxToRenderPerBatch={5}
+            windowSize={10}
+            removeClippedSubviews={true}
             ListHeaderComponent={discoverUsers.length > 0 ? () => (
               <View style={{ marginBottom: 24 }}>
                 <AppText variant="h3" style={{ marginBottom: 16 }}>People who match your skills</AppText>
@@ -151,34 +179,14 @@ export default function MarketplaceScreen() {
             onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
             onEndReachedThreshold={0.5}
             ListFooterComponent={isFetchingNextPage ? <ActivityIndicator style={{ paddingVertical: 16 }} color={Colors.brand} /> : null}
-            renderItem={({ item }) => (
-              <AppCard style={{ marginBottom: 16 }}>
-                <TouchableOpacity onPress={() => router.push(`/profile/${(item.user?.id || item.userId).trim()}`)} style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Avatar uri={item.user?.avatar} name={item.user?.name ?? "?"} size={40} />
-                  <View style={{ marginLeft: 12, flex: 1 }}>
-                    <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{item.user?.name}</AppText>
-                    <AppText variant="caption" style={{ color: theme.textTertiary }}>{item.user?.businessProfile?.businessName ?? "Founder"}</AppText>
-                  </View>
-                  <BizCoinBadge amount={item.coinValue} />
-                </TouchableOpacity>
-                <View style={{ marginTop: 16 }}>
-                  <BaseSkillChip category={item.category} label={item.title} level={item.level} showLevel />
-                </View>
-                <AppButton
-                  title="Request Exchange"
-                  variant="primary"
-                  onPress={() => setExchangeTarget({ userId: item.userId, skillId: item.id })}
-                  style={{ marginTop: 20 }}
-                />
-              </AppCard>
-            )}
+            renderItem={renderSkill}
           />
         )}
 
       <Modal visible={filterOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setFilterOpen(false)}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 64 }}>
               <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <AppText variant="h2">Filters</AppText>
                 <TouchableOpacity onPress={() => setFilterOpen(false)}>
@@ -224,8 +232,8 @@ export default function MarketplaceScreen() {
                 <AppButton title="Apply" onPress={() => setFilterOpen(false)} style={{ flex: 1 }} />
               </View>
             </ScrollView>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
       </Modal>
 
       {exchangeTarget && (

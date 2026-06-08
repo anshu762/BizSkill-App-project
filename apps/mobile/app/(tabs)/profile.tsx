@@ -280,9 +280,9 @@ export default function ProfileScreen() {
 
       {/* Edit Profile Modal */}
       <Modal visible={editOpen} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditOpen(false)}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 64 }}>
               <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <AppText variant="h2">Edit Profile</AppText>
                 <TouchableOpacity onPress={() => setEditOpen(false)}>
@@ -311,15 +311,15 @@ export default function ProfileScreen() {
 
               <AppButton title="Save Changes" onPress={handleSubmit(onSubmit)} style={{ marginTop: 24 }} />
             </ScrollView>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
       </Modal>
 
       {/* Edit Skill Modal */}
       <Modal visible={!!editSkill} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditSkill(null)}>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 32 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingHorizontal: 24, paddingBottom: 64 }}>
               <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <AppText variant="h2">Edit Skill</AppText>
                 <TouchableOpacity onPress={() => setEditSkill(null)}>
@@ -397,8 +397,8 @@ export default function ProfileScreen() {
                 </TouchableOpacity>
               </View>
             </ScrollView>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
       </Modal>
 
       {/* Custom Delete Modal */}

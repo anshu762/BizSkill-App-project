@@ -33,9 +33,9 @@ export function ReviewModal({ visible, onClose, exchangeId }: ReviewModalProps) 
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <ResponsiveLayout>
-        <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
-          <SafeAreaView className="flex-1 bg-surface">
-          <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
+        <SafeAreaView className="flex-1 bg-surface">
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingBottom: 64 }} className="px-6">
             <View className="mt-4 mb-8 flex-row items-center justify-between">
               <Text className="text-xl font-bold text-ink">Leave a Review</Text>
               <TouchableOpacity onPress={onClose}>
@@ -81,9 +81,9 @@ export function ReviewModal({ visible, onClose, exchangeId }: ReviewModalProps) 
               disabled={rating === 0}
               loading={createReview.isPending}
             />
-          </ScrollView>
-          </SafeAreaView>
-        </KeyboardAvoidingView>
+            </ScrollView>
+          </KeyboardAvoidingView>
+        </SafeAreaView>
         <ToastContainer />
       </ResponsiveLayout>
     </Modal>
