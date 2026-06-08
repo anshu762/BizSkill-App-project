@@ -1,7 +1,9 @@
 import { ActivityIndicator, Text, TouchableOpacity, Pressable, type TouchableOpacityProps, type ViewStyle, type TextStyle } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 
 interface SelectableChipProps extends Omit<TouchableOpacityProps, 'onPress'> {
   label: string;
+  icon?: keyof typeof Ionicons.glyphMap;
   selected?: boolean;
   loading?: boolean;
   error?: boolean;
@@ -63,7 +65,17 @@ export function SelectableChip({
       {loading ? (
         <ActivityIndicator size="small" color={selected ? "#FFFFFF" : "#5B4DFF"} />
       ) : (
-        <Text className={textClasses} style={overrideText as TextStyle}>{label}</Text>
+        <>
+          {props.icon && (
+            <Ionicons 
+              name={props.icon as any} 
+              size={16} 
+              color={selected ? "#FFFFFF" : "#64748B"} 
+              style={{ marginRight: 6 }} 
+            />
+          )}
+          <Text className={textClasses} style={overrideText as TextStyle}>{label}</Text>
+        </>
       )}
     </Pressable>
   );

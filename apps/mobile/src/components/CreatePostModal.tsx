@@ -7,6 +7,7 @@ import { readApiError } from "../lib/axios";
 import { ResponsiveLayout } from "./ui/ResponsiveLayout";
 import { useCreatePost } from "../lib/apiHooks";
 import { AppButton } from "./AppButton";
+import { SelectableChip } from "./SelectableChip";
 
 const postTypes = [
   { value: "UPDATE", label: "Update", icon: "megaphone-outline" },
@@ -94,7 +95,7 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
                 loading={createPost.isPending} 
                 disabled={!content.trim()} 
                 size="sm"
-                className="rounded-full px-6"
+                style={{ paddingHorizontal: 24, borderRadius: 999 }}
               />
             </View>
 
@@ -104,24 +105,16 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
               <View className="px-4 pt-5 pb-2">
                 <Text className="mb-3 text-xs font-bold text-slate-400 uppercase tracking-wider">What are you sharing?</Text>
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 16, alignItems: 'center' }}>
-                  {postTypes.map((t) => {
-                    const isSelected = type === t.value;
-                    return (
-                      <TouchableOpacity
-                        key={t.value}
-                        onPress={() => setType(t.value)}
-                        className={`mr-3 flex-row items-center rounded-full px-4 py-2.5 border ${
-                          isSelected ? 'bg-brand border-brand' : 'bg-white border-slate-200 shadow-sm'
-                        }`}
-                        style={isSelected ? { backgroundColor: '#5B4DFF', borderColor: '#5B4DFF' } : {}}
-                      >
-                        <Ionicons name={t.icon as any} size={16} color={isSelected ? '#FFFFFF' : '#64748B'} />
-                        <Text className={`text-sm font-semibold ml-2 ${isSelected ? 'text-white' : 'text-slate-600'}`}>
-                          {t.label}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })}
+                  {postTypes.map((t) => (
+                    <SelectableChip
+                      key={t.value}
+                      label={t.label}
+                      icon={t.icon as any}
+                      selected={type === t.value}
+                      onPress={() => setType(t.value)}
+                      chipStyle="pill"
+                    />
+                  ))}
                 </ScrollView>
               </View>
 
