@@ -360,9 +360,24 @@ export default function ProfileScreen() {
                 <AppButton title="Save Changes" onPress={handleSaveSkill} style={{ flex: 1 }} />
               </View>
               
-              <TouchableOpacity onPress={() => handleDeleteSkill(editSkill?.id, editSkill?.title)} style={{ marginTop: 24, alignItems: 'center' }}>
-                <AppText style={{ fontSize: 14, fontFamily: 'Outfit_600SemiBold', color: Colors.danger }}>Delete Skill</AppText>
-              </TouchableOpacity>
+              <View style={{ marginTop: 32, paddingTop: 24, borderTopWidth: 1, borderTopColor: theme.border }}>
+                <TouchableOpacity 
+                  onPress={() => handleDeleteSkill(editSkill?.id, editSkill?.title)} 
+                  activeOpacity={0.7}
+                  style={{ 
+                    flexDirection: 'row', 
+                    alignItems: 'center', 
+                    justifyContent: 'center',
+                    backgroundColor: 'rgba(239, 68, 68, 0.08)',
+                    paddingVertical: 14,
+                    borderRadius: 16,
+                    borderWidth: 1,
+                    borderColor: 'rgba(239, 68, 68, 0.2)'
+                  }}>
+                  <Ionicons name="trash-outline" size={18} color={Colors.danger} style={{ marginRight: 8 }} />
+                  <AppText style={{ fontSize: 15, fontFamily: 'Outfit_600SemiBold', color: Colors.danger }}>Delete Skill</AppText>
+                </TouchableOpacity>
+              </View>
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>

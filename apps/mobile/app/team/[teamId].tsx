@@ -101,17 +101,17 @@ export default function TeamDetailScreen() {
           <Ionicons name="arrow-back" size={21} color="#101828" />
         </TouchableOpacity>
 
-        <View className="mt-6 rounded-[30px] bg-ink p-7">
-          <Text className="text-xs font-semibold uppercase tracking-widest text-indigo-200">Team</Text>
+        <View className="mt-6 rounded-[30px] p-7" style={{ backgroundColor: '#101828' }}>
+          <Text className="text-xs font-semibold uppercase tracking-widest text-indigo-300">Team</Text>
           <Text className="mt-4 text-3xl font-bold text-white">{team.name}</Text>
           <View className="mt-4 flex-row">
-            <View className="rounded-full bg-indigo-900/50 px-3 py-1">
-              <Text className="text-xs font-medium text-indigo-200">{categoryLabels[team.category] || team.category}</Text>
+            <View className="rounded-full bg-white/10 px-3 py-1">
+              <Text className="text-xs font-medium text-white">{categoryLabels[team.category] || team.category}</Text>
             </View>
-            <View className={`ml-2 rounded-full px-3 py-1 ${stageColors[team.stage]?.replace("text-", "text-indigo-200 bg-") || "bg-indigo-900/50"}`}>
-              <Text className="text-xs font-medium capitalize text-indigo-200">{team.stage?.toLowerCase()}</Text>
+            <View className={`ml-2 rounded-full px-3 py-1 ${team.stage === 'FORMING' ? 'bg-amber-500/20' : team.stage === 'ACTIVE' ? 'bg-green-500/20' : 'bg-white/10'}`}>
+              <Text className={`text-xs font-medium capitalize ${team.stage === 'FORMING' ? 'text-amber-200' : team.stage === 'ACTIVE' ? 'text-green-200' : 'text-slate-200'}`}>{team.stage?.toLowerCase() || 'Stage'}</Text>
             </View>
-            <Text className="ml-auto text-sm font-medium text-white">{team._count?.members ?? team.members?.length ?? 0} members</Text>
+            <Text className="ml-auto text-sm font-medium text-slate-300">{team._count?.members ?? team.members?.length ?? 0} members</Text>
           </View>
           {!!team.description && (
             <Text className="mt-4 leading-6 text-slate-300">{team.description}</Text>

@@ -84,24 +84,32 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
           <SafeAreaView className="flex-1 bg-surface">
           <ScrollView keyboardShouldPersistTaps="handled" contentContainerClassName="px-6 pb-8">
             <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
-                <Ionicons name="close" size={24} color="#101828" />
-              </TouchableOpacity>
-              <Text className="text-lg font-bold text-ink">New Post</Text>
-              <TouchableOpacity 
-                onPress={handlePost} 
-                disabled={!content.trim() || createPost.isPending}
-                style={{
-                  backgroundColor: content.trim() ? '#5B4DFF' : '#E2E8F0',
-                  paddingHorizontal: 16,
-                  paddingVertical: 8,
-                  borderRadius: 20
-                }}
-              >
-                <Text style={{ color: content.trim() ? '#FFFFFF' : '#94A3B8', fontWeight: 'bold' }}>
-                  {createPost.isPending ? "Posting..." : "Post"}
-                </Text>
-              </TouchableOpacity>
+              <View style={{ flex: 1, alignItems: 'flex-start' }}>
+                <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
+                  <Ionicons name="close" size={24} color="#101828" />
+                </TouchableOpacity>
+              </View>
+              
+              <View style={{ flex: 2, alignItems: 'center' }}>
+                <Text className="text-lg font-bold text-ink">New Post</Text>
+              </View>
+              
+              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                <TouchableOpacity 
+                  onPress={handlePost} 
+                  disabled={!content.trim() || createPost.isPending}
+                  style={{
+                    backgroundColor: content.trim() ? '#5B4DFF' : '#E2E8F0',
+                    paddingHorizontal: 16,
+                    paddingVertical: 8,
+                    borderRadius: 20
+                  }}
+                >
+                  <Text style={{ color: content.trim() ? '#FFFFFF' : '#94A3B8', fontWeight: 'bold' }}>
+                    {createPost.isPending ? "Posting..." : "Post"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
 
             <Text className="mb-3 text-sm font-semibold text-ink">Post Type</Text>
