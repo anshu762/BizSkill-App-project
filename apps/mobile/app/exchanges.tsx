@@ -85,8 +85,11 @@ export default function ExchangesScreen() {
   return (
     <ErrorBoundary>
       <SafeAreaView className="flex-1 bg-surface">
-        <View className="px-6">
-          <Text className="mb-6 mt-4 text-2xl font-bold text-ink">Exchanges</Text>
+        <View className="px-6 flex-row items-center mb-6 mt-4">
+          <TouchableOpacity onPress={() => router.back()} className="mr-4">
+            <Ionicons name="arrow-back" size={24} color="#0F0E1A" />
+          </TouchableOpacity>
+          <Text className="text-2xl font-bold text-ink">Exchanges</Text>
         </View>
         <View className="mb-4">
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, flexDirection: 'row', alignItems: 'center' }}>
