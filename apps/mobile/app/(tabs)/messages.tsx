@@ -53,20 +53,33 @@ export default function MessagesScreen() {
                 <TouchableOpacity
                   onPress={() => router.push(`/messages/${item.user.id}` as any)}
                   activeOpacity={0.7}
+                  style={{
+                    backgroundColor: item.unreadCount > 0 ? '#EEF2FF' : 'transparent',
+                    borderRadius: 20,
+                    marginBottom: 8,
+                    paddingHorizontal: 16,
+                    paddingVertical: 14,
+                  }}
                 >
-                  <View style={{ flexDirection: 'row', alignItems: 'center', paddingVertical: 16, borderBottomWidth: 0.5, borderBottomColor: theme.border }}>
-                    <Avatar uri={item.user?.avatar} name={item.user?.name?.[0] ?? "?"} size={52} />
+                  <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Avatar uri={item.user?.avatar} name={item.user?.name ?? "U"} size={54} />
                     <View style={{ marginLeft: 16, flex: 1 }}>
                       <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <AppText variant="body" style={{ fontFamily: item.unreadCount > 0 ? 'Outfit_700Bold' : 'Outfit_600SemiBold', color: theme.textPrimary, fontSize: 16 }}>{item.user.name}</AppText>
-                        <AppText variant="caption" style={{ color: item.unreadCount > 0 ? Colors.brand : theme.textTertiary, fontFamily: item.unreadCount > 0 ? 'Outfit_600SemiBold' : 'Outfit_400Regular' }}>{item.lastMessage ? timeAgo(item.lastMessage.createdAt) : ""}</AppText>
+                        <AppText style={{ fontFamily: 'Outfit_700Bold', color: theme.textPrimary, fontSize: 16, letterSpacing: -0.3 }}>
+                          {item.user.name}
+                        </AppText>
+                        <AppText style={{ color: item.unreadCount > 0 ? Colors.brand : '#94A3B8', fontFamily: item.unreadCount > 0 ? 'Outfit_700Bold' : 'Outfit_500Medium', fontSize: 12 }}>
+                          {item.lastMessage ? timeAgo(item.lastMessage.createdAt) : ""}
+                        </AppText>
                       </View>
                       <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                        <AppText numberOfLines={1} style={{ flex: 1, fontSize: 14, color: item.unreadCount > 0 ? theme.textPrimary : theme.textSecondary, fontFamily: item.unreadCount > 0 ? 'Outfit_600SemiBold' : 'Outfit_400Regular' }}>
+                        <AppText numberOfLines={1} style={{ flex: 1, fontSize: 14, color: item.unreadCount > 0 ? '#334155' : '#64748B', fontFamily: item.unreadCount > 0 ? 'Outfit_600SemiBold' : 'Outfit_400Regular' }}>
                           {item.lastMessage?.content ?? "No messages yet"}
                         </AppText>
                         {item.unreadCount > 0 && (
-                          <View style={{ marginLeft: 12, height: 10, width: 10, borderRadius: 5, backgroundColor: Colors.brand }} />
+                          <View style={{ marginLeft: 12, minWidth: 22, height: 22, borderRadius: 11, backgroundColor: Colors.brand, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 6 }}>
+                            <AppText style={{ color: '#FFF', fontSize: 11, fontFamily: 'Outfit_700Bold' }}>{item.unreadCount > 99 ? '99+' : item.unreadCount}</AppText>
+                          </View>
                         )}
                       </View>
                     </View>
