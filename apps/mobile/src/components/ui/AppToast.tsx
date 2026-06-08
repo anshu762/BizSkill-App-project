@@ -76,7 +76,10 @@ function ToastBubble({
     Animated.parallel([
       Animated.timing(opacity, { toValue: 0, duration: 250, useNativeDriver: true }),
       Animated.timing(translateY, { toValue: -20, duration: 250, useNativeDriver: true }),
-    ]).start(() => onDone(item.id));
+    ]).start();
+    
+    // Guarantee removal even if animation callback fails on Android
+    setTimeout(() => onDone(item.id), 260);
   }, [item.id, onDone, opacity, translateY]);
 
   useEffect(() => {
@@ -137,7 +140,7 @@ export function ToastContainer() {
 
   if (toasts.length === 0) return null;
 
-  // Calculate top offset
+  // Calculate top offset securely
   const topOffset = Platform.OS === 'android'
     ? (StatusBar.currentHeight ?? 24) + 12
     : 60;

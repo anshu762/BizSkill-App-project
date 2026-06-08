@@ -309,7 +309,7 @@ export default function ProfileScreen() {
                 <FormField label="Description" placeholder="What you do" multiline value={field.value} onChangeText={field.onChange} onBlur={field.onBlur} error={fieldState.error?.message} />
               )} />
 
-              <AppButton title="Save Changes" onPress={handleSubmit(onSubmit)} style={{ marginTop: 24 }} />
+              <AppButton title="Save Changes" onPress={handleSubmit(onSubmit)} loading={updateMutation.isPending} style={{ marginTop: 24 }} />
             </ScrollView>
           </KeyboardAvoidingView>
         </SafeAreaView>
@@ -375,7 +375,7 @@ export default function ProfileScreen() {
               
               <View style={{ flexDirection: 'row' }}>
                 <AppButton title="Cancel" variant="secondary" onPress={() => setEditSkill(null)} style={{ marginRight: 12, flex: 1 }} />
-                <AppButton title="Save Changes" onPress={handleSaveSkill} style={{ flex: 1 }} />
+                <AppButton title="Save Changes" onPress={handleSaveSkill} loading={updateSkillMutation.isPending} style={{ flex: 1 }} />
               </View>
               
               <View style={{ marginTop: 32, paddingTop: 24, borderTopWidth: 1, borderTopColor: theme.border }}>
