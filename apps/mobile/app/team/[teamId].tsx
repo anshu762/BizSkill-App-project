@@ -4,6 +4,7 @@ import { useState } from "react";
 import { ActivityIndicator, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton } from "../../src/components/ui/AppButton";
+import { SelectableChip } from "../../src/components/SelectableChip";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { useAcceptApplication, useAddRole, useApplyToRole, useRejectApplication, useTeamDetail } from "../../src/lib/apiHooks";
 import { api } from "../../src/lib/axios";
@@ -125,16 +126,28 @@ export default function TeamDetailScreen() {
         </View>
 
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mt-6 mb-4 flex-row" contentContainerStyle={{ paddingRight: 24 }}>
-          <TouchableOpacity onPress={() => setDetailTab("roles")} className={`mr-2 mb-2 rounded-full px-5 py-2.5 ${detailTab === "roles" ? "bg-brand" : "bg-white"}`}>
-            <Text className={`text-sm font-semibold ${detailTab === "roles" ? "text-white" : "text-muted"}`}>Open Roles ({team.roles?.filter((r: any) => r.isOpen).length ?? 0})</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setDetailTab("members")} className={`mr-2 mb-2 rounded-full px-5 py-2.5 ${detailTab === "members" ? "bg-brand" : "bg-white"}`}>
-            <Text className={`text-sm font-semibold ${detailTab === "members" ? "text-white" : "text-muted"}`}>Members ({team._count?.members ?? team.members?.length ?? 0})</Text>
-          </TouchableOpacity>
+          <SelectableChip
+            chipStyle="pill"
+            label={`Open Roles (${team.roles?.filter((r: any) => r.isOpen).length ?? 0})`}
+            selected={detailTab === "roles"}
+            onPress={() => setDetailTab("roles")}
+            style={{ marginBottom: 0 }}
+          />
+          <SelectableChip
+            chipStyle="pill"
+            label={`Members (${team._count?.members ?? team.members?.length ?? 0})`}
+            selected={detailTab === "members"}
+            onPress={() => setDetailTab("members")}
+            style={{ marginBottom: 0 }}
+          />
           {isOwner && (
-            <TouchableOpacity onPress={() => setDetailTab("applications")} className={`mr-2 mb-2 rounded-full px-5 py-2.5 ${detailTab === "applications" ? "bg-brand" : "bg-white"}`}>
-              <Text className={`text-sm font-semibold ${detailTab === "applications" ? "text-white" : "text-muted"}`}>Applications</Text>
-            </TouchableOpacity>
+            <SelectableChip
+              chipStyle="pill"
+              label="Applications"
+              selected={detailTab === "applications"}
+              onPress={() => setDetailTab("applications")}
+              style={{ marginBottom: 0 }}
+            />
           )}
         </ScrollView>
 

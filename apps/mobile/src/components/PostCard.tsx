@@ -114,10 +114,12 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
       <View style={{ padding: 20 }}>
         <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <TouchableOpacity onPress={() => onUserPress?.(post.userId)} style={{ flexDirection: 'row', alignItems: 'center', flex: 1 }}>
-            <Avatar uri={post.user?.avatar} name={post.user?.name ?? "?"} size={40} />
+            <Avatar uri={post.user?.avatar} name={post.user?.name ?? "User"} size={44} />
             <View style={{ marginLeft: 12, flex: 1 }}>
-              <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{post.user?.name}</AppText>
-              <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>{post.user?.businessProfile?.businessName ?? "Founder"} � {timeAgo(post.createdAt)}</AppText>
+              <AppText style={{ fontSize: 16, fontFamily: 'Outfit_700Bold', color: theme.textPrimary, letterSpacing: -0.3 }}>{post.user?.name || "Unknown User"}</AppText>
+              <AppText style={{ fontSize: 13, fontFamily: 'Outfit_500Medium', color: '#64748B', marginTop: 1 }}>
+                {post.user?.businessProfile?.businessName ?? "Founder"} • {timeAgo(post.createdAt)}
+              </AppText>
             </View>
           </TouchableOpacity>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
