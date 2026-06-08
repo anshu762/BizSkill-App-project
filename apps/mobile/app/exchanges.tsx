@@ -87,7 +87,9 @@ export default function ExchangesScreen() {
       <SafeAreaView className="flex-1 bg-surface">
         <View className="px-6">
           <Text className="mb-6 mt-4 text-2xl font-bold text-ink">Exchanges</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4" contentContainerStyle={{ paddingRight: 24 }}>
+        </View>
+        <View className="mb-4">
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingHorizontal: 24, flexDirection: 'row', alignItems: 'center' }}>
             {tabs.map((t) => (
               <SelectableChip
                 key={t.key}
@@ -95,6 +97,7 @@ export default function ExchangesScreen() {
                 selected={tab === t.key}
                 onPress={() => setTab(t.key)}
                 chipStyle="pill"
+                style={{ marginBottom: 0 }}
               />
             ))}
           </ScrollView>
@@ -111,7 +114,9 @@ export default function ExchangesScreen() {
               </View>
               <Text className="mt-5 text-xl font-bold text-ink">No exchanges yet</Text>
               <Text className="mt-2 text-center text-sm leading-5 text-muted">Discover skills in the marketplace and send your first exchange request to get started.</Text>
-              <AppButton label="Browse Marketplace" onPress={() => router.push("/(tabs)/marketplace" as any)} className="mt-6" />
+              <View className="w-full mt-6">
+                <AppButton label="Browse Marketplace" onPress={() => router.push("/(tabs)/marketplace" as any)} fullWidth />
+              </View>
             </View>
           }
           renderItem={({ item }) => {

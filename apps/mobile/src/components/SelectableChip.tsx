@@ -52,7 +52,7 @@ export function SelectableChip({
       disabled={disabled || loading}
       onPress={onPress}
       className={containerClasses}
-      style={combinedStyle as ViewStyle}
+      style={[combinedStyle as ViewStyle, props.style as ViewStyle]}
       {...props}
     >
       {loading ? (

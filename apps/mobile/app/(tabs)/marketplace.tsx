@@ -128,7 +128,7 @@ export default function MarketplaceScreen() {
                   {discoverUsers.map((user: any) => (
                     <TouchableOpacity
                       key={user.id}
-                      onPress={() => router.push(`/profile/${user.id}`)}
+                      onPress={() => router.push(`/profile/${user.id.trim()}`)}
                       activeOpacity={0.8}
                       style={{ marginRight: 12, width: 140 }}
                     >
@@ -153,7 +153,7 @@ export default function MarketplaceScreen() {
             ListFooterComponent={isFetchingNextPage ? <ActivityIndicator style={{ paddingVertical: 16 }} color={Colors.brand} /> : null}
             renderItem={({ item }) => (
               <AppCard style={{ marginBottom: 16 }}>
-                <TouchableOpacity onPress={() => router.push(`/profile/${item.userId}`)} style={{ flexDirection: 'row', alignItems: 'center' }}>
+                <TouchableOpacity onPress={() => router.push(`/profile/${(item.user?.id || item.userId).trim()}`)} style={{ flexDirection: 'row', alignItems: 'center' }}>
                   <Avatar uri={item.user?.avatar} name={item.user?.name ?? "?"} size={40} />
                   <View style={{ marginLeft: 12, flex: 1 }}>
                     <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{item.user?.name}</AppText>

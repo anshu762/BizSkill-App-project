@@ -209,13 +209,13 @@ export default function PublicProfileScreen() {
               ) : (
                 <>
                   <Text className="mb-2 text-sm font-semibold text-ink">Choose a skill you will offer *</Text>
-                  <View className="mb-5 flex-row flex-wrap">
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5" style={{ marginHorizontal: -24 }} contentContainerStyle={{ paddingHorizontal: 24, flexDirection: 'row' }}>
                     {myOfferedSkills.map((s: any) => (
                       <TouchableOpacity
                         key={s.id}
                         activeOpacity={0.88}
                         onPress={() => setSelectedOfferedSkillId(s.id)}
-                        className={`mb-2 mr-2 rounded-2xl px-4 py-3 border ${selectedOfferedSkillId === s.id ? "bg-brand border-brand" : "bg-white border-slate-200"}`}
+                        className={`mr-2 rounded-2xl px-4 py-3 border ${selectedOfferedSkillId === s.id ? "bg-brand border-brand" : "bg-white border-slate-200"}`}
                         style={selectedOfferedSkillId === s.id ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
                       >
                         <Text
@@ -224,16 +224,16 @@ export default function PublicProfileScreen() {
                         >{s.title}</Text>
                       </TouchableOpacity>
                     ))}
-                  </View>
+                  </ScrollView>
 
                   <Text className="mb-2 text-sm font-semibold text-ink">Choose a skill you want to request *</Text>
-                  <View className="mb-5 flex-row flex-wrap">
+                  <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5" style={{ marginHorizontal: -24 }} contentContainerStyle={{ paddingHorizontal: 24, flexDirection: 'row' }}>
                     {targetOfferedSkills.map((s: any) => (
                       <TouchableOpacity
                         key={s.id}
                         activeOpacity={0.88}
                         onPress={() => setSelectedRequestedSkillId(s.id)}
-                        className={`mb-2 mr-2 rounded-2xl px-4 py-3 border ${selectedRequestedSkillId === s.id ? "bg-brand border-brand" : "bg-white border-slate-200"}`}
+                        className={`mr-2 rounded-2xl px-4 py-3 border ${selectedRequestedSkillId === s.id ? "bg-brand border-brand" : "bg-white border-slate-200"}`}
                         style={selectedRequestedSkillId === s.id ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
                       >
                         <Text
@@ -242,7 +242,7 @@ export default function PublicProfileScreen() {
                         >{s.title}</Text>
                       </TouchableOpacity>
                     ))}
-                  </View>
+                  </ScrollView>
 
                   <Text className="mb-2 text-sm font-semibold text-ink">Message (optional)</Text>
                   <TextInput

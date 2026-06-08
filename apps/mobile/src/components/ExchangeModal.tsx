@@ -83,38 +83,40 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
                 <Text className="mt-2 text-center text-sm text-muted">Add skills to your profile first to send exchange requests.</Text>
               </View>
             ) : (
-              offeredSkills.map((skill) => (
-                <TouchableOpacity
-                  key={skill.id}
-                  onPress={() => setSelectedSkillId(skill.id)}
-                  className="mb-3 rounded-2xl p-4"
-                  style={{
-                    backgroundColor: selectedSkillId === skill.id ? '#FFFFFF' : '#FFFFFF',
-                    borderWidth: 2,
-                    borderColor: selectedSkillId === skill.id ? '#5B4DFF' : '#E2E8F0',
-                    shadowColor: selectedSkillId === skill.id ? '#5B4DFF' : 'transparent',
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: selectedSkillId === skill.id ? 0.1 : 0,
-                    shadowRadius: 8,
-                    elevation: selectedSkillId === skill.id ? 4 : 0,
-                  }}
-                >
-                  <View className="flex-row items-center justify-between">
-                    <View className="flex-1">
-                      <View className="flex-row items-center">
-                        <Text className="font-bold text-ink" style={{ fontSize: 16 }}>{skill.title}</Text>
-                        {selectedSkillId === skill.id && (
-                          <Ionicons name="checkmark-circle" size={20} color="#5B4DFF" style={{ marginLeft: 8 }} />
-                        )}
+              offeredSkills.map((skill) => {
+                const isSelected = selectedSkillId === skill.id;
+                return (
+                  <TouchableOpacity
+                    key={skill.id}
+                    onPress={() => setSelectedSkillId(skill.id)}
+                    activeOpacity={0.8}
+                    className={`mb-3 rounded-2xl p-4 border-2 ${
+                      isSelected ? "border-brand bg-indigo-50" : "border-slate-200 bg-white"
+                    }`}
+                  >
+                    <View className="flex-row items-center justify-between">
+                      <View className="flex-1">
+                        <View className="flex-row items-center">
+                          <Text className={`font-bold text-[16px] ${isSelected ? "text-brand" : "text-ink"}`}>
+                            {skill.title}
+                          </Text>
+                          {isSelected && (
+                            <Ionicons name="checkmark-circle" size={20} color="#5B4DFF" style={{ marginLeft: 8 }} />
+                          )}
+                        </View>
+                        <Text className={`mt-1 text-sm ${isSelected ? "text-indigo-400 font-medium" : "text-muted"}`}>
+                          {skill.level}
+                        </Text>
                       </View>
-                      <Text className="text-sm text-muted mt-1">{skill.level}</Text>
+                      <View className={`rounded-full px-3 py-1 ${isSelected ? "bg-indigo-100" : "bg-amber-50"}`}>
+                        <Text className={`text-xs font-bold ${isSelected ? "text-brand" : "text-amber-700"}`}>
+                          {skill.coinValue} BC
+                        </Text>
+                      </View>
                     </View>
-                    <View className="rounded-full bg-amber-50 px-3 py-1">
-                      <Text className="text-xs font-bold text-amber-700">{skill.coinValue} BC</Text>
-                    </View>
-                  </View>
-                </TouchableOpacity>
-              ))
+                  </TouchableOpacity>
+                );
+              })
             )}
 
             <Text className="mb-2 mt-4 text-sm font-semibold text-ink">Message (optional)</Text>
