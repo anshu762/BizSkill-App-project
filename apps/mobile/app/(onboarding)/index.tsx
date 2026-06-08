@@ -162,7 +162,7 @@ export default function OnboardingScreen() {
         <View key={i} style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 20, backgroundColor: '#FFFFFF', padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 2 }}>
           <View style={{ flex: 1 }}>
             <AppText variant="h3">{skill.title}</AppText>
-            <AppText style={{ marginTop: 4, fontSize: 12, color: '#64748B', fontFamily: 'Outfit_500Medium' }}>{skill.category} � {skill.level} � {Math.round(skill.coinValue / 10) * 10} BC</AppText>
+            <AppText style={{ marginTop: 4, fontSize: 12, color: '#64748B', fontFamily: 'Outfit_500Medium' }}>{skill.category} • {skill.level} • {Math.round(skill.coinValue / 10) * 10} BC</AppText>
           </View>
           <TouchableOpacity onPress={() => removeSkill(i, type)} style={{ marginLeft: 16, height: 36, width: 36, borderRadius: 18, backgroundColor: '#FEF2F2', alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="trash" size={18} color="#EF4444" />
