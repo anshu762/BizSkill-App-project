@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import { showToast } from "../../src/components/ui/AppToast";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Ionicons } from "@expo/vector-icons";
@@ -130,10 +130,10 @@ export default function OnboardingScreen() {
         neededSkills: neededSkills.map((s) => ({ ...s, coinValue: Math.round(s.coinValue / 10) * 10 })),
       });
       await updateUser({ ...useAuthStore.getState().user!, hasOnboarded: true } as any);
-      Toast.show({ type: "success", text1: "Profile ready", text2: "Welcome to BizSkills." });
+      showToast({ type: "success", text1: "Profile ready", text2: "Welcome to BizSkills." });
       router.replace("/(tabs)");
     } catch (error) {
-      Toast.show({ type: "error", text1: "Could not finish onboarding", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Could not finish onboarding", text2: readApiError(error) });
     } finally {
       setIsSubmitting(false);
     }
@@ -162,7 +162,7 @@ export default function OnboardingScreen() {
         <View key={i} style={{ marginBottom: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', borderRadius: 20, backgroundColor: '#FFFFFF', padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 12, elevation: 2 }}>
           <View style={{ flex: 1 }}>
             <AppText variant="h3">{skill.title}</AppText>
-            <AppText style={{ marginTop: 4, fontSize: 12, color: '#64748B', fontFamily: 'Outfit_500Medium' }}>{skill.category} · {skill.level} · {Math.round(skill.coinValue / 10) * 10} BC</AppText>
+            <AppText style={{ marginTop: 4, fontSize: 12, color: '#64748B', fontFamily: 'Outfit_500Medium' }}>{skill.category} � {skill.level} � {Math.round(skill.coinValue / 10) * 10} BC</AppText>
           </View>
           <TouchableOpacity onPress={() => removeSkill(i, type)} style={{ marginLeft: 16, height: 36, width: 36, borderRadius: 18, backgroundColor: '#FEF2F2', alignItems: 'center', justifyContent: 'center' }}>
             <Ionicons name="trash" size={18} color="#EF4444" />

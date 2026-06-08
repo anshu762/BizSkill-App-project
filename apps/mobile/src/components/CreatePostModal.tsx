@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Image, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, Platform, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import { showToast, ToastContainer } from "./ui/AppToast";
 import { readApiError } from "../lib/axios";
 import { ResponsiveLayout } from "./ui/ResponsiveLayout";
 import { useCreatePost } from "../lib/apiHooks";
@@ -44,7 +44,7 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
           setImageUploading(false);
         };
         reader.onerror = () => {
-          Toast.show({ type: "error", text1: "Image upload failed" });
+          showToast({ type: "error", text1: "Image upload failed" });
           setImageUploading(false);
         };
         reader.readAsDataURL(file);
@@ -58,7 +58,7 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
       if (result.canceled || !result.assets?.[0]) return;
       setImageUrl(result.assets[0].uri);
     } catch {
-      Toast.show({ type: "error", text1: "Image picker failed" });
+      showToast({ type: "error", text1: "Image picker failed" });
     }
   };
 
@@ -66,13 +66,14 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
     if (!content.trim()) return;
     try {
       await createPost.mutateAsync({ content: content.trim(), type, imageUrl: imageUrl || undefined });
-      Toast.show({ type: "success", text1: "Posted!" });
       setContent("");
       setType("UPDATE");
       setImageUrl("");
       onClose();
+      // Show toast AFTER modal closes so it renders in the root tree
+      setTimeout(() => showToast({ type: "success", text1: "Posted successfully!" }), 400);
     } catch (error) {
-      Toast.show({ type: "error", text1: "Failed to post", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Failed to post", text2: readApiError(error) });
     }
   };
 
@@ -159,6 +160,7 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
+      <ToastContainer />
       </ResponsiveLayout>
     </Modal>
   );

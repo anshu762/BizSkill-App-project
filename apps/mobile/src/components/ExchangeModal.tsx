@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState, useCallback } from "react";
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import { showToast, ToastContainer } from "./ui/AppToast";
 import { readApiError } from "../lib/axios";
 import { useProfile } from "../lib/apiHooks";
 import { useCreateExchange } from "../lib/apiHooks";
@@ -38,12 +38,12 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
         requestedSkillId: targetSkillId,
         message: message || undefined,
       });
-      Toast.show({ type: "success", text1: "Exchange request sent!" });
       setSelectedSkillId("");
       setMessage("");
       onClose();
+      setTimeout(() => showToast({ type: "success", text1: "Exchange request sent!" }), 400);
     } catch (error) {
-      Toast.show({ type: "error", text1: "Request failed", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Request failed", text2: readApiError(error) });
     }
   }, [selectedSkillId, message, targetUserId, targetSkillId, createExchange, onClose]);
 
@@ -142,6 +142,7 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
+      <ToastContainer />
       </ResponsiveLayout>
     </Modal>
   );

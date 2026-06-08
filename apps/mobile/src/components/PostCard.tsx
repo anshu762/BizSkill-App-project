@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Modal, TextInput, TouchableOpacity, View, Platform, Animated, KeyboardAvoidingView, Keyboard } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import { showToast } from "./ui/AppToast";
 
 import { AppCard } from "./ui/AppCard";
 import { AppText } from "./ui/AppText";
@@ -92,9 +92,9 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
     try {
       await onEdit?.(post.id, editContent.trim());
       setEditModal(false);
-      Toast.show({ type: "success", text1: "Post updated" });
+      showToast({ type: "success", text1: "Post updated" });
     } catch (error) {
-      Toast.show({ type: "error", text1: "Failed to update", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Failed to update", text2: readApiError(error) });
     } finally {
       setIsEditing(false);
     }
@@ -117,7 +117,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
             <Avatar uri={post.user?.avatar} name={post.user?.name ?? "?"} size={40} />
             <View style={{ marginLeft: 12, flex: 1 }}>
               <AppText variant="body" style={{ fontFamily: 'Outfit_600SemiBold', color: theme.textPrimary }}>{post.user?.name}</AppText>
-              <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>{post.user?.businessProfile?.businessName ?? "Founder"} · {timeAgo(post.createdAt)}</AppText>
+              <AppText variant="caption" style={{ color: theme.textTertiary, marginTop: 2 }}>{post.user?.businessProfile?.businessName ?? "Founder"} � {timeAgo(post.createdAt)}</AppText>
             </View>
           </TouchableOpacity>
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>

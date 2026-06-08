@@ -4,7 +4,7 @@ import { Modal, ScrollView, TextInput, TouchableOpacity, View, ActivityIndicator
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Controller, useForm } from "react-hook-form";
 import { useRouter } from "expo-router";
-import Toast from "react-native-toast-message";
+import { showToast } from "../../src/components/ui/AppToast";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 
@@ -88,10 +88,10 @@ export default function ProfileScreen() {
   const onSubmit = async (values: EditValues) => {
     try {
       await updateMutation.mutateAsync(values as any);
-      Toast.show({ type: "success", text1: "Profile updated" });
+      showToast({ type: "success", text1: "Profile updated" });
       setEditOpen(false);
     } catch (error) {
-      Toast.show({ type: "error", text1: "Update failed", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Update failed", text2: readApiError(error) });
     }
   };
 
@@ -104,9 +104,9 @@ export default function ProfileScreen() {
   };
 
   const handleSaveSkill = async () => {
-    if (!editSkillTitle.trim()) { Toast.show({ type: "error", text1: "Title is required" }); return; }
-    if (!editSkillCategory) { Toast.show({ type: "error", text1: "Category is required" }); return; }
-    if (!editSkillLevel) { Toast.show({ type: "error", text1: "Level is required" }); return; }
+    if (!editSkillTitle.trim()) { showToast({ type: "error", text1: "Title is required" }); return; }
+    if (!editSkillCategory) { showToast({ type: "error", text1: "Category is required" }); return; }
+    if (!editSkillLevel) { showToast({ type: "error", text1: "Level is required" }); return; }
     try {
       await updateSkillMutation.mutateAsync({
         skillId: editSkill.id,
@@ -115,10 +115,10 @@ export default function ProfileScreen() {
         level: editSkillLevel,
         coinValue: Math.round(editSkillCoins / 10) * 10,
       });
-      Toast.show({ type: "success", text1: "Skill updated" });
+      showToast({ type: "success", text1: "Skill updated" });
       setEditSkill(null);
     } catch (error) {
-      Toast.show({ type: "error", text1: "Failed to update skill", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Failed to update skill", text2: readApiError(error) });
     }
   };
 
@@ -130,11 +130,11 @@ export default function ProfileScreen() {
     if (!skillToDelete) return;
     try {
       await deleteSkillMutation.mutateAsync(skillToDelete.id);
-      Toast.show({ type: "success", text1: "Skill deleted" });
+      showToast({ type: "success", text1: "Skill deleted" });
       setSkillToDelete(null);
       if (editSkill?.id === skillToDelete.id) setEditSkill(null);
     } catch (error) {
-      Toast.show({ type: "error", text1: "Failed to delete skill", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Failed to delete skill", text2: readApiError(error) });
     }
   };
 

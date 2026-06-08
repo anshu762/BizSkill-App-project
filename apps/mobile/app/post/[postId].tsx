@@ -3,7 +3,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, FlatList, Platform, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import Toast from "react-native-toast-message";
+import { showToast } from "../../src/components/ui/AppToast";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { PostCard } from "../../src/components/PostCard";
 import { useComments, useAddComment, useFeed, useDeletePost, useUpdatePost } from "../../src/lib/apiHooks";
@@ -32,7 +32,7 @@ export default function PostScreen() {
       await addComment.mutateAsync({ postId: postId!, content: text });
     } catch (error) {
       setNewComment(text); // Restore on failure
-      Toast.show({ type: "error", text1: "Failed", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Failed", text2: readApiError(error) });
     }
   };
 

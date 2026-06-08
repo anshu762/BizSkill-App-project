@@ -2,7 +2,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "expo-router";
 import { Controller, useForm } from "react-hook-form";
 import { TouchableOpacity, View } from "react-native";
-import Toast from "react-native-toast-message";
+import { showToast } from "../../src/components/ui/AppToast";
 import { z } from "zod";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { AppText } from "../../src/components/ui/AppText";
@@ -38,7 +38,7 @@ export default function RegisterScreen() {
     try {
       await register(values.name, values.email, values.password);
     } catch (error) {
-      Toast.show({ type: "error", text1: "Account creation failed", text2: readApiError(error) });
+      showToast({ type: "error", text1: "Account creation failed", text2: readApiError(error) });
     }
   };
 
