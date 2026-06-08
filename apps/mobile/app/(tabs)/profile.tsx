@@ -154,23 +154,33 @@ export default function ProfileScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
       <ScrollView contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}>
-        <View style={{ marginTop: 24, alignItems: 'center' }}>
-          <Avatar uri={p?.avatar} name={p?.name ?? "B"} size={96} />
-          <AppText variant="h1" style={{ marginTop: 16 }}>{p?.name}</AppText>
+        <View className="mt-6 rounded-[32px] p-7 items-center" style={{ backgroundColor: '#101828' }}>
+          <View style={{ borderWidth: 4, borderColor: 'rgba(255,255,255,0.1)', borderRadius: 999 }}>
+            <Avatar uri={p?.avatar} name={p?.name ?? "U"} size={100} />
+          </View>
+          <AppText style={{ marginTop: 16, fontSize: 26, fontFamily: 'Outfit_700Bold', color: '#FFFFFF', letterSpacing: -0.5 }}>{p?.name}</AppText>
           {bp && (
-            <AppText variant="body" style={{ marginTop: 4, color: theme.textSecondary }}>{bp.businessName}</AppText>
+            <AppText style={{ marginTop: 4, fontSize: 15, fontFamily: 'Outfit_500Medium', color: '#94A3B8' }}>{bp.businessName}</AppText>
           )}
-          <View style={{ marginTop: 16, flexDirection: 'row', alignItems: 'center' }}>
-            {bp && <StageBadge stage={bp.stage as any} />}
+          <View style={{ marginTop: 20, flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap', justifyContent: 'center', gap: 8 }}>
             {bp && (
-              <View style={{ marginLeft: 8, borderRadius: 999, backgroundColor: Colors.brandTint, paddingHorizontal: 12, paddingVertical: 6 }}>
-                <AppText style={{ fontSize: 12, fontFamily: 'Outfit_500Medium', color: Colors.brand }}>{bp.industry}</AppText>
+              <View style={{ borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 14, paddingVertical: 6 }}>
+                <AppText style={{ fontSize: 12, color: '#E2E8F0', fontFamily: 'Outfit_600SemiBold', textTransform: 'capitalize' }}>
+                  {bp.stage?.toLowerCase() || 'Stage'}
+                </AppText>
+              </View>
+            )}
+            {bp && (
+              <View style={{ borderRadius: 999, backgroundColor: 'rgba(91,77,255,0.2)', paddingHorizontal: 14, paddingVertical: 6 }}>
+                <AppText style={{ fontSize: 12, fontFamily: 'Outfit_600SemiBold', color: '#A5B4FC' }}>
+                  {bp.industry?.replace('_', ' ') || 'Industry'}
+                </AppText>
               </View>
             )}
             {p?.location && (
-              <View style={{ marginLeft: 8, flexDirection: 'row', alignItems: 'center' }}>
-                <Ionicons name="location-outline" size={16} color={theme.textTertiary} />
-                <AppText style={{ marginLeft: 4, fontSize: 12, fontFamily: 'Outfit_400Regular', color: theme.textSecondary }}>{p.location}</AppText>
+              <View style={{ flexDirection: 'row', alignItems: 'center', borderRadius: 999, backgroundColor: 'rgba(255,255,255,0.1)', paddingHorizontal: 14, paddingVertical: 6 }}>
+                <Ionicons name="location-outline" size={14} color="#CBD5E1" />
+                <AppText style={{ marginLeft: 4, fontSize: 12, fontFamily: 'Outfit_600SemiBold', color: '#E2E8F0' }}>{p.location}</AppText>
               </View>
             )}
           </View>
@@ -206,12 +216,16 @@ export default function ProfileScreen() {
 
         <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <AppText variant="h3">Skills I Offer</AppText>
+          <AppText style={{ fontSize: 12, color: '#94A3B8', fontFamily: 'Outfit_500Medium' }}>Tap to manage</AppText>
         </View>
         {offeredSkills.length > 0 ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 24 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 24, paddingTop: 4 }} contentContainerStyle={{ paddingRight: 24 }}>
             {offeredSkills.map((skill: any) => (
-              <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)} style={{ marginRight: 8 }}>
+              <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)} style={{ marginRight: 12, position: 'relative' }} activeOpacity={0.7}>
                 <SkillChip label={skill.title} category={skill.category as SkillCategory} level={skill.level as SkillLevel} showLevel />
+                <View style={{ position: 'absolute', top: -6, right: -6, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 4, borderWidth: 1, borderColor: '#E2E8F0', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 }}>
+                  <Ionicons name="pencil" size={10} color={Colors.brand} />
+                </View>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -221,12 +235,16 @@ export default function ProfileScreen() {
 
         <View style={{ marginBottom: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
           <AppText variant="h3">Skills I Need</AppText>
+          <AppText style={{ fontSize: 12, color: '#94A3B8', fontFamily: 'Outfit_500Medium' }}>Tap to manage</AppText>
         </View>
         {neededSkills.length > 0 ? (
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 24 }}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{ marginBottom: 24, paddingTop: 4 }} contentContainerStyle={{ paddingRight: 24 }}>
             {neededSkills.map((skill: any) => (
-              <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)} style={{ marginRight: 8 }}>
+              <TouchableOpacity key={skill.id} onPress={() => handleEditSkill(skill)} onLongPress={() => handleDeleteSkill(skill.id, skill.title)} style={{ marginRight: 12, position: 'relative' }} activeOpacity={0.7}>
                 <SkillChip label={skill.title} category={skill.category as SkillCategory} level={skill.level as SkillLevel} showLevel />
+                <View style={{ position: 'absolute', top: -6, right: -6, backgroundColor: '#FFFFFF', borderRadius: 12, padding: 4, borderWidth: 1, borderColor: '#E2E8F0', shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 3, elevation: 3 }}>
+                  <Ionicons name="pencil" size={10} color={Colors.brand} />
+                </View>
               </TouchableOpacity>
             ))}
           </ScrollView>
