@@ -10,6 +10,7 @@ import { useAcceptApplication, useAddRole, useApplyToRole, useRejectApplication,
 import { api } from "../../src/lib/axios";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import { showToast } from "../../src/components/ui/AppToast";
+import { useQueryClient } from "@tanstack/react-query";
 
 const stageColors: Record<string, string> = {
   FORMING: "bg-amber-100 text-amber-700",
@@ -182,7 +183,7 @@ export default function TeamDetailScreen() {
                     )
                   )}
                   {isOwner && (
-                    <CloseRoleButton roleId={role.id} />
+                    <CloseRoleButton roleId={role.id} teamId={teamId!} />
                   )}
                 </View>
               ))
@@ -292,17 +293,25 @@ export default function TeamDetailScreen() {
   );
 }
 
-function CloseRoleButton({ roleId }: { roleId: string }) {
+function CloseRoleButton({ roleId, teamId }: { roleId: string; teamId: string }) {
+  const [isClosing, setIsClosing] = useState(false);
+  const queryClient = useQueryClient();
+
   const handleClose = async () => {
+    if (isClosing) return;
+    setIsClosing(true);
     try {
       await api.put(`/teams/roles/${roleId}`, { isOpen: false });
       showToast({ type: "success", text1: "Done", text2: "Role closed" });
+      queryClient.invalidateQueries({ queryKey: ["team", teamId] });
     } catch (e: any) {
       showToast({ type: "error", text1: "Error", text2: e?.response?.data?.message || e.message });
+    } finally {
+      setIsClosing(false);
     }
   };
   return (
-    <AppButton label="Close Role" variant="secondary" onPress={handleClose} className="mt-2" />
+    <AppButton label="Close Role" variant="secondary" onPress={handleClose} loading={isClosing} className="mt-2" />
   );
 }
 
