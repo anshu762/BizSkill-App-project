@@ -1,10 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView, Platform } from "react-native";
+import { ActivityIndicator, ScrollView, Text, TouchableOpacity, View, Modal, TextInput, KeyboardAvoidingView, Platform, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AvatarWithFallback } from "../../src/components/AvatarWithFallback";
 import { StageBadge } from "../../src/components/StageBadge";
 import { SkillChip } from "../../src/components/SkillChip";
+import { SelectableChip } from "../../src/components/SelectableChip";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { useProfile, useFollow, useFollowStats, useCreateExchange } from "../../src/lib/apiHooks";
 import { useState, useEffect } from "react";
@@ -211,36 +212,26 @@ export default function PublicProfileScreen() {
                   <Text className="mb-2 text-sm font-semibold text-ink">Choose a skill you will offer *</Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5" style={{ marginHorizontal: -24 }} contentContainerStyle={{ paddingHorizontal: 24, flexDirection: 'row' }}>
                     {myOfferedSkills.map((s: any) => (
-                      <TouchableOpacity
+                      <SelectableChip
                         key={s.id}
-                        activeOpacity={0.88}
+                        label={s.title}
+                        selected={selectedOfferedSkillId === s.id}
                         onPress={() => setSelectedOfferedSkillId(s.id)}
-                        className={`mr-2 rounded-2xl px-4 py-3 border ${selectedOfferedSkillId === s.id ? "bg-brand border-brand" : "bg-white border-slate-200"}`}
-                        style={selectedOfferedSkillId === s.id ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
-                      >
-                        <Text
-                          className={`text-sm font-semibold ${selectedOfferedSkillId === s.id ? "text-white" : "text-ink"}`}
-                          style={selectedOfferedSkillId === s.id ? { color: "#FFFFFF" } : undefined}
-                        >{s.title}</Text>
-                      </TouchableOpacity>
+                        style={{ marginRight: 8, marginBottom: 0 }}
+                      />
                     ))}
                   </ScrollView>
 
                   <Text className="mb-2 text-sm font-semibold text-ink">Choose a skill you want to request *</Text>
                   <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5" style={{ marginHorizontal: -24 }} contentContainerStyle={{ paddingHorizontal: 24, flexDirection: 'row' }}>
                     {targetOfferedSkills.map((s: any) => (
-                      <TouchableOpacity
+                      <SelectableChip
                         key={s.id}
-                        activeOpacity={0.88}
+                        label={s.title}
+                        selected={selectedRequestedSkillId === s.id}
                         onPress={() => setSelectedRequestedSkillId(s.id)}
-                        className={`mr-2 rounded-2xl px-4 py-3 border ${selectedRequestedSkillId === s.id ? "bg-brand border-brand" : "bg-white border-slate-200"}`}
-                        style={selectedRequestedSkillId === s.id ? { backgroundColor: "#5B4DFF", borderColor: "#5B4DFF" } : undefined}
-                      >
-                        <Text
-                          className={`text-sm font-semibold ${selectedRequestedSkillId === s.id ? "text-white" : "text-ink"}`}
-                          style={selectedRequestedSkillId === s.id ? { color: "#FFFFFF" } : undefined}
-                        >{s.title}</Text>
-                      </TouchableOpacity>
+                        style={{ marginRight: 8, marginBottom: 0 }}
+                      />
                     ))}
                   </ScrollView>
 

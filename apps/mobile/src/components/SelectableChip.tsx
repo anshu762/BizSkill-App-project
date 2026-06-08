@@ -1,4 +1,4 @@
-import { ActivityIndicator, Text, TouchableOpacity, type TouchableOpacityProps, type ViewStyle, type TextStyle } from "react-native";
+import { ActivityIndicator, Text, TouchableOpacity, Pressable, type TouchableOpacityProps, type ViewStyle, type TextStyle } from "react-native";
 
 interface SelectableChipProps extends Omit<TouchableOpacityProps, 'onPress'> {
   label: string;
@@ -46,20 +46,25 @@ export function SelectableChip({
   const overrideText = selected ? { color: "#FFFFFF" } : undefined;
   const combinedStyle = { ...overrideBg, opacity: disabled || loading ? 0.6 : 1 };
 
+  const { activeOpacity, ...restProps } = props as any;
+
   return (
-    <TouchableOpacity
-      activeOpacity={0.88}
+    <Pressable
       disabled={disabled || loading}
       onPress={onPress}
       className={containerClasses}
-      style={[combinedStyle as ViewStyle, props.style as ViewStyle]}
-      {...props}
+      style={({ pressed }) => [
+        combinedStyle as ViewStyle, 
+        restProps.style as ViewStyle,
+        pressed && !disabled && !loading ? { opacity: activeOpacity ?? 0.88 } : undefined
+      ]}
+      {...restProps}
     >
       {loading ? (
         <ActivityIndicator size="small" color={selected ? "#FFFFFF" : "#5B4DFF"} />
       ) : (
         <Text className={textClasses} style={overrideText as TextStyle}>{label}</Text>
       )}
-    </TouchableOpacity>
+    </Pressable>
   );
 }
