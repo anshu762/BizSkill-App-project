@@ -11,6 +11,7 @@ import { AppButton } from "../../src/components/ui/AppButton";
 import { SkeletonPostCard } from "../../src/components/ui/ShimmerLoader";
 import { EmptyFeed } from "../../src/components/ui/EmptyState";
 import { Avatar } from "../../src/components/ui/Avatar";
+import { SelectableChip } from "../../src/components/SelectableChip";
 import { PostCard } from "../../src/components/PostCard";
 import { CreatePostModal } from "../../src/components/CreatePostModal";
 import { ErrorBoundary } from "../../src/components/ErrorBoundary";
@@ -122,26 +123,15 @@ export default function FeedScreen() {
   const keyExtractor = useCallback((item: any, i: number) => item?.id ?? String(i), []);
 
   const renderFilter = useCallback(({ item }: any) => {
-    const isSelected = filter === item.key;
     return (
-      <TouchableOpacity
+      <SelectableChip
+        label={item.label}
+        selected={filter === item.key}
         onPress={() => setFilter(item.key)}
-        activeOpacity={0.88}
-        className="mr-2 flex-row items-center rounded-xl border px-4 py-2.5"
-        style={{
-          backgroundColor: isSelected ? Colors.brand : theme.elevated,
-          borderColor: isSelected ? Colors.brand : theme.border,
-        }}
-      >
-        <AppText
-          variant="label"
-          style={{
-            color: isSelected ? "#FFFFFF" : theme.textSecondary,
-          }}
-        >{item.label}</AppText>
-      </TouchableOpacity>
+        chipStyle="pill"
+      />
     );
-  }, [filter, theme]);
+  }, [filter]);
 
   return (
     <ErrorBoundary>

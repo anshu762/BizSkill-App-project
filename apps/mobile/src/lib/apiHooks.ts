@@ -195,7 +195,12 @@ export function useDeletePost() {
     mutationFn: async (postId: string) => {
       await api.delete(`/posts/${postId}`);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["feed"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["feed"] });
+      import("../components/ui/AppToast").then((m) => {
+        m.showToast({ type: "info", text1: "Post deleted" });
+      });
+    },
   });
 }
 
