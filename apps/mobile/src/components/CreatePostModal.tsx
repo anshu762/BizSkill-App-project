@@ -7,14 +7,13 @@ import { readApiError } from "../lib/axios";
 import { ResponsiveLayout } from "./ui/ResponsiveLayout";
 import { useCreatePost } from "../lib/apiHooks";
 import { AppButton } from "./AppButton";
-import { SelectableChip } from "./SelectableChip";
 
 const postTypes = [
-  { value: "UPDATE", label: "Update" },
-  { value: "LAUNCH", label: "Launch" },
-  { value: "MILESTONE", label: "Milestone" },
-  { value: "PRODUCT_DROP", label: "Product Drop" },
-  { value: "COLLAB_REQUEST", label: "Collab" },
+  { value: "UPDATE", label: "Update", icon: "megaphone-outline" },
+  { value: "LAUNCH", label: "Launch", icon: "rocket-outline" },
+  { value: "MILESTONE", label: "Milestone", icon: "trophy-outline" },
+  { value: "PRODUCT_DROP", label: "Product Drop", icon: "cube-outline" },
+  { value: "COLLAB_REQUEST", label: "Collab", icon: "people-outline" },
 ];
 
 interface CreatePostModalProps {
@@ -80,84 +79,104 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
   return (
     <Modal visible={visible} animationType="slide" presentationStyle="pageSheet" onRequestClose={onClose}>
       <ResponsiveLayout>
-        <SafeAreaView className="flex-1 bg-surface">
+        <SafeAreaView className="flex-1 bg-white">
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
-            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1, paddingBottom: 64 }} className="px-6">
-            <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <View style={{ flex: 1, alignItems: 'flex-start' }}>
-                <TouchableOpacity onPress={onClose} style={{ padding: 4 }}>
-                  <Ionicons name="close" size={24} color="#101828" />
-                </TouchableOpacity>
-              </View>
-              
-              <View style={{ flex: 2, alignItems: 'center' }}>
-                <Text className="text-lg font-bold text-ink">New Post</Text>
-              </View>
-              
-              <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                <AppButton 
-                  title="Post" 
-                  onPress={handlePost} 
-                  loading={createPost.isPending} 
-                  disabled={!content.trim()} 
-                  size="sm" 
-                />
-              </View>
-            </View>
-
-            <Text className="mb-3 text-sm font-semibold text-ink">Post Type</Text>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-5">
-              {postTypes.map((t) => (
-                <SelectableChip
-                  key={t.value}
-                  label={t.label}
-                  selected={type === t.value}
-                  onPress={() => setType(t.value)}
-                  chipStyle="pill"
-                />
-              ))}
-            </ScrollView>
-
-            <TextInput
-              multiline
-              autoFocus
-              placeholder="What do you want to share with your network?"
-              placeholderTextColor="#94A3B8"
-              maxLength={500}
-              style={{
-                fontSize: 18,
-                color: '#101828',
-                lineHeight: 28,
-                minHeight: 160,
-                textAlignVertical: 'top',
-                marginBottom: 16,
-              }}
-              value={content}
-              onChangeText={setContent}
-            />
             
-            <View className="flex-row items-center justify-between mb-6 border-b border-slate-100 pb-4">
-              <Text className="text-xs text-slate-400">{content.length}/500</Text>
+            {/* Header */}
+            <View className="flex-row items-center justify-between px-4 py-4 border-b border-slate-100">
+              <TouchableOpacity onPress={onClose} className="h-10 w-10 items-center justify-center rounded-full bg-slate-50 border border-slate-100">
+                <Ionicons name="close" size={20} color="#334155" />
+              </TouchableOpacity>
+              <Text className="text-lg font-bold text-slate-800">Create Post</Text>
+              <AppButton 
+                title="Post" 
+                onPress={handlePost} 
+                loading={createPost.isPending} 
+                disabled={!content.trim()} 
+                size="sm"
+                className="rounded-full px-6"
+              />
             </View>
 
-            {imageUrl ? (
-              <View className="mb-5 relative">
-                <Image source={{ uri: imageUrl }} className="h-64 w-full rounded-2xl" resizeMode="cover" />
-                <TouchableOpacity onPress={() => setImageUrl("")} className="absolute right-3 top-3 h-8 w-8 items-center justify-center rounded-full bg-black/60">
-                  <Ionicons name="close" size={18} color="#FFF" />
-                </TouchableOpacity>
+            <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={{ flexGrow: 1 }} className="flex-1">
+              
+              {/* Post Type Selector */}
+              <View className="px-4 pt-5 pb-2">
+                <Text className="mb-3 text-xs font-bold text-slate-400 uppercase tracking-wider">What are you sharing?</Text>
+                <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ paddingRight: 16, alignItems: 'center' }}>
+                  {postTypes.map((t) => {
+                    const isSelected = type === t.value;
+                    return (
+                      <TouchableOpacity
+                        key={t.value}
+                        onPress={() => setType(t.value)}
+                        className={`mr-3 flex-row items-center rounded-full px-4 py-2.5 border ${
+                          isSelected ? 'bg-brand border-brand' : 'bg-white border-slate-200 shadow-sm'
+                        }`}
+                        style={isSelected ? { backgroundColor: '#5B4DFF', borderColor: '#5B4DFF' } : {}}
+                      >
+                        <Ionicons name={t.icon as any} size={16} color={isSelected ? '#FFFFFF' : '#64748B'} />
+                        <Text className={`text-sm font-semibold ml-2 ${isSelected ? 'text-white' : 'text-slate-600'}`}>
+                          {t.label}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </ScrollView>
               </View>
-            ) : (
-              <TouchableOpacity onPress={handlePickImage} className="mb-5 flex-row items-center rounded-2xl bg-slate-50 px-4 py-4 border border-slate-200 border-dashed">
-                <View className="h-10 w-10 items-center justify-center rounded-full bg-brand/10">
-                  <Ionicons name={imageUploading ? "hourglass-outline" : "image-outline"} size={20} color="#5B4DFF" />
+
+              {/* Text Input */}
+              <View className="px-4 pt-4 flex-1">
+                <TextInput
+                  multiline
+                  autoFocus
+                  placeholder="What's on your mind? Share your updates, milestones or product drops..."
+                  placeholderTextColor="#94A3B8"
+                  maxLength={500}
+                  style={{
+                    fontSize: 18,
+                    color: '#1E293B',
+                    lineHeight: 28,
+                    minHeight: 180,
+                    textAlignVertical: 'top',
+                  }}
+                  value={content}
+                  onChangeText={setContent}
+                />
+              </View>
+
+              {/* Image Preview & Actions Footer */}
+              <View className="px-4 pb-6 pt-2">
+                {imageUrl ? (
+                  <View className="mb-5 relative rounded-2xl overflow-hidden border border-slate-200 shadow-sm">
+                    <Image source={{ uri: imageUrl }} className="h-64 w-full" resizeMode="cover" />
+                    <TouchableOpacity 
+                      onPress={() => setImageUrl("")} 
+                      className="absolute right-3 top-3 h-8 w-8 items-center justify-center rounded-full bg-black/50"
+                    >
+                      <Ionicons name="close" size={18} color="#FFF" />
+                    </TouchableOpacity>
+                  </View>
+                ) : null}
+
+                <View className="flex-row items-center justify-between border-t border-slate-100 pt-4">
+                  <TouchableOpacity 
+                    onPress={handlePickImage} 
+                    className="flex-row items-center bg-slate-50 px-4 py-2.5 rounded-full border border-slate-200"
+                    disabled={imageUploading}
+                  >
+                    <Ionicons name={imageUploading ? "hourglass-outline" : "image-outline"} size={20} color="#5B4DFF" />
+                    <Text className="ml-2 font-medium text-slate-700">
+                      {imageUploading ? "Uploading..." : "Add Photo"}
+                    </Text>
+                  </TouchableOpacity>
+                  
+                  <Text className={`text-xs font-semibold ${content.length > 450 ? 'text-amber-500' : 'text-slate-400'}`}>
+                    {content.length}/500
+                  </Text>
                 </View>
-                <View className="ml-3">
-                  <Text className="font-semibold text-ink">{imageUploading ? "Uploading image..." : "Add a photo"}</Text>
-                  <Text className="text-xs text-slate-500">Showcase your work or milestone</Text>
-                </View>
-              </TouchableOpacity>
-            )}
+              </View>
+
             </ScrollView>
           </KeyboardAvoidingView>
         </SafeAreaView>
