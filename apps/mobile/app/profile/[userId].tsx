@@ -8,7 +8,7 @@ import { SkillChip } from "../../src/components/SkillChip";
 import { AppButton } from "../../src/components/ui/AppButton";
 import { useProfile, useFollow, useFollowStats, useCreateExchange } from "../../src/lib/apiHooks";
 import { useState, useEffect } from "react";
-import { showToast } from "../../src/components/ui/AppToast";
+import { showToast, ToastContainer } from "../../src/components/ui/AppToast";
 import { useAuthStore } from "../../src/store/useAuthStore";
 import type { SkillCategory, SkillLevel } from "@bizskills/types";
 
@@ -266,6 +266,7 @@ export default function PublicProfileScreen() {
             </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
+        <ToastContainer />
       </Modal>
     </SafeAreaView>
   );

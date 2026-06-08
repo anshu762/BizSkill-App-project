@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Image, Modal, ScrollView, Text, TextInput, TouchableOpacity, View, Platform, KeyboardAvoidingView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { showToast } from "./ui/AppToast";
+import { showToast, ToastContainer } from "./ui/AppToast";
 import { readApiError } from "../lib/axios";
 import { ResponsiveLayout } from "./ui/ResponsiveLayout";
 import { useCreatePost } from "../lib/apiHooks";
@@ -160,6 +160,7 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
+      <ToastContainer />
       </ResponsiveLayout>
     </Modal>
   );

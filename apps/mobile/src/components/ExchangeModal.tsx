@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState, useCallback } from "react";
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { showToast } from "./ui/AppToast";
+import { showToast, ToastContainer } from "./ui/AppToast";
 import { readApiError } from "../lib/axios";
 import { useProfile } from "../lib/apiHooks";
 import { useCreateExchange } from "../lib/apiHooks";
@@ -142,6 +142,7 @@ export function ExchangeModal({ visible, onClose, targetUserId, targetSkillId }:
           </ScrollView>
         </SafeAreaView>
       </KeyboardAvoidingView>
+      <ToastContainer />
       </ResponsiveLayout>
     </Modal>
   );

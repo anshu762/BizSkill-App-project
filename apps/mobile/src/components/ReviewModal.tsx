@@ -2,7 +2,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useState } from "react";
 import { Modal, ScrollView, Text, TextInput, TouchableOpacity, View, KeyboardAvoidingView, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { showToast } from "./ui/AppToast";
+import { showToast, ToastContainer } from "./ui/AppToast";
 import { readApiError } from "../lib/axios";
 import { useCreateReview } from "../lib/apiHooks";
 import { AppButton } from "./AppButton";
@@ -84,6 +84,7 @@ export function ReviewModal({ visible, onClose, exchangeId }: ReviewModalProps) 
           </ScrollView>
           </SafeAreaView>
         </KeyboardAvoidingView>
+        <ToastContainer />
       </ResponsiveLayout>
     </Modal>
   );
