@@ -106,6 +106,43 @@ export default function FeedScreen() {
 
   const allPosts = data?.pages.flatMap((p) => p.data) ?? [];
 
+  const renderPost = useCallback(({ item }: any) => {
+    if (isLoading) return <SkeletonPostCard />;
+    return (
+      <PostCard
+        post={item}
+        onCommentPress={(postId) => router.push(`/post/${postId}` as any)}
+        onUserPress={(userId) => router.push(`/profile/${userId}` as any)}
+        onDelete={(postId) => deletePost.mutate(postId)}
+        onEdit={(postId, content) => updatePost.mutateAsync({ postId, content })}
+      />
+    );
+  }, [isLoading, router, deletePost, updatePost]);
+
+  const keyExtractor = useCallback((item: any, i: number) => item?.id ?? String(i), []);
+
+  const renderFilter = useCallback(({ item }: any) => {
+    const isSelected = filter === item.key;
+    return (
+      <TouchableOpacity
+        onPress={() => setFilter(item.key)}
+        activeOpacity={0.88}
+        className="mr-2 flex-row items-center rounded-xl border px-4 py-2.5"
+        style={{
+          backgroundColor: isSelected ? Colors.brand : theme.elevated,
+          borderColor: isSelected ? Colors.brand : theme.border,
+        }}
+      >
+        <AppText
+          variant="label"
+          style={{
+            color: isSelected ? "#FFFFFF" : theme.textSecondary,
+          }}
+        >{item.label}</AppText>
+      </TouchableOpacity>
+    );
+  }, [filter, theme]);
+
   return (
     <ErrorBoundary>
       <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
@@ -139,36 +176,20 @@ export default function FeedScreen() {
             data={filters}
             keyExtractor={(f) => f.key}
             className="mb-4"
-            renderItem={({ item }) => {
-              const isSelected = filter === item.key;
-              return (
-                <TouchableOpacity
-                  onPress={() => setFilter(item.key)}
-                  activeOpacity={0.88}
-                  className="mr-2 flex-row items-center rounded-xl border px-4 py-2.5"
-                  style={{
-                    backgroundColor: isSelected ? Colors.brand : theme.elevated,
-                    borderColor: isSelected ? Colors.brand : theme.border,
-                  }}
-                >
-                  <AppText
-                    variant="label"
-                    style={{
-                      color: isSelected ? "#FFFFFF" : theme.textSecondary,
-                    }}
-                  >{item.label}</AppText>
-                </TouchableOpacity>
-              );
-            }}
+            renderItem={renderFilter}
           />
         </View>
 
         <FlatList
           data={isLoading ? Array(3).fill(null) : allPosts}
-          keyExtractor={(item, i) => item?.id ?? String(i)}
+          keyExtractor={keyExtractor}
           contentContainerClassName="px-6 pb-24"
           onEndReached={() => { if (hasNextPage) fetchNextPage(); }}
           onEndReachedThreshold={0.5}
+          initialNumToRender={5}
+          maxToRenderPerBatch={5}
+          windowSize={10}
+          removeClippedSubviews={true}
           ListHeaderComponent={<DashboardCard />}
           ListFooterComponent={isFetchingNextPage ? <ActivityIndicator className="py-4" color={Colors.brand} /> : null}
           ListEmptyComponent={
@@ -182,17 +203,7 @@ export default function FeedScreen() {
               <EmptyFeed onAction={() => setCreateOpen(true)} />
             )
           }
-          renderItem={({ item }) =>
-            isLoading ? <SkeletonPostCard /> : (
-              <PostCard
-                post={item}
-                onCommentPress={(postId) => router.push(`/post/${postId}` as any)}
-                onUserPress={(userId) => router.push(`/profile/${userId}` as any)}
-                onDelete={(postId) => deletePost.mutate(postId)}
-                onEdit={(postId, content) => updatePost.mutateAsync({ postId, content })}
-              />
-            )
-          }
+          renderItem={renderPost}
         />
 
         <CreatePostModal visible={createOpen} onClose={() => setCreateOpen(false)} />
