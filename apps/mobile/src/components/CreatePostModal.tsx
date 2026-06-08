@@ -95,20 +95,13 @@ export function CreatePostModal({ visible, onClose }: CreatePostModalProps) {
               </View>
               
               <View style={{ flex: 1, alignItems: 'flex-end' }}>
-                <TouchableOpacity 
+                <AppButton 
+                  title="Post" 
                   onPress={handlePost} 
-                  disabled={!content.trim() || createPost.isPending}
-                  style={{
-                    backgroundColor: content.trim() ? '#5B4DFF' : '#E2E8F0',
-                    paddingHorizontal: 16,
-                    paddingVertical: 8,
-                    borderRadius: 20
-                  }}
-                >
-                  <Text style={{ color: content.trim() ? '#FFFFFF' : '#94A3B8', fontWeight: 'bold' }}>
-                    {createPost.isPending ? "Posting..." : "Post"}
-                  </Text>
-                </TouchableOpacity>
+                  loading={createPost.isPending} 
+                  disabled={!content.trim()} 
+                  size="sm" 
+                />
               </View>
             </View>
 
