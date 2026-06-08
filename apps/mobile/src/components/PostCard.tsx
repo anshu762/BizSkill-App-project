@@ -216,7 +216,7 @@ export function PostCard({ post, onCommentPress, onUserPress, onDelete, onEdit }
       {/* Edit Modal */}
       <Modal visible={editModal} animationType="slide" presentationStyle="pageSheet" onRequestClose={() => setEditModal(false)}>
         <SafeAreaView style={{ flex: 1, backgroundColor: theme.bg }}>
-          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined} style={{ flex: 1 }}>
+          <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style={{ flex: 1 }}>
             <View style={{ flex: 1, paddingHorizontal: 24 }}>
               <View style={{ marginTop: 16, marginBottom: 24, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
                 <AppText variant="h2">Edit Post</AppText>
