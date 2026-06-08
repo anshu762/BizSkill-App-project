@@ -65,8 +65,8 @@ function ToastBubble({
   item: ToastItem;
   onDone: (id: number) => void;
 }) {
-  const opacity = useRef(new Animated.Value(0)).current;
-  const translateY = useRef(new Animated.Value(-20)).current;
+  const opacity = useRef(new Animated.Value(1)).current;
+  const translateY = useRef(new Animated.Value(0)).current;
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const cfg = TYPE_CONFIG[item.type];
   const duration = item.duration ?? 4000;
@@ -74,8 +74,8 @@ function ToastBubble({
   const dismiss = useCallback(() => {
     if (timerRef.current) clearTimeout(timerRef.current);
     Animated.parallel([
-      Animated.timing(opacity, { toValue: 0, duration: 250, useNativeDriver: true }),
-      Animated.timing(translateY, { toValue: -20, duration: 250, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 0, duration: 250, useNativeDriver: false }),
+      Animated.timing(translateY, { toValue: -20, duration: 250, useNativeDriver: false }),
     ]).start();
     
     // Guarantee removal even if animation callback fails on Android
@@ -85,8 +85,8 @@ function ToastBubble({
   useEffect(() => {
     // Fade in
     Animated.parallel([
-      Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: true }),
-      Animated.timing(translateY, { toValue: 0, duration: 300, useNativeDriver: true }),
+      Animated.timing(opacity, { toValue: 1, duration: 300, useNativeDriver: false }),
+      Animated.timing(translateY, { toValue: 0, duration: 300, useNativeDriver: false }),
     ]).start();
 
     // Auto-dismiss after duration
@@ -141,14 +141,12 @@ export function ToastContainer() {
   if (toasts.length === 0) return null;
 
   // Calculate top offset securely
-  const topOffset = Platform.OS === 'android'
-    ? (StatusBar.currentHeight ?? 24) + 12
-    : 60;
+  const topOffset = 60;
 
   return (
     <View
       style={[styles.container, { top: topOffset }]}
-      pointerEvents="none"
+      pointerEvents="box-none"
     >
       {toasts.map((t) => (
         <ToastBubble key={t.id} item={t} onDone={remove} />
@@ -164,11 +162,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 0,
     right: 0,
-    zIndex: 9999,
-    elevation: 9999,
+    zIndex: 100,
+    elevation: 50,
     alignItems: 'center',
     paddingHorizontal: 16,
-    pointerEvents: 'none',
+    pointerEvents: 'box-none',
   } as any,
   bubble: {
     width: '100%',
