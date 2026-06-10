@@ -48,7 +48,7 @@ export default function WelcomeScreen() {
         ))}
       </View>
 
-      <View className="mt-auto pb-5 pt-8">
+      <View className="mt-auto pb-12 pt-8">
         <AppButton title="Create Account" size="lg" onPress={() => router.push("/(auth)/register")} />
         <AppButton
           title="Sign In"
